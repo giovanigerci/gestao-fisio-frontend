@@ -1,0 +1,39 @@
+<div class="min-h-screen flex items-center justify-center bg-slate-950 px-4">
+  <div class="w-full max-w-sm">
+    <h1 class="text-2xl font-semibold text-slate-50 mb-1">FisioAgenda</h1>
+    <p class="text-slate-400 text-sm mb-8">Entre com sua conta para continuar</p>
+
+    <form class="flex flex-col gap-4">
+      <div>
+        <label class="block text-sm text-slate-300 mb-1">Usuário</label>
+        <input
+          [value]="username()"
+          (input)="username.set($any($event.target).value)"
+          class="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+        />
+      </div>
+
+      <div>
+        <label class="block text-sm text-slate-300 mb-1">Senha</label>
+        <input
+          type="password"
+          [value]="password()"
+          (input)="password.set($any($event.target).value)"
+          class="w-full rounded-lg bg-slate-900 border border-slate-700 px-3 py-2 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+        />
+      </div>
+
+      @if (erro()) {
+        <p class="text-red-400 text-sm">{{ erro() }}</p>
+      }
+
+      <button
+        type="button"
+        (click)="entrar()"
+        class="mt-2 w-full rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2 transition-colors"
+      >
+        Entrar
+      </button>
+    </form>
+  </div>
+</div>
