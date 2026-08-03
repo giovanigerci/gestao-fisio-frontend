@@ -18,8 +18,9 @@ export class Login {
 
   entrar() {
     this.authService.login(this.username(), this.password()).subscribe({
-      next: (resposta: any) => {
-        console.log('Login realizado', resposta);
+      next: (resposta: { access: string; refresh: string }) => {
+        this.authService.salvarTokens(resposta.access, resposta.refresh);
+        this.router.navigate(['/dashboard']);
       },
       error: () => {
         this.erro.set('Usuário ou senha inválidos.');
