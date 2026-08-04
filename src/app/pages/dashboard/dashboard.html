@@ -1,0 +1,9 @@
+<div class="min-h-screen bg-slate-950 text-slate-100 p-6">
+  <h1 class="text-xl font-semibold mb-4">Dashboard (teste)</h1>
+  <p class="text-slate-400 text-sm mb-4">Veja o console para os dados completos.</p>
+  <ul class="flex flex-col gap-2">
+    @for (paciente of pacientes(); track paciente.id) {
+      <li class="bg-slate-900 rounded-lg px-4 py-2">{{ paciente.nome }}</li>
+    }
+  </ul>
+</div>
