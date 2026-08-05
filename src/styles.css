@@ -1,3 +1,87 @@
 /* You can add global styles to this file, and also import other style files */
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 @import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Inter', system-ui, sans-serif;
+
+  /* Brand Colors */
+  --color-primary: #5383A3;
+  --color-primary-light: #6a9ab8;
+  --color-primary-subtle: rgba(83, 131, 163, 0.15);
+  --color-accent: #C9A888;
+  --color-accent-light: #d4b99c;
+  --color-accent-subtle: rgba(201, 168, 136, 0.15);
+
+  /* Surfaces */
+  --color-surface: #111827;
+  --color-surface-elevated: #1e293b;
+
+  /* Feedback */
+  --color-success: #34d399;
+  --color-error: #f87171;
+  --color-warning: #fbbf24;
+}
+
+/* ─── Base Overrides ─── */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: #0a0f1a;
+  color: #f1f5f9;
+  min-height: 100dvh;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #64748b;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ─── Utility Animations ─── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes float-slow {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(20px, -15px) scale(1.1); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(83, 131, 163, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(83, 131, 163, 0.4);
+  }
+}
