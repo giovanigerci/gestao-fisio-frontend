@@ -1,12 +1,28 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, inject, signal } from '@angular/core';
+import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { NavBar } from './components/nav-bar/nav-bar';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, NavBar],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App {
-  protected readonly title = signal('gestao-fisio-frontend');
+  private router = inject(Router);
+  mostrarNav = signal(false);
+
+  constructor() {
+    this.atualizarNav(this.router.url);
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd)
+    ).subscribe(event => {
+      this.atualizarNav(event.urlAfterRedirects);
+    });
+  }
+
+  private atualizarNav(url: string) {
+    this.mostrarNav.set(!url.startsWith('/login'));
+  }
 }

@@ -1,1 +1,7 @@
-<router-outlet />
+@if (mostrarNav()) {
+  <app-nav-bar />
+}
+
+<main [class]="mostrarNav() ? 'pb-20 md:pb-0 md:pl-56' : ''">
+  <router-outlet />
+</main>
