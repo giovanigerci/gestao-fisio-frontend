@@ -1,0 +1,150 @@
+<div class="min-h-screen bg-slate-950 px-4 pt-6 pb-8">
+  <!-- Header -->
+  <div class="flex items-center gap-3 mb-8">
+    <button (click)="cancelar()"
+            class="w-10 h-10 rounded-lg flex items-center justify-center text-slate-400
+                   hover:text-slate-200 hover:bg-slate-800 transition-colors cursor-pointer">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+      </svg>
+    </button>
+    <h1 class="text-xl font-semibold text-slate-50">
+      {{ modoEdicao() ? 'Editar Agendamento' : 'Novo Agendamento' }}
+    </h1>
+  </div>
+
+  <!-- Loading -->
+  @if (carregando() || carregandoDropdowns()) {
+    <div class="flex items-center justify-center py-20">
+      <div class="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+    </div>
+  }
+
+  <!-- Form -->
+  @if (!carregando() && !carregandoDropdowns()) {
+    <form (submit)="$event.preventDefault(); salvar()" class="flex flex-col gap-5 max-w-lg">
+
+      <!-- Error -->
+      @if (erro()) {
+        <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4 animate-in">
+          <p class="text-red-400 text-sm">{{ erro() }}</p>
+        </div>
+      }
+
+      <!-- Paciente (dropdown) -->
+      <div>
+        <label class="block text-sm text-slate-300 mb-1.5">Paciente <span class="text-red-400">*</span></label>
+        <select
+          [value]="paciente() ?? ''"
+          (change)="paciente.set(+$any($event.target).value || null)"
+          class="input-field">
+          <option value="" disabled>Selecione o paciente</option>
+          @for (p of pacientes(); track p.id) {
+            <option [value]="p.id">{{ p.nome }}</option>
+          }
+        </select>
+      </div>
+
+      <!-- Clínica (dropdown) -->
+      <div>
+        <label class="block text-sm text-slate-300 mb-1.5">Clínica <span class="text-red-400">*</span></label>
+        <select
+          [value]="clinica() ?? ''"
+          (change)="clinica.set(+$any($event.target).value || null)"
+          class="input-field">
+          <option value="" disabled>Selecione a clínica</option>
+          @for (c of clinicas(); track c.id) {
+            <option [value]="c.id">{{ c.nome }} — R$ {{ c.valor_por_atendimento }}/atend.</option>
+          }
+        </select>
+      </div>
+
+      <!-- Data -->
+      <div>
+        <label class="block text-sm text-slate-300 mb-1.5">Data <span class="text-red-400">*</span></label>
+        <input
+          type="date"
+          [value]="data()"
+          (input)="data.set($any($event.target).value)"
+          class="input-field"
+        />
+      </div>
+
+      <!-- Horários -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm text-slate-300 mb-1.5">Hora início <span class="text-red-400">*</span></label>
+          <input
+            type="time"
+            [value]="horaInicio()"
+            (input)="horaInicio.set($any($event.target).value)"
+            class="input-field"
+          />
+        </div>
+        <div>
+          <label class="block text-sm text-slate-300 mb-1.5">Hora fim <span class="text-red-400">*</span></label>
+          <input
+            type="time"
+            [value]="horaFim()"
+            (input)="horaFim.set($any($event.target).value)"
+            class="input-field"
+          />
+        </div>
+      </div>
+
+      <!-- Checkboxes -->
+      <div class="flex flex-col gap-3 pt-1">
+        <label class="checkbox-field">
+          <input
+            type="checkbox"
+            [checked]="ehExperimental()"
+            (change)="ehExperimental.set($any($event.target).checked)"
+            class="checkbox-input"
+          />
+          <div class="checkbox-content">
+            <span class="checkbox-label">Aula experimental</span>
+            <span class="checkbox-hint">Marca este agendamento como aula experimental</span>
+          </div>
+        </label>
+
+        <label class="checkbox-field">
+          <input
+            type="checkbox"
+            [checked]="ehGratuito()"
+            (change)="ehGratuito.set($any($event.target).checked)"
+            class="checkbox-input"
+          />
+          <div class="checkbox-content">
+            <span class="checkbox-label">Gratuito</span>
+            <span class="checkbox-hint">Este atendimento não será contabilizado na receita</span>
+          </div>
+        </label>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex gap-3 pt-2">
+        <button
+          type="button"
+          (click)="cancelar()"
+          class="flex-1 rounded-xl border border-slate-700/50 py-2.5 text-slate-300 font-medium text-sm
+                 hover:bg-slate-800 transition-colors cursor-pointer">
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          [disabled]="salvando()"
+          class="flex-1 rounded-xl bg-primary py-2.5 text-white font-medium text-sm
+                 hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
+          @if (salvando()) {
+            <span class="flex items-center justify-center gap-2">
+              <span class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block"></span>
+              Salvando...
+            </span>
+          } @else {
+            Salvar
+          }
+        </button>
+      </div>
+    </form>
+  }
+</div>

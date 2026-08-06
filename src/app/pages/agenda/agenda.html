@@ -1,0 +1,237 @@
+<div class="min-h-screen bg-slate-950 px-4 pt-6 pb-4">
+
+  <!-- Header -->
+  <div class="mb-5">
+    <h1 class="text-2xl font-semibold text-slate-50">Agenda</h1>
+    <p class="text-slate-400 text-sm mt-1">Visão semanal dos seus agendamentos</p>
+  </div>
+
+  <!-- Week Navigation -->
+  <div class="agenda-week-nav">
+    <button (click)="semanaAnterior()" class="agenda-nav-btn" aria-label="Semana anterior">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+      </svg>
+    </button>
+
+    <button (click)="irParaHoje()" class="agenda-week-title">
+      {{ tituloSemana() }}
+    </button>
+
+    <button (click)="proximaSemana()" class="agenda-nav-btn" aria-label="Próxima semana">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Error -->
+  @if (erro()) {
+    <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-4 animate-in">
+      <p class="text-red-400 text-sm">{{ erro() }}</p>
+      <button (click)="carregarAgendamentos()" class="text-red-300 text-sm mt-2 underline hover:text-red-200 transition-colors cursor-pointer">
+        Tentar novamente
+      </button>
+    </div>
+  }
+
+  <!-- Loading -->
+  @if (carregando()) {
+    <div class="flex flex-col items-center justify-center py-20">
+      <div class="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+      <p class="text-slate-400 text-sm mt-4">Carregando agendamentos...</p>
+    </div>
+  }
+
+  <!-- Week View -->
+  @if (!carregando()) {
+    <div class="agenda-days">
+      @for (dia of diasDaSemana(); track dia.data) {
+        <div class="agenda-day-group" [class.agenda-day-group--hoje]="dia.ehHoje">
+
+          <!-- Day Header -->
+          <div class="agenda-day-header">
+            <span class="agenda-day-name">{{ dia.diaSemana }}</span>
+            <span class="agenda-day-date" [class.agenda-day-date--hoje]="dia.ehHoje">
+              {{ dia.diaFormatado }}
+            </span>
+            @if (dia.ehHoje) {
+              <span class="agenda-badge-hoje">Hoje</span>
+            }
+          </div>
+
+          <!-- Appointments -->
+          @if (dia.agendamentos.length === 0) {
+            <div class="agenda-empty-day">
+              <p class="text-slate-500 text-xs">Nenhum agendamento</p>
+            </div>
+          } @else {
+            <div class="agenda-day-items">
+              @for (ag of dia.agendamentos; track ag.id) {
+                <div
+                  (click)="abrirDetalhes(ag)"
+                  class="agenda-item"
+                  [class.agenda-item--cancelado]="ag.status === 'CA'"
+                  [class.agenda-item--realizado]="ag.status === 'RE'"
+                  [class.agenda-item--gratuito]="ag.eh_gratuito">
+
+                  <!-- Time -->
+                  <div class="agenda-item-time">
+                    <span class="agenda-item-hora">{{ formatarHora(ag.hora_inicio) }}</span>
+                    <span class="agenda-item-hora-fim">{{ formatarHora(ag.hora_fim) }}</span>
+                  </div>
+
+                  <!-- Content -->
+                  <div class="agenda-item-content">
+                    <div class="agenda-item-top">
+                      <span class="agenda-item-paciente">{{ getNomePaciente(ag.paciente) }}</span>
+                      <div class="agenda-item-badges">
+                        @if (ag.eh_experimental) {
+                          <span class="badge badge--experimental">Experimental</span>
+                        }
+                        @if (ag.eh_gratuito) {
+                          <span class="badge badge--gratuito">Gratuito</span>
+                        }
+                        <span class="badge"
+                              [class.badge--agendado]="ag.status === 'AG'"
+                              [class.badge--realizado]="ag.status === 'RE'"
+                              [class.badge--cancelado]="ag.status === 'CA'">
+                          {{ getStatusLabel(ag.status) }}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="agenda-item-bottom">
+                      <span class="agenda-item-clinica">{{ getNomeClinica(ag.clinica) }}</span>
+                      <span class="agenda-item-valor" [class.agenda-item-valor--zero]="ag.eh_gratuito">
+                        {{ formatarValor(ag.valor_calculado) }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Detail Modal -->
+  @if (agendamentoSelecionado()) {
+    <div class="agenda-overlay" (click)="fecharDetalhes()"></div>
+    <div class="agenda-modal">
+      <div class="agenda-modal-header">
+        <h2 class="agenda-modal-title">Detalhes do Agendamento</h2>
+        <button (click)="fecharDetalhes()" class="agenda-modal-close" aria-label="Fechar">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="agenda-modal-body">
+        <!-- Patient -->
+        <div class="agenda-modal-field">
+          <span class="agenda-modal-label">Paciente</span>
+          <span class="agenda-modal-value">{{ getNomePaciente(agendamentoSelecionado()!.paciente) }}</span>
+        </div>
+
+        <!-- Clinic -->
+        <div class="agenda-modal-field">
+          <span class="agenda-modal-label">Clínica</span>
+          <span class="agenda-modal-value">{{ getNomeClinica(agendamentoSelecionado()!.clinica) }}</span>
+        </div>
+
+        <!-- Date/time -->
+        <div class="agenda-modal-row">
+          <div class="agenda-modal-field">
+            <span class="agenda-modal-label">Data</span>
+            <span class="agenda-modal-value">{{ agendamentoSelecionado()!.data }}</span>
+          </div>
+          <div class="agenda-modal-field">
+            <span class="agenda-modal-label">Horário</span>
+            <span class="agenda-modal-value">{{ formatarHora(agendamentoSelecionado()!.hora_inicio) }} – {{ formatarHora(agendamentoSelecionado()!.hora_fim) }}</span>
+          </div>
+        </div>
+
+        <!-- Value -->
+        <div class="agenda-modal-field">
+          <span class="agenda-modal-label">Valor</span>
+          <span class="agenda-modal-value" [class.agenda-item-valor--zero]="agendamentoSelecionado()!.eh_gratuito">
+            {{ formatarValor(agendamentoSelecionado()!.valor_calculado) }}
+          </span>
+        </div>
+
+        <!-- Badges -->
+        <div class="agenda-modal-badges">
+          @if (agendamentoSelecionado()!.eh_experimental) {
+            <span class="badge badge--experimental">Experimental</span>
+          }
+          @if (agendamentoSelecionado()!.eh_gratuito) {
+            <span class="badge badge--gratuito">Gratuito — não conta na receita</span>
+          }
+          <span class="badge"
+                [class.badge--agendado]="agendamentoSelecionado()!.status === 'AG'"
+                [class.badge--realizado]="agendamentoSelecionado()!.status === 'RE'"
+                [class.badge--cancelado]="agendamentoSelecionado()!.status === 'CA'">
+            {{ getStatusLabel(agendamentoSelecionado()!.status) }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="agenda-modal-actions">
+        <button
+          (click)="editarAgendamento(agendamentoSelecionado()!)"
+          class="agenda-action-btn agenda-action-btn--editar"
+          [disabled]="processandoAcao()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+          </svg>
+          Editar
+        </button>
+
+        <button
+          (click)="marcarComoRealizado(agendamentoSelecionado()!)"
+          class="agenda-action-btn agenda-action-btn--realizado"
+          [disabled]="processandoAcao() || agendamentoSelecionado()!.status === 'RE'">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          </svg>
+          Realizado
+        </button>
+
+        <button
+          (click)="cancelarAgendamento(agendamentoSelecionado()!)"
+          class="agenda-action-btn agenda-action-btn--cancelar"
+          [disabled]="processandoAcao() || agendamentoSelecionado()!.status === 'CA'">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          </svg>
+          Cancelar
+        </button>
+
+        <button
+          (click)="excluirAgendamento(agendamentoSelecionado()!)"
+          class="agenda-action-btn agenda-action-btn--excluir"
+          [disabled]="processandoAcao()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+          </svg>
+          Excluir
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- FAB -->
+  <a routerLink="/agenda/novo"
+     class="fixed bottom-24 right-5 md:bottom-8 md:right-8 z-40
+            w-14 h-14 rounded-full bg-primary text-white shadow-lg shadow-primary/25
+            flex items-center justify-center hover:brightness-110 transition-all
+            hover:scale-105 active:scale-95">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-7 h-7">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+    </svg>
+  </a>
+</div>
