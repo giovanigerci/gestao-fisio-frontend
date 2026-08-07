@@ -13,13 +13,29 @@ export class Auth {
         );
     }
 
+    renovarToken() {
+        const refresh = this.getRefreshToken();
+        return this.http.post<{ access: string }>(
+            `${environment.apiUrl}/auth/token/refresh/`,
+            { refresh }
+        );
+    }
+
     salvarTokens(access: string, refresh: string) {
         localStorage.setItem('access_token', access);
         localStorage.setItem('refresh_token', refresh);
     }
 
+    salvarAccessToken(access: string) {
+        localStorage.setItem('access_token', access);
+    }
+
     getAccessToken(): string | null {
         return localStorage.getItem('access_token');
+    }
+
+    getRefreshToken(): string | null {
+        return localStorage.getItem('refresh_token');
     }
 
     estaAutenticado(): boolean {
