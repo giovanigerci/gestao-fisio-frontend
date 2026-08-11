@@ -1,0 +1,166 @@
+/* ─── Period Toggle ─── */
+.fin-toggle-wrapper {
+  display: flex;
+  gap: 4px;
+  background: #0f172a;
+  border: 1px solid rgba(51, 65, 85, 0.5);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 1.5rem;
+}
+
+.fin-toggle-btn {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #94a3b8;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.fin-toggle-btn:hover:not(.fin-toggle--active) {
+  color: #cbd5e1;
+  background: rgba(30, 41, 59, 0.5);
+}
+
+.fin-toggle--active {
+  background: #5383A3;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(83, 131, 163, 0.3);
+}
+
+/* ─── Total Card ─── */
+.fin-total-card {
+  background: linear-gradient(135deg, rgba(83, 131, 163, 0.15) 0%, rgba(201, 168, 136, 0.08) 100%);
+  border: 1px solid rgba(83, 131, 163, 0.25);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.fin-total-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #94a3b8;
+  margin-bottom: 0.5rem;
+}
+
+.fin-total-valor {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  letter-spacing: -0.02em;
+}
+
+/* ─── Clinic Cards ─── */
+.fin-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  animation: fadeInUp 0.5s ease-out 0.1s both;
+}
+
+.fin-card {
+  background: #0f172a;
+  border: 1px solid rgba(51, 65, 85, 0.5);
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  transition: border-color 0.2s ease, transform 0.15s ease;
+}
+
+.fin-card:hover {
+  border-color: rgba(83, 131, 163, 0.3);
+}
+
+.fin-card:active {
+  transform: scale(0.99);
+}
+
+.fin-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.fin-card-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 10px;
+  background: rgba(83, 131, 163, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #5383A3;
+  flex-shrink: 0;
+}
+
+.fin-card-nome {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fin-card-stats {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(15, 23, 42, 0.5);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(51, 65, 85, 0.3);
+}
+
+.fin-card-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.fin-card-stat-label {
+  font-size: 0.75rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 500;
+}
+
+.fin-card-stat-value {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.fin-card-stat-value--receita {
+  color: #34d399;
+}
+
+.fin-card-divider {
+  width: 1px;
+  height: 2rem;
+  background: rgba(51, 65, 85, 0.5);
+  flex-shrink: 0;
+}
+
+/* ─── Animations ─── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
