@@ -31,8 +31,7 @@ export class Login {
     this.carregando.set(true);
 
     this.authService.login(this.username(), this.password()).subscribe({
-      next: (resposta: { access: string; refresh: string }) => {
-        this.authService.salvarTokens(resposta.access, resposta.refresh);
+      next: () => {
         this.router.navigate(['/agenda']);
       },
       error: () => {
