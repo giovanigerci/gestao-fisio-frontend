@@ -1,6 +1,6 @@
 <nav
   class="fixed bottom-0 inset-x-0 z-50 border-t border-slate-700/50 bg-slate-900/95 backdrop-blur-md
-            md:inset-x-auto md:top-0 md:left-0 md:bottom-0 md:w-56 md:border-t-0 md:border-r md:border-slate-700/50 md:bg-slate-900">
+            md:inset-x-auto md:top-0 md:left-0 md:bottom-0 md:w-56 md:border-t-0 md:border-r md:border-slate-700/50 md:bg-slate-900 md:flex md:flex-col">
 
   <!-- Branding (desktop only) -->
   <div class="hidden md:flex items-center gap-1 px-5 py-5 mb-2">
@@ -10,7 +10,7 @@
 
   <!-- Nav links -->
   <div class="flex justify-around py-1
-              md:flex-col md:gap-1 md:px-3 md:py-0 md:justify-start">
+              md:flex-col md:gap-1 md:px-3 md:py-0 md:justify-start md:flex-1 md:pb-5">
 
     <!-- Agenda -->
     <a routerLink="/agenda" routerLinkActive="nav-active" class="nav-link">
@@ -51,6 +51,14 @@
       </svg>
       <span class="nav-label">Financeiro</span>
     </a>
+
+    <!-- Sair -->
+    <button (click)="logout()" class="nav-link text-left md:mt-auto hover:text-red-400 cursor-pointer">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="nav-icon">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+      </svg>
+      <span class="nav-label">Sair</span>
+    </button>
 
   </div>
 </nav>
