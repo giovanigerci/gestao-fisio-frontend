@@ -1,0 +1,116 @@
+<div class="min-h-screen bg-slate-950 px-4 pt-6 pb-4">
+  <!-- Header -->
+  <div class="mb-6">
+    <h1 class="text-2xl font-semibold text-slate-50">Clínicas</h1>
+    <p class="text-slate-400 text-sm mt-1">Gerencie suas clínicas cadastradas</p>
+  </div>
+
+  <!-- Search bar -->
+  <div class="relative mb-6">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+         class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500">
+      <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+    </svg>
+    <input
+      type="text"
+      [value]="termoBusca()"
+      (input)="termoBusca.set($any($event.target).value)"
+      placeholder="Buscar por nome..."
+      class="w-full rounded-xl bg-slate-900 border border-slate-700/50 pl-11 pr-4 py-2.5 text-slate-100 text-sm
+             placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+    />
+  </div>
+
+  <!-- Loading state -->
+  @if (carregando()) {
+    <div class="flex flex-col items-center justify-center py-20">
+      <div class="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+      <p class="text-slate-400 text-sm mt-4">Carregando clínicas...</p>
+    </div>
+  }
+
+  <!-- Error state -->
+  @if (erro() && !carregando()) {
+    <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-4">
+      <p class="text-red-400 text-sm">{{ erro() }}</p>
+      <button (click)="carregarClinicas()" class="text-red-300 text-sm mt-2 underline hover:text-red-200 transition-colors">
+        Tentar novamente
+      </button>
+    </div>
+  }
+
+  <!-- Empty state (no clinics at all) -->
+  @if (!carregando() && !erro() && clinicas().length === 0) {
+    <div class="flex flex-col items-center justify-center py-20 text-center">
+      <div class="w-16 h-16 rounded-full bg-slate-800/80 flex items-center justify-center mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-slate-500">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z" />
+        </svg>
+      </div>
+      <h2 class="text-slate-300 font-medium mb-1">Nenhuma clínica cadastrada</h2>
+      <p class="text-slate-500 text-sm">Toque no botão <span class="text-primary font-bold">+</span> para adicionar</p>
+    </div>
+  }
+
+  <!-- Search empty state -->
+  @if (!carregando() && !erro() && clinicas().length > 0 && clinicasFiltradas().length === 0) {
+    <div class="flex flex-col items-center justify-center py-16 text-center">
+      <p class="text-slate-400 text-sm">Nenhuma clínica encontrada para "<span class="text-slate-300">{{ termoBusca() }}</span>"</p>
+    </div>
+  }
+
+  <!-- Clinic list -->
+  @if (!carregando() && !erro()) {
+    <div class="flex flex-col gap-3">
+      @for (clinica of clinicasFiltradas(); track clinica.id) {
+        <div
+          (click)="editarClinica(clinica)"
+          class="bg-slate-900 rounded-xl border border-slate-700/50 p-4 flex items-center gap-4
+                 hover:border-primary/30 transition-all duration-200 cursor-pointer active:scale-[0.98]">
+
+          <!-- Avatar -->
+          <div class="w-11 h-11 rounded-full bg-primary/15 flex items-center justify-center
+                      text-primary font-semibold text-sm shrink-0">
+            {{ getIniciais(clinica.nome) }}
+          </div>
+
+          <!-- Info -->
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2">
+              <p class="text-slate-50 font-medium truncate">{{ clinica.nome }}</p>
+              @if (clinica.ativo) {
+                <span class="shrink-0 w-2 h-2 rounded-full bg-emerald-400" title="Ativa"></span>
+              } @else {
+                <span class="shrink-0 w-2 h-2 rounded-full bg-slate-500" title="Inativa"></span>
+              }
+            </div>
+            <p class="text-slate-400 text-sm truncate">{{ formatarValor(clinica.valor_por_atendimento) }} por atendimento</p>
+          </div>
+
+          <!-- Delete button -->
+          <button
+            (click)="confirmarExclusao(clinica, $event)"
+            class="w-9 h-9 rounded-lg flex items-center justify-center text-slate-500
+                   hover:text-red-400 hover:bg-red-400/10 transition-colors shrink-0"
+            title="Excluir clínica">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-[18px] h-[18px]">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+            </svg>
+          </button>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- FAB -->
+  <a routerLink="/clinicas/novo"
+     class="fixed bottom-24 right-5 md:bottom-8 md:right-8 z-40
+            w-14 h-14 rounded-full bg-primary text-white shadow-lg shadow-primary/25
+            flex items-center justify-center hover:brightness-110 transition-all
+            hover:scale-105 active:scale-95">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-7 h-7">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+    </svg>
+  </a>
+</div>

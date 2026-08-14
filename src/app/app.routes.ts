@@ -2,6 +2,8 @@ import { Routes } from '@angular/router';
 import { Login } from './pages/login/login';
 import { Pacientes } from './pages/pacientes/pacientes';
 import { PacienteForm } from './pages/pacientes/paciente-form/paciente-form';
+import { Clinicas } from './pages/clinicas/clinicas';
+import { ClinicaForm } from './pages/clinicas/clinica-form/clinica-form';
 import { Agenda } from './pages/agenda/agenda';
 import { AgendamentoForm } from './pages/agenda/agendamento-form/agendamento-form';
 import { Financeiro } from './pages/financeiro/financeiro';
@@ -16,6 +18,10 @@ export const routes: Routes = [
     { path: 'pacientes', component: Pacientes, canActivate: [authGuard] },
     { path: 'pacientes/novo', component: PacienteForm, canActivate: [authGuard] },
     { path: 'pacientes/:id/editar', component: PacienteForm, canActivate: [authGuard] },
+    { path: 'clinicas', component: Clinicas, canActivate: [authGuard] },
+    { path: 'clinicas/novo', component: ClinicaForm, canActivate: [authGuard] },
+    { path: 'clinicas/:id/editar', component: ClinicaForm, canActivate: [authGuard] },
     { path: 'financeiro', component: Financeiro, canActivate: [authGuard] },
     { path: '**', redirectTo: 'agenda' },
 ];
+
