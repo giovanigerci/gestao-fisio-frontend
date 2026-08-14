@@ -25,4 +25,16 @@ export class ClinicaService {
   buscarPorId(id: number) {
     return this.http.get<Clinica>(`${this.url}${id}/`);
   }
+
+  criar(dados: Partial<Clinica>) {
+    return this.http.post<Clinica>(this.url, dados);
+  }
+
+  atualizar(id: number, dados: Partial<Clinica>) {
+    return this.http.put<Clinica>(`${this.url}${id}/`, dados);
+  }
+
+  excluir(id: number) {
+    return this.http.delete(`${this.url}${id}/`);
+  }
 }
