@@ -2,9 +2,12 @@ import { Component, inject, signal, computed } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { PacienteService, Paciente } from '../../services/paciente.service';
 
+import { Card } from '../../shared/components/card/card';
+import { EmptyState } from '../../shared/components/empty-state/empty-state';
+
 @Component({
   selector: 'app-pacientes',
-  imports: [RouterLink],
+  imports: [RouterLink, Card, EmptyState],
   templateUrl: './pacientes.html',
   styleUrl: './pacientes.css',
 })

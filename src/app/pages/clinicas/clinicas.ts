@@ -2,9 +2,13 @@ import { Component, inject, signal, computed } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ClinicaService, Clinica } from '../../services/clinica.service';
 
+import { Card } from '../../shared/components/card/card';
+import { EmptyState } from '../../shared/components/empty-state/empty-state';
+import { Badge } from '../../shared/components/badge/badge';
+
 @Component({
   selector: 'app-clinicas',
-  imports: [RouterLink],
+  imports: [RouterLink, Card, EmptyState, Badge],
   templateUrl: './clinicas.html',
   styleUrl: './clinicas.css',
 })
