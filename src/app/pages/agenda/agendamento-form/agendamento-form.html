@@ -1,14 +1,14 @@
-<div class="min-h-screen bg-slate-950 px-4 pt-6 pb-8">
+<div class="min-h-screen px-4 pt-6 pb-8">
   <!-- Header -->
   <div class="flex items-center gap-3 mb-8">
     <button (click)="cancelar()"
-            class="w-10 h-10 rounded-lg flex items-center justify-center text-slate-400
-                   hover:text-slate-200 hover:bg-slate-800 transition-colors cursor-pointer">
+            class="w-10 h-10 rounded-lg flex items-center justify-center text-[var(--color-text-secondary)]
+                   hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
         <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
       </svg>
     </button>
-    <h1 class="text-xl font-semibold text-slate-50">
+    <h1 class="text-xl font-semibold text-[var(--color-text-primary)]">
       {{ modoEdicao() ? 'Editar Agendamento' : 'Novo Agendamento' }}
     </h1>
   </div>
@@ -26,14 +26,14 @@
 
       <!-- Error -->
       @if (erro()) {
-        <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4 animate-in">
-          <p class="text-red-400 text-sm">{{ erro() }}</p>
+        <div class="bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/20 rounded-xl p-4 animate-in">
+          <p class="text-[var(--color-danger)] text-sm">{{ erro() }}</p>
         </div>
       }
 
       <!-- Paciente (dropdown) -->
       <div>
-        <label class="block text-sm text-slate-300 mb-1.5">Paciente <span class="text-red-400">*</span></label>
+        <label class="block text-sm text-[var(--color-text-primary)] mb-1.5">Paciente <span class="text-[var(--color-danger)]">*</span></label>
         <select
           [value]="paciente() ?? ''"
           (change)="paciente.set(+$any($event.target).value || null)"
@@ -47,7 +47,7 @@
 
       <!-- Clínica (dropdown) -->
       <div>
-        <label class="block text-sm text-slate-300 mb-1.5">Clínica <span class="text-red-400">*</span></label>
+        <label class="block text-sm text-[var(--color-text-primary)] mb-1.5">Clínica <span class="text-[var(--color-danger)]">*</span></label>
         <select
           [value]="clinica() ?? ''"
           (change)="clinica.set(+$any($event.target).value || null)"
@@ -61,7 +61,7 @@
 
       <!-- Data -->
       <div>
-        <label class="block text-sm text-slate-300 mb-1.5">Data <span class="text-red-400">*</span></label>
+        <label class="block text-sm text-[var(--color-text-primary)] mb-1.5">Data <span class="text-[var(--color-danger)]">*</span></label>
         <input
           type="date"
           [value]="data()"
@@ -73,7 +73,7 @@
       <!-- Horários -->
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <label class="block text-sm text-slate-300 mb-1.5">Hora início <span class="text-red-400">*</span></label>
+          <label class="block text-sm text-[var(--color-text-primary)] mb-1.5">Hora início <span class="text-[var(--color-danger)]">*</span></label>
           <input
             type="time"
             [value]="horaInicio()"
@@ -82,7 +82,7 @@
           />
         </div>
         <div>
-          <label class="block text-sm text-slate-300 mb-1.5">Hora fim <span class="text-red-400">*</span></label>
+          <label class="block text-sm text-[var(--color-text-primary)] mb-1.5">Hora fim <span class="text-[var(--color-danger)]">*</span></label>
           <input
             type="time"
             [value]="horaFim()"
@@ -126,8 +126,8 @@
         <button
           type="button"
           (click)="cancelar()"
-          class="flex-1 rounded-xl border border-slate-700/50 py-2.5 text-slate-300 font-medium text-sm
-                 hover:bg-slate-800 transition-colors cursor-pointer">
+          class="flex-1 rounded-xl border border-[var(--color-border)] py-2.5 text-[var(--color-text-primary)] font-medium text-sm
+                 hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer">
           Cancelar
         </button>
         <button

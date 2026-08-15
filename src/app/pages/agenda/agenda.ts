@@ -3,10 +3,17 @@ import { Router, RouterLink } from '@angular/router';
 import { AgendamentoService, Agendamento } from '../../services/agendamento.service';
 import { PacienteService, Paciente } from '../../services/paciente.service';
 import { ClinicaService, Clinica } from '../../services/clinica.service';
+import { Badge, BadgeVariant } from '../../shared/components/badge/badge';
+import { Card } from '../../shared/components/card/card';
+import { EmptyState } from '../../shared/components/empty-state/empty-state';
+import { ProgressBar } from '../../shared/components/progress-bar/progress-bar';
+import { corDaClinica } from '../../shared/utils/clinic-colors';
 
 interface DiaAgenda {
   data: string;
   diaSemana: string;
+  diaSemanaAbrev: string;
+  diaNumero: number;
   diaFormatado: string;
   ehHoje: boolean;
   agendamentos: Agendamento[];
@@ -14,7 +21,7 @@ interface DiaAgenda {
 
 @Component({
   selector: 'app-agenda',
-  imports: [RouterLink],
+  imports: [RouterLink, Badge, Card, EmptyState, ProgressBar],
   templateUrl: './agenda.html',
   styleUrl: './agenda.css',
 })
@@ -30,11 +37,16 @@ export class Agenda {
   carregando = signal(true);
   erro = signal('');
   dataReferencia = signal(new Date());
+  dataSelecionada = signal(this.formatarData(new Date()));
   agendamentoSelecionado = signal<Agendamento | null>(null);
   processandoAcao = signal(false);
 
+  corDaClinica = corDaClinica;
+
   private readonly DIAS_SEMANA = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+  private readonly DIAS_ABREV = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
   private readonly MESES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+  private readonly MESES_EXTENSO = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 
   inicioSemana = computed(() => {
     const d = new Date(this.dataReferencia());
@@ -54,13 +66,11 @@ export class Agenda {
   tituloSemana = computed(() => {
     const inicio = this.inicioSemana();
     const fim = this.fimSemana();
-    const mesInicio = this.MESES[inicio.getMonth()];
-    const mesFim = this.MESES[fim.getMonth()];
 
     if (inicio.getMonth() === fim.getMonth()) {
-      return `${inicio.getDate()} – ${fim.getDate()} ${mesFim} ${fim.getFullYear()}`;
+      return `${inicio.getDate()} – ${fim.getDate()} De ${this.MESES_EXTENSO[fim.getMonth()]}`;
     }
-    return `${inicio.getDate()} ${mesInicio} – ${fim.getDate()} ${mesFim} ${fim.getFullYear()}`;
+    return `${inicio.getDate()} ${this.MESES[inicio.getMonth()]} – ${fim.getDate()} ${this.MESES[fim.getMonth()]} ${fim.getFullYear()}`;
   });
 
   diasDaSemana = computed<DiaAgenda[]>(() => {
@@ -82,12 +92,58 @@ export class Agenda {
       dias.push({
         data: dataStr,
         diaSemana: this.DIAS_SEMANA[d.getDay()],
-        diaFormatado: `${d.getDate()} ${this.MESES[d.getMonth()]}`,
+        diaSemanaAbrev: this.DIAS_ABREV[d.getDay()],
+        diaNumero: d.getDate(),
+        diaFormatado: `${d.getDate()} De ${this.MESES_EXTENSO[d.getMonth()]}`,
         ehHoje: d.getTime() === hoje.getTime(),
         agendamentos: agendamentosDoDia,
       });
     }
     return dias;
+  });
+
+  diaSelecionado = computed(() => {
+    const dias = this.diasDaSemana();
+    const sel = this.dataSelecionada();
+    return dias.find(d => d.data === sel) || dias.find(d => d.ehHoje) || dias[0];
+  });
+
+  resumoDia = computed(() => {
+    const dia = this.diaSelecionado();
+    if (!dia) return { realizados: 0, total: 0, valorTotal: 0 };
+    const ags = dia.agendamentos;
+    return {
+      realizados: ags.filter(a => a.status === 'RE').length,
+      total: ags.length,
+      valorTotal: ags
+        .filter(a => a.status !== 'CA' && !a.eh_gratuito)
+        .reduce((sum, a) => sum + a.valor_calculado, 0),
+    };
+  });
+
+  progressSegments = computed(() => {
+    const r = this.resumoDia();
+    if (r.total === 0) return [];
+    const segs: { value: number; color: string }[] = [];
+    if (r.realizados > 0) {
+      segs.push({ value: r.realizados, color: 'var(--color-money)' });
+    }
+    const restante = r.total - r.realizados;
+    if (restante > 0) {
+      segs.push({ value: restante, color: 'var(--color-border)' });
+    }
+    return segs;
+  });
+
+  clinicasDoDia = computed(() => {
+    const dia = this.diaSelecionado();
+    if (!dia) return [];
+    const clinicaIds = [...new Set(dia.agendamentos.map(a => a.clinica))];
+    return clinicaIds.map(id => ({
+      id,
+      nome: this.getNomeClinica(id),
+      cor: corDaClinica(id),
+    }));
   });
 
   constructor() {
@@ -151,6 +207,11 @@ export class Agenda {
 
   irParaHoje() {
     this.dataReferencia.set(new Date());
+    this.dataSelecionada.set(this.formatarData(new Date()));
+  }
+
+  selecionarDia(data: string) {
+    this.dataSelecionada.set(data);
   }
 
   abrirDetalhes(agendamento: Agendamento) {
@@ -217,8 +278,34 @@ export class Agenda {
     });
   }
 
-  getNomePaciente(id: number): string {
-    return this.pacientes().find(p => p.id === id)?.nome ?? '—';
+  getDotsDoDia(dia: DiaAgenda): string[] {
+    return dia.agendamentos.slice(0, 4).map(a => corDaClinica(a.clinica));
+  }
+
+  getStatusVariant(status: string): BadgeVariant {
+    switch (status) {
+      case 'AG': return 'agendado';
+      case 'RE': return 'realizado';
+      case 'CA': return 'cancelado';
+      default: return 'agendado';
+    }
+  }
+
+  getNomePaciente(pacienteId: number): string {
+    return this.pacientes().find(p => p.id === pacienteId)?.nome || 'Desconhecido';
+  }
+
+  getIdadePaciente(pacienteId: number): string {
+    const p = this.pacientes().find(p => p.id === pacienteId);
+    if (!p || !p.data_nascimento) return '';
+    const hoje = new Date();
+    const nasc = new Date(p.data_nascimento);
+    let idade = hoje.getFullYear() - nasc.getFullYear();
+    const m = hoje.getMonth() - nasc.getMonth();
+    if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) {
+      idade--;
+    }
+    return `${idade} Anos`;
   }
 
   getNomeClinica(id: number): string {
@@ -251,10 +338,19 @@ export class Agenda {
     }
   }
 
-  private formatarData(d: Date): string {
+  formatarData(d: Date): string {
     const ano = d.getFullYear();
     const mes = String(d.getMonth() + 1).padStart(2, '0');
     const dia = String(d.getDate()).padStart(2, '0');
     return `${ano}-${mes}-${dia}`;
+  }
+
+  formatarDataBR(dataStr: string): string {
+    if (!dataStr) return '';
+    const partes = dataStr.split('-');
+    if (partes.length === 3) {
+      return `${partes[2]}/${partes[1]}/${partes[0]}`;
+    }
+    return dataStr;
   }
 }

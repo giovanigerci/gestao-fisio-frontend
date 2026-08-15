@@ -1,22 +1,39 @@
-<div class="min-h-screen bg-slate-950 px-4 pt-6 pb-4">
+<div class="agenda-page">
 
   <!-- Header -->
-  <div class="mb-5">
-    <h1 class="text-2xl font-semibold text-slate-50">Agenda</h1>
-    <p class="text-slate-400 text-sm mt-1">Visão semanal dos seus agendamentos</p>
+  <div class="agenda-header">
+    <div>
+      <h1 class="agenda-title">Agenda</h1>
+      <p class="agenda-subtitle">{{ tituloSemana() }}</p>
+    </div>
+    <a routerLink="/agenda/novo" class="agenda-btn-nova">+ Sessão</a>
   </div>
 
-  <!-- Week Navigation -->
-  <div class="agenda-week-nav">
+  <!-- Day Strip Selector -->
+  <div class="agenda-day-strip-wrapper">
     <button (click)="semanaAnterior()" class="agenda-nav-btn" aria-label="Semana anterior">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
       </svg>
     </button>
 
-    <button (click)="irParaHoje()" class="agenda-week-title">
-      {{ tituloSemana() }}
-    </button>
+    <div class="agenda-day-strip">
+      @for (dia of diasDaSemana(); track dia.data) {
+        <button
+          class="agenda-day-item"
+          [class.agenda-day-item--selected]="dia.data === diaSelecionado()?.data"
+          [class.agenda-day-item--hoje]="dia.ehHoje"
+          (click)="selecionarDia(dia.data)">
+          <span class="agenda-day-abbrev">{{ dia.diaSemanaAbrev }}</span>
+          <span class="agenda-day-number">{{ dia.diaNumero }}</span>
+          <div class="agenda-day-dots">
+            @for (dot of getDotsDoDia(dia); track $index) {
+              <span class="agenda-day-dot" [style.background-color]="dot"></span>
+            }
+          </div>
+        </button>
+      }
+    </div>
 
     <button (click)="proximaSemana()" class="agenda-nav-btn" aria-label="Próxima semana">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
@@ -25,11 +42,44 @@
     </button>
   </div>
 
+  <!-- Selected Day Header -->
+  @if (diaSelecionado(); as dia) {
+    <div class="agenda-selected-section">
+      <div class="agenda-selected-header">
+        <span class="agenda-selected-date">{{ dia.diaSemanaAbrev }}, {{ dia.diaFormatado }}</span>
+        @if (dia.ehHoje) {
+          <app-badge variant="hoje" />
+        }
+        <div class="agenda-selected-summary">
+          <span class="agenda-summary-progress">{{ resumoDia().realizados }}/{{ resumoDia().total }}</span>
+          <span class="agenda-summary-valor">{{ formatarValor(resumoDia().valorTotal) }}</span>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      @if (progressSegments().length > 0) {
+        <app-progress-bar [segments]="progressSegments()" [height]="4" />
+      }
+
+      <!-- Clinic Legend -->
+      @if (clinicasDoDia().length > 0) {
+        <div class="agenda-clinic-legend">
+          @for (clinica of clinicasDoDia(); track clinica.id) {
+            <div class="agenda-clinic-legend-item">
+              <span class="agenda-clinic-dot" [style.background-color]="clinica.cor"></span>
+              <span>{{ clinica.nome }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
   <!-- Error -->
   @if (erro()) {
-    <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-4 animate-in">
-      <p class="text-red-400 text-sm">{{ erro() }}</p>
-      <button (click)="carregarAgendamentos()" class="text-red-300 text-sm mt-2 underline hover:text-red-200 transition-colors cursor-pointer">
+    <div class="agenda-error">
+      <p class="agenda-error-text">{{ erro() }}</p>
+      <button (click)="carregarAgendamentos()" class="agenda-error-retry">
         Tentar novamente
       </button>
     </div>
@@ -37,83 +87,59 @@
 
   <!-- Loading -->
   @if (carregando()) {
-    <div class="flex flex-col items-center justify-center py-20">
-      <div class="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
-      <p class="text-slate-400 text-sm mt-4">Carregando agendamentos...</p>
+    <div class="agenda-loading">
+      <div class="agenda-spinner"></div>
+      <p class="agenda-loading-text">Carregando agendamentos...</p>
     </div>
   }
 
-  <!-- Week View -->
-  @if (!carregando()) {
-    <div class="agenda-days">
-      @for (dia of diasDaSemana(); track dia.data) {
-        <div class="agenda-day-group" [class.agenda-day-group--hoje]="dia.ehHoje">
-
-          <!-- Day Header -->
-          <div class="agenda-day-header">
-            <span class="agenda-day-name">{{ dia.diaSemana }}</span>
-            <span class="agenda-day-date" [class.agenda-day-date--hoje]="dia.ehHoje">
-              {{ dia.diaFormatado }}
-            </span>
-            @if (dia.ehHoje) {
-              <span class="agenda-badge-hoje">Hoje</span>
-            }
-          </div>
-
-          <!-- Appointments -->
-          @if (dia.agendamentos.length === 0) {
-            <div class="agenda-empty-day">
-              <p class="text-slate-500 text-xs">Nenhum agendamento</p>
-            </div>
-          } @else {
-            <div class="agenda-day-items">
-              @for (ag of dia.agendamentos; track ag.id) {
-                <div
-                  (click)="abrirDetalhes(ag)"
-                  class="agenda-item"
-                  [class.agenda-item--cancelado]="ag.status === 'CA'"
-                  [class.agenda-item--realizado]="ag.status === 'RE'"
-                  [class.agenda-item--gratuito]="ag.eh_gratuito">
-
-                  <!-- Time -->
-                  <div class="agenda-item-time">
-                    <span class="agenda-item-hora">{{ formatarHora(ag.hora_inicio) }}</span>
-                    <span class="agenda-item-hora-fim">{{ formatarHora(ag.hora_fim) }}</span>
-                  </div>
-
-                  <!-- Content -->
-                  <div class="agenda-item-content">
-                    <div class="agenda-item-top">
-                      <span class="agenda-item-paciente">{{ getNomePaciente(ag.paciente) }}</span>
-                      <div class="agenda-item-badges">
-                        @if (ag.eh_experimental) {
-                          <span class="badge badge--experimental">Experimental</span>
-                        }
-                        @if (ag.eh_gratuito) {
-                          <span class="badge badge--gratuito">Gratuito</span>
-                        }
-                        <span class="badge"
-                              [class.badge--agendado]="ag.status === 'AG'"
-                              [class.badge--realizado]="ag.status === 'RE'"
-                              [class.badge--cancelado]="ag.status === 'CA'">
-                          {{ getStatusLabel(ag.status) }}
-                        </span>
-                      </div>
-                    </div>
-                    <div class="agenda-item-bottom">
-                      <span class="agenda-item-clinica">{{ getNomeClinica(ag.clinica) }}</span>
-                      <span class="agenda-item-valor" [class.agenda-item-valor--zero]="ag.eh_gratuito">
-                        {{ formatarValor(ag.valor_calculado) }}
-                      </span>
-                    </div>
-                  </div>
+  <!-- Appointments for selected day -->
+  @if (!carregando() && diaSelecionado(); as dia) {
+    @if (dia.agendamentos.length === 0) {
+      <app-empty-state
+        title="Nenhum agendamento"
+        subtitle="Nenhum agendamento para este dia">
+        <svg icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+        </svg>
+      </app-empty-state>
+    } @else {
+      <div class="agenda-items">
+        @for (ag of dia.agendamentos; track ag.id) {
+          <div [class.agenda-item--cancelado]="ag.status === 'CA'">
+            <app-card [clinicColor]="corDaClinica(ag.clinica)">
+              <div class="agenda-item-layout" (click)="abrirDetalhes(ag)">
+                <!-- Time -->
+                <div class="agenda-item-time">
+                  <span class="agenda-item-hora">{{ formatarHora(ag.hora_inicio) }}</span>
                 </div>
-              }
-            </div>
-          }
-        </div>
-      }
-    </div>
+
+                <!-- Content -->
+                <div class="agenda-item-content">
+                  <span class="agenda-item-paciente">{{ getNomePaciente(ag.paciente) }}</span>
+                  <span class="agenda-item-clinica">{{ getNomeClinica(ag.clinica) }}</span>
+                </div>
+
+                <!-- Value + Badge -->
+                <div class="agenda-item-end">
+                  <span class="agenda-item-valor" [class.agenda-item-valor--zero]="ag.eh_gratuito">
+                    {{ formatarValor(ag.valor_calculado) }}
+                  </span>
+                  @if (ag.eh_experimental) {
+                    <app-badge variant="experimental" />
+                  } @else if (ag.eh_gratuito) {
+                    <app-badge variant="gratuito" />
+                  } @else {
+                    <app-badge [variant]="getStatusVariant(ag.status)" />
+                  }
+                </div>
+              </div>
+            </app-card>
+          </div>
+        }
+      </div>
+    }
   }
 
   <!-- Detail Modal -->
@@ -130,10 +156,19 @@
       </div>
 
       <div class="agenda-modal-body">
-        <!-- Patient -->
-        <div class="agenda-modal-field">
-          <span class="agenda-modal-label">Paciente</span>
-          <span class="agenda-modal-value">{{ getNomePaciente(agendamentoSelecionado()!.paciente) }}</span>
+        <!-- Patient and Age -->
+        <div class="agenda-modal-row">
+          <div class="agenda-modal-field">
+            <span class="agenda-modal-label">Paciente</span>
+            <span class="agenda-modal-value">{{ getNomePaciente(agendamentoSelecionado()!.paciente) }}</span>
+          </div>
+
+          @if (getIdadePaciente(agendamentoSelecionado()!.paciente)) {
+            <div class="agenda-modal-field">
+              <span class="agenda-modal-label">Idade</span>
+              <span class="agenda-modal-value">{{ getIdadePaciente(agendamentoSelecionado()!.paciente) }}</span>
+            </div>
+          }
         </div>
 
         <!-- Clinic -->
@@ -146,7 +181,7 @@
         <div class="agenda-modal-row">
           <div class="agenda-modal-field">
             <span class="agenda-modal-label">Data</span>
-            <span class="agenda-modal-value">{{ agendamentoSelecionado()!.data }}</span>
+            <span class="agenda-modal-value">{{ formatarDataBR(agendamentoSelecionado()!.data) }}</span>
           </div>
           <div class="agenda-modal-field">
             <span class="agenda-modal-label">Horário</span>
@@ -165,17 +200,12 @@
         <!-- Badges -->
         <div class="agenda-modal-badges">
           @if (agendamentoSelecionado()!.eh_experimental) {
-            <span class="badge badge--experimental">Experimental</span>
+            <app-badge variant="experimental" />
           }
           @if (agendamentoSelecionado()!.eh_gratuito) {
-            <span class="badge badge--gratuito">Gratuito — não conta na receita</span>
+            <app-badge variant="gratuito" label="Gratuito — não conta na receita" />
           }
-          <span class="badge"
-                [class.badge--agendado]="agendamentoSelecionado()!.status === 'AG'"
-                [class.badge--realizado]="agendamentoSelecionado()!.status === 'RE'"
-                [class.badge--cancelado]="agendamentoSelecionado()!.status === 'CA'">
-            {{ getStatusLabel(agendamentoSelecionado()!.status) }}
-          </span>
+          <app-badge [variant]="getStatusVariant(agendamentoSelecionado()!.status)" />
         </div>
       </div>
 
@@ -224,14 +254,4 @@
     </div>
   }
 
-  <!-- FAB -->
-  <a routerLink="/agenda/novo"
-     class="fixed bottom-24 right-5 md:bottom-8 md:right-8 z-40
-            w-14 h-14 rounded-full bg-primary text-white shadow-lg shadow-primary/25
-            flex items-center justify-center hover:brightness-110 transition-all
-            hover:scale-105 active:scale-95">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-7 h-7">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-    </svg>
-  </a>
 </div>
