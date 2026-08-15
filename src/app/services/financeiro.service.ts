@@ -19,9 +19,11 @@ export class FinanceiroService {
   private http = inject(HttpClient);
   private readonly url = `${environment.apiUrl}/resumo-financeiro/`;
 
-  buscarResumo(periodo: 'mes' | 'semana') {
-    return this.http.get<ResumoFinanceiro>(this.url, {
-      params: { periodo },
-    });
+  buscarResumo(periodo: 'mes' | 'semana', data?: string) {
+    let params: any = { periodo };
+    if (data) {
+      params.data = data;
+    }
+    return this.http.get<ResumoFinanceiro>(this.url, { params });
   }
 }

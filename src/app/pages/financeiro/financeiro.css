@@ -1,21 +1,27 @@
+/* ─── Controls ─── */
+.fin-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
 /* ─── Period Toggle ─── */
 .fin-toggle-wrapper {
   display: flex;
   gap: 4px;
-  background: #0f172a;
-  border: 1px solid rgba(51, 65, 85, 0.5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 12px;
   padding: 4px;
-  margin-bottom: 1.5rem;
 }
 
 .fin-toggle-btn {
-  flex: 1;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 1.25rem;
   border-radius: 10px;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 500;
-  color: #94a3b8;
+  color: var(--color-text-muted);
   background: transparent;
   border: none;
   cursor: pointer;
@@ -23,40 +29,140 @@
 }
 
 .fin-toggle-btn:hover:not(.fin-toggle--active) {
-  color: #cbd5e1;
-  background: rgba(30, 41, 59, 0.5);
+  color: var(--color-text-primary);
+  background: var(--color-surface-hover);
 }
 
 .fin-toggle--active {
-  background: #5383A3;
+  background: var(--color-primary);
   color: #ffffff;
-  box-shadow: 0 2px 8px rgba(83, 131, 163, 0.3);
+}
+
+/* ─── Date Navigator ─── */
+.fin-date-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.fin-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: var(--color-surface);
+  border-radius: 10px;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.fin-nav-btn:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
+
+.fin-date-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
 }
 
 /* ─── Total Card ─── */
 .fin-total-card {
-  background: linear-gradient(135deg, rgba(83, 131, 163, 0.15) 0%, rgba(201, 168, 136, 0.08) 100%);
-  border: 1px solid rgba(83, 131, 163, 0.25);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 16px;
   padding: 1.5rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   animation: fadeInUp 0.4s ease-out;
 }
 
 .fin-total-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   margin-bottom: 0.5rem;
 }
 
 .fin-total-valor {
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: 700;
-  color: #f1f5f9;
+  color: var(--color-money);
   letter-spacing: -0.02em;
+  margin-bottom: 1.5rem;
+}
+
+.fin-total-divider {
+  height: 1px;
+  background: var(--color-border);
+  margin-bottom: 1.25rem;
+}
+
+.fin-total-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.fin-stat-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fin-stat-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.fin-stat-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* ─── Distribuição ─── */
+.fin-section-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 1rem;
+}
+
+.fin-legend {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.fin-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fin-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.fin-legend-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
 }
 
 /* ─── Clinic Cards ─── */
@@ -67,90 +173,68 @@
   animation: fadeInUp 0.5s ease-out 0.1s both;
 }
 
-.fin-card {
-  background: #0f172a;
-  border: 1px solid rgba(51, 65, 85, 0.5);
+.fin-clinic-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: 14px;
-  padding: 1rem 1.25rem;
+  padding: 1.25rem;
   transition: border-color 0.2s ease, transform 0.15s ease;
 }
 
-.fin-card:hover {
+.fin-clinic-card:hover {
   border-color: rgba(83, 131, 163, 0.3);
 }
 
-.fin-card:active {
-  transform: scale(0.99);
-}
-
-.fin-card-header {
+.fin-clinic-card-header {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.fin-clinic-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fin-clinic-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.fin-clinic-money {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--color-money);
+}
+
+.fin-clinic-card-sub {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 1rem;
 }
 
-.fin-card-avatar {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 10px;
-  background: rgba(83, 131, 163, 0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #5383A3;
-  flex-shrink: 0;
+.fin-clinic-atendimentos,
+.fin-clinic-pct {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
 }
 
-.fin-card-nome {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: #f1f5f9;
-  white-space: nowrap;
+.fin-clinic-bar-bg {
+  width: 100%;
+  height: 4px;
+  background: color-mix(in srgb, var(--color-border) 60%, transparent);
+  border-radius: 2px;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.fin-card-stats {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  background: rgba(15, 23, 42, 0.5);
-  border-radius: 10px;
-  padding: 0.75rem 1rem;
-  border: 1px solid rgba(51, 65, 85, 0.3);
-}
-
-.fin-card-stat {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.fin-card-stat-label {
-  font-size: 0.75rem;
-  color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  font-weight: 500;
-}
-
-.fin-card-stat-value {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #e2e8f0;
-}
-
-.fin-card-stat-value--receita {
-  color: #34d399;
-}
-
-.fin-card-divider {
-  width: 1px;
-  height: 2rem;
-  background: rgba(51, 65, 85, 0.5);
-  flex-shrink: 0;
+.fin-clinic-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.5s ease-out;
 }
 
 /* ─── Animations ─── */
