@@ -1,0 +1,37 @@
+/* ═══════════════════════════════════════════════════════
+   Design Tokens — FisioAgenda
+   Fonte de verdade para todas as cores do produto.
+   Importado uma vez em styles.css; consumido via var().
+   ═══════════════════════════════════════════════════════ */
+
+:root {
+  /* ─── Base ─── */
+  --color-bg: #0b1120;
+  --color-surface: #131b2e;
+  --color-surface-hover: #1a2438;
+  --color-border: #263449;
+
+  /* ─── Texto ─── */
+  --color-text-primary: #f8fafc;
+  --color-text-secondary: #94a3b8;
+  --color-text-muted: #64748b;
+
+  /* ─── Ação primária (azul acinzentado — identidade do produto) ─── */
+  --color-primary: #5383A3;
+  --color-primary-hover: #467192;
+
+  /* ─── Destaque secundário (dourado da marca, ecoa a logo) ─── */
+  --color-accent: #d9a566;
+
+  /* ─── Semânticas de status ─── */
+  --color-money: #34d399;      /* valores monetários, sucesso  */
+  --color-warning: #fbbf24;    /* experimental, atenção        */
+  --color-danger: #f87171;     /* cancelado, erro              */
+
+  /* ─── Paleta rotativa para identificação de clínicas (seção 3) ─── */
+  --color-clinic-1: #3b82f6;   /* azul    */
+  --color-clinic-2: #d9a566;   /* dourado */
+  --color-clinic-3: #2dd4bf;   /* teal    */
+  --color-clinic-4: #a78bfa;   /* violeta */
+  --color-clinic-5: #fb7185;   /* rosa    */
+}

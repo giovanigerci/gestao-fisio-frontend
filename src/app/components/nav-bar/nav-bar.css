@@ -4,14 +4,14 @@
   align-items: center;
   gap: 2px;
   padding: 8px 12px;
-  color: #94a3b8;
+  color: var(--color-text-secondary);
   transition: color 0.2s ease;
   position: relative;
   text-decoration: none;
 }
 
 .nav-link:hover {
-  color: #cbd5e1;
+  color: var(--color-text-primary);
 }
 
 .nav-icon {
@@ -26,7 +26,7 @@
 }
 
 .nav-active {
-  color: #5383A3 !important;
+  color: var(--color-primary) !important;
 }
 
 .nav-active::after {
@@ -37,12 +37,12 @@
   transform: translateX(-50%);
   width: 20px;
   height: 2.5px;
-  background: #5383A3;
+  background: var(--color-primary);
   border-radius: 0 0 3px 3px;
 }
 
-/* Desktop sidebar layout */
-@media (min-width: 768px) {
+/* Desktop sidebar layout (>= 1024px — seção 5 do design system) */
+@media (min-width: 1024px) {
   .nav-link {
     flex-direction: row;
     gap: 12px;
@@ -56,7 +56,7 @@
   }
 
   .nav-active {
-    background-color: rgba(83, 131, 163, 0.1);
+    background-color: color-mix(in srgb, var(--color-primary) 10%, transparent);
   }
 
   .nav-active::after {

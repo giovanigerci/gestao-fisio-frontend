@@ -1,0 +1,82 @@
+:host {
+  display: inline-flex;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  line-height: 1.4;
+  border: 1px solid transparent;
+}
+
+/* ─── Agendado — primary ─── */
+.badge[data-variant="agendado"] {
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  color: var(--color-primary);
+  border-color: color-mix(in srgb, var(--color-primary) 25%, transparent);
+}
+
+/* ─── Realizado — money green ─── */
+.badge[data-variant="realizado"] {
+  background: color-mix(in srgb, var(--color-money) 12%, transparent);
+  color: var(--color-money);
+  border-color: color-mix(in srgb, var(--color-money) 25%, transparent);
+}
+
+/* ─── Cancelado — danger red ─── */
+.badge[data-variant="cancelado"] {
+  background: color-mix(in srgb, var(--color-danger) 12%, transparent);
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 25%, transparent);
+}
+
+/* ─── Experimental — warning yellow ─── */
+.badge[data-variant="experimental"] {
+  background: color-mix(in srgb, var(--color-warning) 12%, transparent);
+  color: var(--color-warning);
+  border-color: color-mix(in srgb, var(--color-warning) 25%, transparent);
+}
+
+/* ─── Gratuito — muted ─── */
+.badge[data-variant="gratuito"] {
+  background: color-mix(in srgb, var(--color-text-secondary) 10%, transparent);
+  color: var(--color-text-secondary);
+  border-color: color-mix(in srgb, var(--color-text-secondary) 20%, transparent);
+  text-decoration: line-through;
+}
+
+/* ─── Ativo — money green ─── */
+.badge[data-variant="ativo"] {
+  background: color-mix(in srgb, var(--color-money) 12%, transparent);
+  color: var(--color-money);
+  border-color: color-mix(in srgb, var(--color-money) 25%, transparent);
+}
+
+/* ─── Inativo — muted ─── */
+.badge[data-variant="inativo"] {
+  background: color-mix(in srgb, var(--color-text-muted) 12%, transparent);
+  color: var(--color-text-muted);
+  border-color: color-mix(in srgb, var(--color-text-muted) 25%, transparent);
+}
+
+/* ─── Ausente — warning ─── */
+.badge[data-variant="ausente"] {
+  background: color-mix(in srgb, var(--color-warning) 12%, transparent);
+  color: var(--color-warning);
+  border-color: color-mix(in srgb, var(--color-warning) 25%, transparent);
+}
+
+/* ─── Hoje — primary highlighted ─── */
+.badge[data-variant="hoje"] {
+  background: color-mix(in srgb, var(--color-primary) 15%, transparent);
+  color: var(--color-primary);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}

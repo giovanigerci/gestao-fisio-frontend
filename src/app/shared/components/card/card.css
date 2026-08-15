@@ -1,0 +1,21 @@
+:host {
+  display: block;
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  transition: border-color 0.2s ease;
+}
+
+.card:hover {
+  border-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
+}
+
+/* Borda lateral na cor da clínica (seção 6 — Agenda) */
+.card--clinic {
+  border-left: 3px solid var(--_clinic-color);
+  padding-left: calc(1.25rem - 2px); /* compensa a borda mais grossa */
+}

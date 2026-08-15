@@ -1,25 +1,27 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import './styles/tokens.css';
+@import './styles/forms.css';
 
 @import 'tailwindcss';
 
 @theme {
   --font-sans: 'Inter', system-ui, sans-serif;
 
-  /* Brand Colors */
+  /* Brand Colors — sincronizados com tokens.css */
   --color-primary: #5383A3;
   --color-primary-light: #6a9ab8;
   --color-primary-subtle: rgba(83, 131, 163, 0.15);
-  --color-accent: #C9A888;
-  --color-accent-light: #d4b99c;
-  --color-accent-subtle: rgba(201, 168, 136, 0.15);
+  --color-accent: #d9a566;
+  --color-accent-light: #e4c899;
+  --color-accent-subtle: rgba(217, 165, 102, 0.15);
 
-  /* Surfaces */
-  --color-surface: #111827;
-  --color-surface-elevated: #1e293b;
+  /* Surfaces — sincronizados com tokens.css */
+  --color-surface: #131b2e;
+  --color-surface-elevated: #1a2438;
 
-  /* Feedback */
+  /* Feedback — sincronizados com tokens.css */
   --color-success: #34d399;
   --color-error: #f87171;
   --color-warning: #fbbf24;
@@ -32,8 +34,8 @@ html {
 }
 
 body {
-  background-color: #0a0f1a;
-  color: #f1f5f9;
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
   min-height: 100dvh;
 }
 
@@ -47,12 +49,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #64748b;
+  background: var(--color-text-muted);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--color-text-secondary);
 }
 
 /* ─── Utility Animations ─── */

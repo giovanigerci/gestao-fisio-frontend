@@ -1,0 +1,9 @@
+<div class="progress-track" [style.height.px]="height()">
+  @for (segment of normalizedSegments(); track $index) {
+    <div
+      class="progress-segment"
+      [style.width.%]="segment.percent"
+      [style.background-color]="segment.color">
+    </div>
+  }
+</div>

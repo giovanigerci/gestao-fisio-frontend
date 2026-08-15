@@ -1,16 +1,16 @@
 <nav
   class="fixed bottom-0 inset-x-0 z-50 border-t border-slate-700/50 bg-slate-900/95 backdrop-blur-md
-            md:inset-x-auto md:top-0 md:left-0 md:bottom-0 md:w-56 md:border-t-0 md:border-r md:border-slate-700/50 md:bg-slate-900 md:flex md:flex-col">
+            lg:inset-x-auto lg:top-0 lg:left-0 lg:bottom-0 lg:w-56 lg:border-t-0 lg:border-r lg:border-slate-700/50 lg:bg-slate-900 lg:flex lg:flex-col">
 
   <!-- Branding (desktop only) -->
-  <div class="hidden md:flex items-center gap-1 px-5 py-5 mb-2">
+  <div class="hidden lg:flex items-center gap-1 px-5 py-5 mb-2">
     <img src="/logo.png" alt="Gestão Fisio Logo" class="w-8 h-8 object-contain" />
     <span class="text-lg font-bold text-primary">Gestão</span><span class="text-lg font-bold text-accent">Fisio</span>
   </div>
 
   <!-- Nav links -->
   <div class="flex justify-around py-1
-              md:flex-col md:gap-1 md:px-3 md:py-0 md:justify-start md:flex-1 md:pb-5">
+              lg:flex-col lg:gap-1 lg:px-3 lg:py-0 lg:justify-start lg:flex-1 lg:pb-5">
 
     <!-- Agenda -->
     <a routerLink="/agenda" routerLinkActive="nav-active" class="nav-link">
@@ -53,7 +53,7 @@
     </a>
 
     <!-- Sair -->
-    <button (click)="logout()" class="nav-link text-left md:mt-auto hover:text-red-400 cursor-pointer">
+    <button (click)="logout()" class="nav-link text-left lg:mt-auto hover:text-red-400 cursor-pointer">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="nav-icon">
         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
       </svg>

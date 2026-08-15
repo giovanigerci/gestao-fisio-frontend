@@ -1,0 +1,18 @@
+:host {
+  display: block;
+}
+
+.progress-track {
+  display: flex;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--color-border);
+  gap: 2px;
+}
+
+.progress-segment {
+  height: 100%;
+  min-width: 3px;
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
