@@ -13,7 +13,6 @@ export interface Agendamento {
   hora_fim: string;
   status: 'AG' | 'RE' | 'CA';
   eh_experimental: boolean;
-  eh_gratuito: boolean;
   valor_calculado: number;
 }
 
