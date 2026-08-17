@@ -1,0 +1,204 @@
+/* ═══════════════════════════════════════════════════════
+   Confirm Modal — Estilos
+   Reutiliza tokens de cor via var(--color-*).
+   ═══════════════════════════════════════════════════════ */
+
+/* ─── Overlay ─── */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 100;
+  animation: confirmFadeIn 0.2s ease-out;
+}
+
+/* ─── Modal ─── */
+.confirm-modal {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 101;
+  background: var(--color-surface);
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  border: 1px solid var(--color-border);
+  border-bottom: none;
+  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.4);
+  padding: 32px 24px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: confirmSlideUp 0.25s ease-out;
+}
+
+/* ─── Icon ─── */
+.confirm-icon-wrapper {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  transition: background 0.2s ease;
+}
+
+.confirm-modal--danger .confirm-icon-wrapper {
+  background: color-mix(in srgb, var(--color-danger) 12%, transparent);
+}
+
+.confirm-modal--warning .confirm-icon-wrapper {
+  background: color-mix(in srgb, var(--color-warning) 12%, transparent);
+}
+
+.confirm-icon {
+  width: 28px;
+  height: 28px;
+}
+
+.confirm-modal--danger .confirm-icon {
+  color: var(--color-danger);
+}
+
+.confirm-modal--warning .confirm-icon {
+  color: var(--color-warning);
+}
+
+/* ─── Text ─── */
+.confirm-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 6px;
+}
+
+.confirm-message {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  max-width: 320px;
+  margin-bottom: 24px;
+}
+
+/* ─── Actions ─── */
+.confirm-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.confirm-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.confirm-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Cancel / Back button */
+.confirm-btn--cancel {
+  background: color-mix(in srgb, var(--color-border) 60%, transparent);
+  color: var(--color-text-secondary);
+  border-color: var(--color-border);
+}
+
+.confirm-btn--cancel:hover:not(:disabled) {
+  background: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
+
+/* Confirm button — danger variant */
+.confirm-modal--danger .confirm-btn--confirm {
+  background: var(--color-danger);
+  color: #fff;
+}
+
+.confirm-modal--danger .confirm-btn--confirm:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-danger) 85%, black);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-danger) 30%, transparent);
+}
+
+/* Confirm button — warning variant */
+.confirm-modal--warning .confirm-btn--confirm {
+  background: var(--color-warning);
+  color: #fff;
+}
+
+.confirm-modal--warning .confirm-btn--confirm:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-warning) 85%, black);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-warning) 30%, transparent);
+}
+
+/* ─── Spinner ─── */
+.confirm-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: confirmSpin 0.7s linear infinite;
+}
+
+/* ─── Animations ─── */
+@keyframes confirmFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes confirmSlideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0.5;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes confirmSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Desktop: Modal centered (>= 1024px) ─── */
+@media (min-width: 1024px) {
+  .confirm-modal {
+    top: 50%;
+    left: 50%;
+    bottom: auto;
+    right: auto;
+    transform: translate(-50%, -50%);
+    border-radius: 20px;
+    border: 1px solid var(--color-border);
+    max-width: 400px;
+    width: 90%;
+    animation: confirmScaleIn 0.2s ease-out;
+  }
+
+  @keyframes confirmScaleIn {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+}

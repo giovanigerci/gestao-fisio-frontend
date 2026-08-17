@@ -6,7 +6,7 @@
       <h1 class="agenda-title">Agenda</h1>
       <p class="agenda-subtitle">{{ tituloSemana() }}</p>
     </div>
-    <a routerLink="/agenda/novo" class="agenda-btn-nova">+ Sessão</a>
+    <a (click)="novoAgendamento()" class="agenda-btn-nova">+ Sessão</a>
   </div>
 
   <!-- Day Strip Selector -->
@@ -123,13 +123,11 @@
 
                 <!-- Value + Badge -->
                 <div class="agenda-item-end">
-                  <span class="agenda-item-valor" [class.agenda-item-valor--zero]="ag.eh_gratuito">
+                  <span class="agenda-item-valor" [class.agenda-item-valor--zero]="ag.eh_experimental">
                     {{ formatarValor(ag.valor_calculado) }}
                   </span>
                   @if (ag.eh_experimental) {
                     <app-badge variant="experimental" />
-                  } @else if (ag.eh_gratuito) {
-                    <app-badge variant="gratuito" />
                   } @else {
                     <app-badge [variant]="getStatusVariant(ag.status)" />
                   }
@@ -192,7 +190,7 @@
         <!-- Value -->
         <div class="agenda-modal-field">
           <span class="agenda-modal-label">Valor</span>
-          <span class="agenda-modal-value" [class.agenda-item-valor--zero]="agendamentoSelecionado()!.eh_gratuito">
+          <span class="agenda-modal-value" [class.agenda-item-valor--zero]="agendamentoSelecionado()!.eh_experimental">
             {{ formatarValor(agendamentoSelecionado()!.valor_calculado) }}
           </span>
         </div>
@@ -201,9 +199,6 @@
         <div class="agenda-modal-badges">
           @if (agendamentoSelecionado()!.eh_experimental) {
             <app-badge variant="experimental" />
-          }
-          @if (agendamentoSelecionado()!.eh_gratuito) {
-            <app-badge variant="gratuito" label="Gratuito — não conta na receita" />
           }
           <app-badge [variant]="getStatusVariant(agendamentoSelecionado()!.status)" />
         </div>
@@ -252,6 +247,19 @@
         </button>
       </div>
     </div>
+  }
+
+  <!-- Confirm Delete Modal -->
+  @if (confirmandoExclusao()) {
+    <app-confirm-modal
+      title="Excluir agendamento"
+      [message]="'Deseja realmente excluir o agendamento de ' + getNomePaciente(confirmandoExclusao()!.paciente) + '?'"
+      confirmLabel="Excluir"
+      cancelLabel="Voltar"
+      variant="danger"
+      [loading]="processandoAcao()"
+      (confirmed)="confirmarExclusao()"
+      (cancelled)="cancelarExclusao()" />
   }
 
 </div>
