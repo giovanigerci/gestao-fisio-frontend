@@ -77,7 +77,7 @@
           <input
             type="time"
             [value]="horaInicio()"
-            (input)="horaInicio.set($any($event.target).value)"
+            (input)="onHoraInicioChange($any($event.target).value)"
             class="input-field"
           />
         </div>
@@ -104,19 +104,6 @@
           <div class="checkbox-content">
             <span class="checkbox-label">Aula experimental</span>
             <span class="checkbox-hint">Marca este agendamento como aula experimental</span>
-          </div>
-        </label>
-
-        <label class="checkbox-field">
-          <input
-            type="checkbox"
-            [checked]="ehGratuito()"
-            (change)="ehGratuito.set($any($event.target).checked)"
-            class="checkbox-input"
-          />
-          <div class="checkbox-content">
-            <span class="checkbox-label">Gratuito</span>
-            <span class="checkbox-hint">Este atendimento não será contabilizado na receita</span>
           </div>
         </label>
       </div>

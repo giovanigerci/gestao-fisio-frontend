@@ -35,7 +35,6 @@ export class AgendamentoForm {
   horaInicio = signal('');
   horaFim = signal('');
   ehExperimental = signal(false);
-  ehGratuito = signal(false);
 
   constructor() {
     this.carregarDropdowns();
@@ -45,6 +44,12 @@ export class AgendamentoForm {
       this.modoEdicao.set(true);
       this.agendamentoId.set(+id);
       this.carregarAgendamento(+id);
+    } else {
+      // Pre-fill date from query param when creating a new appointment
+      const dataParam = this.route.snapshot.queryParamMap.get('data');
+      if (dataParam) {
+        this.data.set(dataParam);
+      }
     }
   }
 
@@ -89,7 +94,6 @@ export class AgendamentoForm {
         this.horaInicio.set(ag.hora_inicio.substring(0, 5));
         this.horaFim.set(ag.hora_fim.substring(0, 5));
         this.ehExperimental.set(ag.eh_experimental);
-        this.ehGratuito.set(ag.eh_gratuito);
         this.carregando.set(false);
       },
       error: () => {
@@ -115,7 +119,6 @@ export class AgendamentoForm {
       hora_inicio: this.horaInicio(),
       hora_fim: this.horaFim(),
       eh_experimental: this.ehExperimental(),
-      eh_gratuito: this.ehGratuito(),
     };
 
     const operacao = this.modoEdicao()
@@ -138,6 +141,15 @@ export class AgendamentoForm {
         }
       },
     });
+  }
+
+  onHoraInicioChange(valor: string) {
+    this.horaInicio.set(valor);
+    if (valor) {
+      const [h, m] = valor.split(':').map(Number);
+      const horaFim = `${String((h + 1) % 24).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+      this.horaFim.set(horaFim);
+    }
   }
 
   cancelar() {
