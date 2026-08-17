@@ -7,6 +7,7 @@ import { Badge, BadgeVariant } from '../../shared/components/badge/badge';
 import { Card } from '../../shared/components/card/card';
 import { EmptyState } from '../../shared/components/empty-state/empty-state';
 import { ProgressBar } from '../../shared/components/progress-bar/progress-bar';
+import { ConfirmModal } from '../../shared/components/confirm-modal/confirm-modal';
 import { corDaClinica } from '../../shared/utils/clinic-colors';
 
 interface DiaAgenda {
@@ -21,7 +22,7 @@ interface DiaAgenda {
 
 @Component({
   selector: 'app-agenda',
-  imports: [RouterLink, Badge, Card, EmptyState, ProgressBar],
+  imports: [RouterLink, Badge, Card, EmptyState, ProgressBar, ConfirmModal],
   templateUrl: './agenda.html',
   styleUrl: './agenda.css',
 })
@@ -40,6 +41,7 @@ export class Agenda {
   dataSelecionada = signal(this.formatarData(new Date()));
   agendamentoSelecionado = signal<Agendamento | null>(null);
   processandoAcao = signal(false);
+  confirmandoExclusao = signal<Agendamento | null>(null);
 
   corDaClinica = corDaClinica;
 
@@ -116,7 +118,7 @@ export class Agenda {
       realizados: ags.filter(a => a.status === 'RE').length,
       total: ags.length,
       valorTotal: ags
-        .filter(a => a.status !== 'CA' && !a.eh_gratuito)
+        .filter(a => a.status !== 'CA' && !a.eh_experimental)
         .reduce((sum, a) => sum + a.valor_calculado, 0),
     };
   });
@@ -222,6 +224,11 @@ export class Agenda {
     this.agendamentoSelecionado.set(null);
   }
 
+  novoAgendamento() {
+    const dataSel = this.dataSelecionada();
+    this.router.navigate(['/agenda/novo'], { queryParams: { data: dataSel } });
+  }
+
   editarAgendamento(agendamento: Agendamento) {
     this.fecharDetalhes();
     this.router.navigate(['/agenda', agendamento.id, 'editar']);
@@ -234,8 +241,8 @@ export class Agenda {
         this.agendamentos.update(lista =>
           lista.map(a => a.id === atualizado.id ? atualizado : a)
         );
-        this.agendamentoSelecionado.set(atualizado);
         this.processandoAcao.set(false);
+        this.fecharDetalhes();
       },
       error: () => {
         this.erro.set('Erro ao marcar como realizado.');
@@ -251,8 +258,8 @@ export class Agenda {
         this.agendamentos.update(lista =>
           lista.map(a => a.id === atualizado.id ? atualizado : a)
         );
-        this.agendamentoSelecionado.set(atualizado);
         this.processandoAcao.set(false);
+        this.fecharDetalhes();
       },
       error: () => {
         this.erro.set('Erro ao cancelar agendamento.');
@@ -262,20 +269,31 @@ export class Agenda {
   }
 
   excluirAgendamento(agendamento: Agendamento) {
-    if (!confirm('Deseja realmente excluir este agendamento?')) return;
+    this.fecharDetalhes();
+    this.confirmandoExclusao.set(agendamento);
+  }
+
+  confirmarExclusao() {
+    const agendamento = this.confirmandoExclusao();
+    if (!agendamento) return;
 
     this.processandoAcao.set(true);
     this.agendamentoService.excluir(agendamento.id).subscribe({
       next: () => {
         this.agendamentos.update(lista => lista.filter(a => a.id !== agendamento.id));
-        this.fecharDetalhes();
         this.processandoAcao.set(false);
+        this.confirmandoExclusao.set(null);
       },
       error: () => {
         this.erro.set('Erro ao excluir agendamento.');
         this.processandoAcao.set(false);
+        this.confirmandoExclusao.set(null);
       },
     });
+  }
+
+  cancelarExclusao() {
+    this.confirmandoExclusao.set(null);
   }
 
   getDotsDoDia(dia: DiaAgenda): string[] {
