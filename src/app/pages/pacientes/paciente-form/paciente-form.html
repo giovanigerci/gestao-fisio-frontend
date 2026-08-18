@@ -22,7 +22,7 @@
 
   <!-- Form -->
   @if (!carregando()) {
-    <form (submit)="$event.preventDefault(); salvar()" class="flex flex-col gap-5 max-w-lg">
+    <form (submit)="$event.preventDefault(); salvar()" class="flex flex-col gap-5 max-w-lg lg:mx-auto">
 
       <!-- Error -->
       @if (erro()) {
