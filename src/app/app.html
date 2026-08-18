@@ -1,7 +1,9 @@
 @if (mostrarNav()) {
-  <app-nav-bar />
+<app-nav-bar />
 }
 
 <main [class]="mostrarNav() ? 'pb-20 lg:pb-0 lg:pl-56' : ''">
-  <router-outlet />
+  <div [class]="mostrarNav() ? 'lg:max-w-6xl lg:mx-auto' : ''">
+    <router-outlet />
+  </div>
 </main>
