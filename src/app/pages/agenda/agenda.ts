@@ -1,5 +1,5 @@
 import { Component, inject, signal, computed, effect } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AgendamentoService, Agendamento } from '../../services/agendamento.service';
 import { PacienteService, Paciente } from '../../services/paciente.service';
 import { ClinicaService, Clinica } from '../../services/clinica.service';
@@ -22,7 +22,7 @@ interface DiaAgenda {
 
 @Component({
   selector: 'app-agenda',
-  imports: [RouterLink, Badge, Card, EmptyState, ProgressBar, ConfirmModal],
+  imports: [Badge, Card, EmptyState, ProgressBar, ConfirmModal],
   templateUrl: './agenda.html',
   styleUrl: './agenda.css',
 })
@@ -152,12 +152,12 @@ export class Agenda {
     // Carregar pacientes e clínicas para lookup de nomes
     this.pacienteService.listar().subscribe({
       next: (resp) => this.pacientes.set(resp.results),
-      error: () => {},
+      error: () => { },
     });
 
     this.clinicaService.listar().subscribe({
       next: (resp) => this.clinicas.set(resp.results),
-      error: () => {},
+      error: () => { },
     });
 
     // Sempre que a semana mudar, buscar agendamentos do intervalo correto

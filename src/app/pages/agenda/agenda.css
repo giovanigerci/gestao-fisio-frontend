@@ -1,9 +1,3 @@
-/* ═══════════════════════════════════════════════════════
-   Agenda — Estilos
-   Todos os valores de cor via var(--color-*) de tokens.css.
-   Badges vieram para <app-badge>, cards para <app-card>.
-   ═══════════════════════════════════════════════════════ */
-
 /* ─── Page ─── */
 .agenda-page {
   min-height: 100vh;
