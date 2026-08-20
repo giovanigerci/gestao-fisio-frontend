@@ -11,6 +11,8 @@ export interface Clinica {
   telefone: string;
   valor_por_atendimento: string;
   ativo: boolean;
+  total_atendimentos?: number;
+  receita_total?: string;
 }
 
 @Service()
@@ -20,6 +22,10 @@ export class ClinicaService {
 
   listar() {
     return this.http.get<RespostaPaginada<Clinica>>(this.url);
+  }
+
+  buscarOpcoes() {
+    return this.http.get<{ id: number, nome: string }[]>(`${this.url}opcoes/`);
   }
 
   buscarPorId(id: number) {
