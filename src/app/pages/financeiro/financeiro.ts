@@ -1,6 +1,5 @@
 import { Component, inject, signal, effect, computed } from '@angular/core';
 import { FinanceiroService, ResumoClinica } from '../../services/financeiro.service';
-import { Card } from '../../shared/components/card/card';
 import { EmptyState } from '../../shared/components/empty-state/empty-state';
 import { ProgressBar } from '../../shared/components/progress-bar/progress-bar';
 import { corDaClinica } from '../../shared/utils/clinic-colors';
@@ -49,11 +48,11 @@ export class Financeiro {
       const dia = d.getDay();
       const diff = dia === 0 ? 6 : dia - 1; // Considerar segunda-feira como início
       d.setDate(d.getDate() - diff);
-      
+
       const inicio = new Date(d);
       d.setDate(d.getDate() + 6);
       const fim = new Date(d);
-      
+
       return `${inicio.getDate()} ${meses[inicio.getMonth()]} - ${fim.getDate()} ${meses[fim.getMonth()]}`;
     }
   });
@@ -91,10 +90,10 @@ export class Financeiro {
   progressSegments = computed(() => {
     const total = this.totalGeral();
     if (total === 0) return [];
-    
+
     // Sort by value descending for the progress bar
     const sorted = [...this.porClinica()].sort((a, b) => b.receita_total - a.receita_total);
-    
+
     return sorted.map(c => ({
       value: c.receita_total,
       color: corDaClinica(c.clinica)

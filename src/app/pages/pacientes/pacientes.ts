@@ -1,7 +1,6 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { PacienteService, Paciente } from '../../services/paciente.service';
-
 import { Card } from '../../shared/components/card/card';
 import { EmptyState } from '../../shared/components/empty-state/empty-state';
 import { Badge, BadgeVariant } from '../../shared/components/badge/badge';
@@ -69,7 +68,7 @@ export class Pacientes {
   confirmarExclusaoModal() {
     const paciente = this.confirmandoExclusao();
     if (!paciente) return;
-    
+
     this.processandoAcao.set(true);
     this.pacienteService.excluir(paciente.id).subscribe({
       next: () => {
