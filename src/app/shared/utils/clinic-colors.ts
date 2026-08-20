@@ -44,3 +44,11 @@ export function corDaClinica(clinicaId: number): string {
 export function corDaClinicaHex(clinicaId: number): string {
   return CORES_CLINICA_HEX[clinicaId % CORES_CLINICA_HEX.length];
 }
+
+/**
+ * Retorna a cor CSS atribuída deterministicamente a um paciente com base no
+ * seu `id`, reutilizando a mesma paleta `--color-clinic-*`.
+ */
+export function corDoPaciente(pacienteId: number): string {
+  return CORES_CLINICA[pacienteId % CORES_CLINICA.length];
+}
