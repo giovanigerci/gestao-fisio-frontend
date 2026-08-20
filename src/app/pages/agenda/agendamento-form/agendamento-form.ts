@@ -24,8 +24,8 @@ export class AgendamentoForm {
   erro = signal('');
 
   // Dropdown data
-  pacientes = signal<Paciente[]>([]);
-  clinicas = signal<Clinica[]>([]);
+  pacientes = signal<{ id: number, nome: string }[]>([]);
+  clinicas = signal<{ id: number, nome: string }[]>([]);
   carregandoDropdowns = signal(true);
 
   // Form fields
@@ -61,9 +61,9 @@ export class AgendamentoForm {
       if (carregados >= 2) this.carregandoDropdowns.set(false);
     };
 
-    this.pacienteService.listar().subscribe({
+    this.pacienteService.buscarOpcoes().subscribe({
       next: (resp) => {
-        this.pacientes.set(resp.results);
+        this.pacientes.set(resp);
         verificarCompleto();
       },
       error: () => {
@@ -72,9 +72,9 @@ export class AgendamentoForm {
       },
     });
 
-    this.clinicaService.listar().subscribe({
+    this.clinicaService.buscarOpcoes().subscribe({
       next: (resp) => {
-        this.clinicas.set(resp.results);
+        this.clinicas.set(resp);
         verificarCompleto();
       },
       error: () => {

@@ -181,7 +181,8 @@ export class Agenda {
 
     this.agendamentoService.listar(dataInicio, dataFim).subscribe({
       next: (resp) => {
-        this.agendamentos.set(resp.results);
+        const dados = Array.isArray(resp) ? resp : resp.results;
+        this.agendamentos.set(dados);
         this.carregando.set(false);
       },
       error: () => {
