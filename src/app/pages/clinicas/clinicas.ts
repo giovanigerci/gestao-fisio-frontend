@@ -1,14 +1,15 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ClinicaService, Clinica } from '../../services/clinica.service';
-
 import { Card } from '../../shared/components/card/card';
 import { EmptyState } from '../../shared/components/empty-state/empty-state';
-import { Badge } from '../../shared/components/badge/badge';
+import { Badge, BadgeVariant } from '../../shared/components/badge/badge';
+import { ConfirmModal } from '../../shared/components/confirm-modal/confirm-modal';
+import { corDoPaciente } from '../../shared/utils/clinic-colors';
 
 @Component({
   selector: 'app-clinicas',
-  imports: [RouterLink, Card, EmptyState, Badge],
+  imports: [RouterLink, Card, EmptyState, Badge, ConfirmModal],
   templateUrl: './clinicas.html',
   styleUrl: './clinicas.css',
 })
@@ -20,6 +21,10 @@ export class Clinicas {
   termoBusca = signal('');
   carregando = signal(true);
   erro = signal('');
+  processandoAcao = signal(false);
+  confirmandoExclusao = signal<Clinica | null>(null);
+
+  corDoPaciente = corDoPaciente;
 
   clinicasFiltradas = computed(() => {
     const termo = this.termoBusca().toLowerCase().trim();
@@ -28,6 +33,8 @@ export class Clinicas {
       c.nome.toLowerCase().includes(termo)
     );
   });
+
+  totalCadastradas = signal(0);
 
   constructor() {
     this.carregarClinicas();
@@ -39,6 +46,7 @@ export class Clinicas {
     this.clinicaService.listar().subscribe({
       next: (resposta) => {
         this.clinicas.set(resposta.results);
+        this.totalCadastradas.set(resposta.count);
         this.carregando.set(false);
       },
       error: () => {
@@ -54,16 +62,31 @@ export class Clinicas {
 
   confirmarExclusao(clinica: Clinica, event: Event) {
     event.stopPropagation();
-    if (confirm(`Deseja excluir a clínica "${clinica.nome}"?`)) {
-      this.clinicaService.excluir(clinica.id).subscribe({
-        next: () => {
-          this.clinicas.update(lista => lista.filter(c => c.id !== clinica.id));
-        },
-        error: () => {
-          this.erro.set('Erro ao excluir clínica.');
-        },
-      });
-    }
+    this.confirmandoExclusao.set(clinica);
+  }
+
+  confirmarExclusaoModal() {
+    const clinica = this.confirmandoExclusao();
+    if (!clinica) return;
+
+    this.processandoAcao.set(true);
+    this.clinicaService.excluir(clinica.id).subscribe({
+      next: () => {
+        this.clinicas.update(lista => lista.filter(c => c.id !== clinica.id));
+        this.totalCadastradas.update(total => total - 1);
+        this.processandoAcao.set(false);
+        this.confirmandoExclusao.set(null);
+      },
+      error: () => {
+        this.erro.set('Erro ao excluir clínica.');
+        this.processandoAcao.set(false);
+        this.confirmandoExclusao.set(null);
+      },
+    });
+  }
+
+  cancelarExclusao() {
+    this.confirmandoExclusao.set(null);
   }
 
   getIniciais(nome: string): string {
@@ -75,7 +98,12 @@ export class Clinicas {
       .toUpperCase();
   }
 
-  formatarValor(valor: string): string {
+  formatarValor(valor: string | undefined): string {
+    if (!valor) return 'R$ 0,00';
     return (+valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  }
+
+  getStatusVariant(ativo: boolean): BadgeVariant {
+    return ativo ? 'ativo' : 'inativo';
   }
 }
