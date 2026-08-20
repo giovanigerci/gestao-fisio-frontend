@@ -12,6 +12,9 @@ export interface Paciente {
   data_nascimento: string | null;
   endereco: string;
   historico_medico: string;
+  ultima_visita: string | null;
+  total_sessoes: number;
+  status: 'Ativo' | 'Inativo';
 }
 
 export interface RespostaPaginada<T> {
