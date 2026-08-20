@@ -1,14 +1,24 @@
-<div class="min-h-screen bg-slate-950 px-4 pt-6 pb-4">
+<div class="pacientes-page">
   <!-- Header -->
-  <div class="mb-6">
-    <h1 class="text-2xl font-semibold text-slate-50">Pacientes</h1>
-    <p class="text-slate-400 text-sm mt-1">Gerencie seus pacientes cadastrados</p>
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">Pacientes</h1>
+      @if (!carregando() && !erro()) {
+        <span class="page-counter">{{ totalCadastrados() }} cadastrados</span>
+      }
+    </div>
+    <a routerLink="/pacientes/novo" class="btn-novo-paciente desktop-only">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="btn-icon">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+      </svg>
+      Paciente
+    </a>
   </div>
 
   <!-- Search bar -->
-  <div class="relative mb-6">
+  <div class="search-container">
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-         class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500">
+         class="search-icon">
       <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
     </svg>
     <input
@@ -16,24 +26,23 @@
       [value]="termoBusca()"
       (input)="termoBusca.set($any($event.target).value)"
       placeholder="Buscar por nome..."
-      class="w-full rounded-xl bg-slate-900 border border-slate-700/50 pl-11 pr-4 py-2.5 text-slate-100 text-sm
-             placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+      class="search-input"
     />
   </div>
 
   <!-- Loading state -->
   @if (carregando()) {
-    <div class="flex flex-col items-center justify-center py-20">
-      <div class="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
-      <p class="text-slate-400 text-sm mt-4">Carregando pacientes...</p>
+    <div class="state-container">
+      <div class="spinner"></div>
+      <p class="state-text">Carregando pacientes...</p>
     </div>
   }
 
   <!-- Error state -->
   @if (erro() && !carregando()) {
-    <div class="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-4">
-      <p class="text-red-400 text-sm">{{ erro() }}</p>
-      <button (click)="carregarPacientes()" class="text-red-300 text-sm mt-2 underline hover:text-red-200 transition-colors">
+    <div class="error-container">
+      <p class="error-text">{{ erro() }}</p>
+      <button (click)="carregarPacientes()" class="error-retry">
         Tentar novamente
       </button>
     </div>
@@ -61,34 +70,104 @@
     </app-empty-state>
   }
 
-  <!-- Patient list -->
-  @if (!carregando() && !erro()) {
-    <div class="flex flex-col gap-3">
+  <!-- ═══════════ DESKTOP TABLE (≥ 1024px) ═══════════ -->
+  @if (!carregando() && !erro() && pacientesFiltrados().length > 0) {
+    <div class="table-wrapper desktop-only">
+      <table class="pacientes-table">
+        <thead>
+          <tr>
+            <th class="th-paciente">Paciente</th>
+            <th class="th-status">Status</th>
+            <th class="th-telefone">Telefone</th>
+            <th class="th-visita">Última Visita</th>
+            <th class="th-sessoes">Sessões</th>
+            <th class="th-acoes"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (paciente of pacientesFiltrados(); track paciente.id) {
+            <tr class="table-row" (click)="editarPaciente(paciente)">
+              <!-- Paciente (avatar + nome) -->
+              <td class="td-paciente">
+                <div class="cell-paciente">
+                  <div class="avatar"
+                       [style.background]="'color-mix(in srgb, ' + corDoPaciente(paciente.id) + ' 15%, transparent)'"
+                       [style.color]="corDoPaciente(paciente.id)">
+                    {{ getIniciais(paciente.nome) }}
+                  </div>
+                  <span class="nome-paciente">{{ paciente.nome }}</span>
+                </div>
+              </td>
+
+              <!-- Status -->
+              <td class="td-status">
+                <app-badge [variant]="getStatusVariant(paciente.status)"></app-badge>
+              </td>
+
+              <!-- Telefone -->
+              <td class="td-telefone">{{ paciente.telefone }}</td>
+
+              <!-- Última Visita -->
+              <td class="td-visita"
+                  [class.visita-nunca]="!paciente.ultima_visita">
+                {{ formatarUltimaVisita(paciente.ultima_visita) }}
+              </td>
+
+              <!-- Sessões -->
+              <td class="td-sessoes">{{ paciente.total_sessoes }}</td>
+
+              <!-- Ações -->
+              <td class="td-acoes">
+                <button
+                  (click)="confirmarExclusao(paciente, $event)"
+                  class="btn-delete"
+                  title="Excluir paciente">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-delete">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- ═══════════ MOBILE CARDS (< 1024px) ═══════════ -->
+  @if (!carregando() && !erro() && pacientesFiltrados().length > 0) {
+    <div class="cards-wrapper mobile-only">
       @for (paciente of pacientesFiltrados(); track paciente.id) {
         <app-card>
           <div
             (click)="editarPaciente(paciente)"
-            class="flex items-center gap-4 cursor-pointer active:scale-[0.98]">
-  
+            class="card-content">
+
             <!-- Avatar -->
-            <div class="w-11 h-11 rounded-full bg-primary/15 flex items-center justify-center
-                        text-primary font-semibold text-sm shrink-0">
+            <div class="avatar"
+                 [style.background]="'color-mix(in srgb, ' + corDoPaciente(paciente.id) + ' 15%, transparent)'"
+                 [style.color]="corDoPaciente(paciente.id)">
               {{ getIniciais(paciente.nome) }}
             </div>
-  
+
             <!-- Info -->
-            <div class="flex-1 min-w-0">
-              <p class="text-slate-50 font-medium truncate">{{ paciente.nome }}</p>
-              <p class="text-slate-400 text-sm truncate">{{ paciente.telefone }}</p>
+            <div class="card-info">
+              <div class="card-top-row">
+                <p class="card-nome">{{ paciente.nome }}</p>
+                <app-badge [variant]="getStatusVariant(paciente.status)"></app-badge>
+              </div>
+              <p class="card-telefone">{{ paciente.telefone }}</p>
+              @if (paciente.ultima_visita) {
+                <p class="card-visita">Última visita: {{ formatarUltimaVisita(paciente.ultima_visita) }}</p>
+              }
             </div>
-  
+
             <!-- Delete button -->
             <button
               (click)="confirmarExclusao(paciente, $event)"
-              class="w-9 h-9 rounded-lg flex items-center justify-center text-slate-500
-                     hover:text-red-400 hover:bg-red-400/10 transition-colors shrink-0"
+              class="btn-delete-card"
               title="Excluir paciente">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-[18px] h-[18px]">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-delete">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
               </svg>
             </button>
@@ -98,14 +177,24 @@
     </div>
   }
 
-  <!-- FAB -->
+  <!-- FAB (mobile only) -->
   <a routerLink="/pacientes/novo"
-     class="fixed bottom-24 right-5 md:bottom-8 md:right-8 z-40
-            w-14 h-14 rounded-full bg-primary text-white shadow-lg shadow-primary/25
-            flex items-center justify-center hover:brightness-110 transition-all
-            hover:scale-105 active:scale-95">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-7 h-7">
+     class="fab mobile-only">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="fab-icon">
       <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
     </svg>
   </a>
+
+  <!-- Confirm Delete Modal -->
+  @if (confirmandoExclusao()) {
+    <app-confirm-modal
+      title="Excluir paciente"
+      [message]="'Deseja realmente excluir o paciente ' + confirmandoExclusao()!.nome + '?'"
+      confirmLabel="Excluir"
+      cancelLabel="Voltar"
+      variant="danger"
+      [loading]="processandoAcao()"
+      (confirmed)="confirmarExclusaoModal()"
+      (cancelled)="cancelarExclusao()" />
+  }
 </div>
