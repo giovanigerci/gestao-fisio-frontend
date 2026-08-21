@@ -10,11 +10,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const http = inject(HttpClient);
 
   const reqComCredenciais = req.clone({ withCredentials: true });
-  const reqAuth = req.url.includes('/auth/');
+  const requisicaoToken = req.url.includes('/auth/token/');
 
   return next(reqComCredenciais).pipe(
     catchError((erro: HttpErrorResponse) => {
-      if (erro.status === 401 && !reqAuth) {
+      if (erro.status === 401 && !requisicaoToken) {
         return http
           .post(`${environment.apiUrl}/auth/token/refresh/`, {}, { withCredentials: true })
           .pipe(
@@ -25,7 +25,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
             })
           );
       }
-      
+
       return throwError(() => erro);
     })
   );
