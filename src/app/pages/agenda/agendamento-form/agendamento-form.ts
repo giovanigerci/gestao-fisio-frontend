@@ -36,6 +36,12 @@ export class AgendamentoForm {
   horaFim = signal('');
   ehExperimental = signal(false);
 
+  // Recorrência
+  repetirSemanal = signal(false);
+  repeticoes = signal<number>(4);
+  conflitos = signal<string[]>([]);
+  totalCriados = signal(0);
+
   constructor() {
     this.carregarDropdowns();
 
@@ -109,8 +115,17 @@ export class AgendamentoForm {
       return;
     }
 
+    if (this.repetirSemanal() && !this.modoEdicao()) {
+      const rep = this.repeticoes();
+      if (!rep || rep < 1 || rep > 12) {
+        this.erro.set('Informe a quantidade de repetições (entre 1 e 12).');
+        return;
+      }
+    }
+
     this.salvando.set(true);
     this.erro.set('');
+    this.conflitos.set([]);
 
     const dados = {
       paciente: this.paciente()!,
@@ -121,26 +136,53 @@ export class AgendamentoForm {
       eh_experimental: this.ehExperimental(),
     };
 
-    const operacao = this.modoEdicao()
-      ? this.agendamentoService.atualizar(this.agendamentoId()!, dados)
-      : this.agendamentoService.criar(dados);
+    if (this.repetirSemanal() && !this.modoEdicao()) {
+      this.agendamentoService.criarRecorrente({ ...dados, repeticoes: this.repeticoes() }).subscribe({
+        next: (resp) => {
+          this.salvando.set(false);
+          if (resp.agendamentos_conflitantes.length === 0) {
+            this.router.navigate(['/agenda']);
+          } else {
+            this.totalCriados.set(resp.agendamentos_criados.length);
+            this.conflitos.set(resp.agendamentos_conflitantes.map(d => this.formatarData(d)));
+          }
+        },
+        error: (err) => {
+          this.salvando.set(false);
+          this.tratarErro(err);
+        },
+      });
+    } else {
+      const operacao = this.modoEdicao()
+        ? this.agendamentoService.atualizar(this.agendamentoId()!, dados)
+        : this.agendamentoService.criar(dados);
 
-    operacao.subscribe({
-      next: () => {
-        this.router.navigate(['/agenda']);
-      },
-      error: (err) => {
-        this.salvando.set(false);
-        if (err.error && typeof err.error === 'object') {
-          const mensagens = Object.entries(err.error)
-            .map(([campo, msgs]) => `${campo}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`)
-            .join(' | ');
-          this.erro.set(mensagens || 'Erro ao salvar agendamento.');
-        } else {
-          this.erro.set('Erro ao salvar agendamento. Tente novamente.');
-        }
-      },
-    });
+      operacao.subscribe({
+        next: () => {
+          this.router.navigate(['/agenda']);
+        },
+        error: (err) => {
+          this.salvando.set(false);
+          this.tratarErro(err);
+        },
+      });
+    }
+  }
+
+  private tratarErro(err: any) {
+    if (err.error && typeof err.error === 'object') {
+      const mensagens = Object.entries(err.error)
+        .map(([campo, msgs]) => `${campo}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`)
+        .join(' | ');
+      this.erro.set(mensagens || 'Erro ao salvar agendamento.');
+    } else {
+      this.erro.set('Erro ao salvar agendamento. Tente novamente.');
+    }
+  }
+
+  private formatarData(dataISO: string): string {
+    const [ano, mes, dia] = dataISO.split('-');
+    return `${dia}/${mes}/${ano}`;
   }
 
   onHoraInicioChange(valor: string) {

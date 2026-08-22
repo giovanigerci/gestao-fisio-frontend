@@ -21,8 +21,41 @@
   </div>
   }
 
+  <!-- Resultado parcial (conflitos de recorrência) -->
+  @if (conflitos().length > 0) {
+  <div class="max-w-lg lg:mx-auto flex flex-col gap-4">
+    <div class="rounded-xl border border-[var(--color-warning,#f59e0b)]/30 bg-[var(--color-warning,#f59e0b)]/10 p-4 animate-in">
+      <div class="flex items-start gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+          stroke="var(--color-warning,#f59e0b)" class="w-5 h-5 mt-0.5 shrink-0">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+        </svg>
+        <div class="flex-1">
+          <p class="text-sm font-medium text-[var(--color-text-primary)] mb-1">
+            {{ totalCriados() }} agendamento{{ totalCriados() > 1 ? 's criados' : ' criado' }} com sucesso
+          </p>
+          <p class="text-sm text-[var(--color-text-secondary)] mb-2">
+            {{ conflitos().length }} data{{ conflitos().length > 1 ? 's foram puladas' : ' foi pulada' }} por já possuir agendamento nesse horário:
+          </p>
+          <ul class="list-disc list-inside text-sm text-[var(--color-text-secondary)]">
+            @for (data of conflitos(); track data) {
+            <li>{{ data }}</li>
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+    <button type="button" (click)="cancelar()"
+      class="w-full rounded-xl bg-primary py-2.5 text-white font-medium text-sm
+             hover:brightness-110 transition-all cursor-pointer">
+      Ir para a Agenda
+    </button>
+  </div>
+  }
+
   <!-- Form -->
-  @if (!carregando() && !carregandoDropdowns()) {
+  @if (!carregando() && !carregandoDropdowns() && conflitos().length === 0) {
   <form (submit)="$event.preventDefault(); salvar()" class="flex flex-col gap-5 max-w-lg lg:mx-auto">
 
     <!-- Error -->
@@ -89,7 +122,29 @@
           <span class="checkbox-hint">Marca este agendamento como aula experimental</span>
         </div>
       </label>
+
+      @if (!modoEdicao()) {
+      <label class="checkbox-field">
+        <input type="checkbox" [checked]="repetirSemanal()" (change)="repetirSemanal.set($any($event.target).checked)"
+          class="checkbox-input" />
+        <div class="checkbox-content">
+          <span class="checkbox-label">Repetir semanalmente</span>
+          <span class="checkbox-hint">Cria agendamentos recorrentes nas próximas semanas</span>
+        </div>
+      </label>
+      }
     </div>
+
+    <!-- Repetições (visível apenas quando repetir semanal está marcado) -->
+    @if (repetirSemanal() && !modoEdicao()) {
+    <div>
+      <label class="block text-sm text-[var(--color-text-primary)] mb-1.5">Quantas vezes <span
+          class="text-[var(--color-danger)]">*</span></label>
+      <input type="number" [value]="repeticoes()" (input)="repeticoes.set(+$any($event.target).value)"
+        min="1" max="12" class="input-field" placeholder="Ex: 4" />
+      <span class="block text-xs text-[var(--color-text-secondary)] mt-1">De 1 a 12 semanas</span>
+    </div>
+    }
 
     <!-- Actions -->
     <div class="flex gap-3 pt-2">

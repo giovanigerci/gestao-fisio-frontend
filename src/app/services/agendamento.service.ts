@@ -16,6 +16,11 @@ export interface Agendamento {
   valor_calculado: number;
 }
 
+export interface RespostaRecorrente {
+  agendamentos_criados: Agendamento[];
+  agendamentos_conflitantes: string[];
+}
+
 @Service()
 export class AgendamentoService {
   private http = inject(HttpClient);
@@ -34,6 +39,10 @@ export class AgendamentoService {
 
   criar(dados: Partial<Agendamento>) {
     return this.http.post<Agendamento>(this.url, dados);
+  }
+
+  criarRecorrente(dados: Partial<Agendamento> & { repeticoes: number }) {
+    return this.http.post<RespostaRecorrente>(`${this.url}recorrente/`, dados);
   }
 
   atualizar(id: number, dados: Partial<Agendamento>) {
