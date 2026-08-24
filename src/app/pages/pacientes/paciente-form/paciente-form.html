@@ -66,8 +66,17 @@
     <!-- Data de nascimento -->
     <div>
       <label class="block text-sm text-[var(--color-text-primary)] mb-1.5">Data de nascimento</label>
-      <input type="date" [value]="dataNascimento()" (input)="dataNascimento.set($any($event.target).value)"
-        class="input-field" />
+      <input type="date"
+        [value]="dataNascimento()"
+        (input)="dataNascimento.set($any($event.target).value)"
+        (blur)="validarDataNascimento()"
+        [attr.max]="hoje"
+        [attr.min]="dataMinima"
+        class="input-field"
+        [class.input-field--error]="erroDataNascimento()" />
+      @if (erroDataNascimento()) {
+        <p class="text-xs mt-1.5 text-[var(--color-danger)] animate-in">{{ erroDataNascimento() }}</p>
+      }
     </div>
 
     <!-- Endereço -->
@@ -90,7 +99,7 @@
                  hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer">
         Cancelar
       </button>
-      <button type="submit" [disabled]="salvando()" class="flex-1 rounded-xl bg-primary py-2.5 text-white font-medium text-sm
+      <button type="submit" [disabled]="salvando() || !dataValida()" class="flex-1 rounded-xl bg-primary py-2.5 text-white font-medium text-sm
                  hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
         @if (salvando()) {
         <span class="flex items-center justify-center gap-2">
