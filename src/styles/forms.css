@@ -39,6 +39,23 @@ select.input-field option {
 
 .input-field::-webkit-calendar-picker-indicator {
   filter: invert(0.7);
+  cursor: pointer;
+}
+
+/* Dark mode para calendário nativo do navegador */
+input[type="date"].input-field {
+  color-scheme: dark;
+  cursor: pointer;
+}
+
+/* Estado de erro nos inputs */
+.input-field--error {
+  border-color: var(--color-danger) !important;
+  box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.15);
+}
+
+.input-field--error:focus {
+  box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.3);
 }
 
 .checkbox-field {
