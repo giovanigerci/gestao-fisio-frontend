@@ -10,7 +10,7 @@
 
   <!-- Nav links -->
   <div class="flex justify-around py-1
-              lg:flex-col lg:gap-1 lg:px-3 lg:py-0 lg:justify-start lg:flex-1 lg:pb-5">
+              lg:flex-col lg:gap-1 lg:px-3 lg:py-0 lg:justify-start lg:flex-1 lg:pb-0">
 
     <!-- Agenda -->
     <a routerLink="/agenda" routerLinkActive="nav-active" class="nav-link">
@@ -52,8 +52,40 @@
       <span class="nav-label">Financeiro</span>
     </a>
 
-    <!-- Sair -->
-    <button (click)="logout()" class="nav-link text-left lg:mt-auto hover:text-red-400 cursor-pointer">
+    <!-- Sair (mobile only — no desktop it's in the footer below) -->
+    <button (click)="logout()" class="nav-link text-left lg:hidden hover:text-red-400 cursor-pointer">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="nav-icon">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+      </svg>
+      <span class="nav-label">Sair</span>
+    </button>
+
+  </div>
+
+  <!-- Profile + Logout (desktop only) -->
+  <div class="hidden lg:flex lg:flex-col lg:px-3 lg:pb-4 lg:gap-1 lg:border-t lg:border-[var(--color-border)] lg:pt-3">
+
+    <!-- Profile card -->
+    @if (perfilService.perfil(); as perfil) {
+    <a routerLink="/perfil" class="profile-card">
+      <div class="profile-avatar">
+        @if (perfil.foto) {
+        <img [src]="perfil.foto" alt="Foto de perfil" class="profile-avatar-img" />
+        } @else {
+        <span class="profile-initials">{{ perfilService.iniciais() }}</span>
+        }
+      </div>
+      <div class="profile-info">
+        <span class="profile-name">{{ perfilService.nomeExibicao() }}</span>
+        <span class="profile-subtitle">
+          {{ clinicasCount() ?? '–' }} clínicas · CREFITO {{ perfil.crefito }}
+        </span>
+      </div>
+    </a>
+    }
+
+    <!-- Sair (desktop) -->
+    <button (click)="logout()" class="nav-link text-left hover:text-red-400 cursor-pointer">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="nav-icon">
         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
       </svg>
