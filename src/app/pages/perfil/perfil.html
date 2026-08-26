@@ -1,0 +1,161 @@
+<div class="min-h-screen px-4 pt-6 pb-8">
+  <!-- Header -->
+  <div class="flex items-center gap-3 mb-8">
+    <button (click)="cancelar()"
+      class="w-10 h-10 rounded-lg flex items-center justify-center text-[var(--color-text-secondary)]
+                   hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        class="w-5 h-5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+      </svg>
+    </button>
+    <h1 class="text-xl font-semibold text-[var(--color-text-primary)]">
+      Meu Perfil
+    </h1>
+  </div>
+
+  <!-- Loading -->
+  @if (perfilService.carregando()) {
+  <div class="flex items-center justify-center py-20">
+    <div class="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+  </div>
+  }
+
+  <!-- Form -->
+  @if (perfilService.perfil(); as perfil) {
+  <form (submit)="$event.preventDefault(); salvar()" class="flex flex-col gap-5 max-w-lg lg:mx-auto">
+
+    <!-- Avatar area -->
+    <div class="flex flex-col items-center gap-3 mb-2">
+      <div class="avatar-container">
+        @if (uploadingFoto() || removendoFoto()) {
+        <div class="avatar-large">
+          <div class="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+        </div>
+        } @else if (perfil.foto) {
+        <div class="avatar-large">
+          <img [src]="perfil.foto" alt="Foto de perfil" class="avatar-large-img" />
+        </div>
+        } @else {
+        <div class="avatar-large">
+          <span class="avatar-large-initials">{{ perfilService.iniciais() }}</span>
+        </div>
+        }
+
+        <!-- Camera button -->
+        <button type="button" (click)="fileInput.click()"
+          [disabled]="uploadingFoto() || removendoFoto()"
+          class="avatar-camera-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+            class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Z" />
+          </svg>
+        </button>
+
+        <input #fileInput type="file" accept="image/*" class="hidden" (change)="onFotoSelecionada($event)" />
+      </div>
+
+      <!-- Remove photo -->
+      @if (perfil.foto && !uploadingFoto() && !removendoFoto()) {
+      <button type="button" (click)="removerFoto()"
+        class="text-xs text-[var(--color-danger)] hover:underline cursor-pointer">
+        Remover foto
+      </button>
+      }
+
+      <!-- Photo error -->
+      @if (erroFoto()) {
+      <p class="text-xs text-[var(--color-danger)] text-center animate-in">{{ erroFoto() }}</p>
+      }
+    </div>
+
+    <!-- Success message -->
+    @if (sucesso()) {
+    <div class="bg-[var(--color-money)]/10 border border-[var(--color-money)]/20 rounded-xl p-4 animate-in">
+      <p class="text-[var(--color-money)] text-sm">{{ sucesso() }}</p>
+    </div>
+    }
+
+    <!-- Error -->
+    @if (erro()) {
+    <div class="bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/20 rounded-xl p-4 animate-in">
+      <p class="text-[var(--color-danger)] text-sm">{{ erro() }}</p>
+    </div>
+    }
+
+    <!-- Username (read-only) -->
+    <div>
+      <label class="block text-sm text-[var(--color-text-primary)] mb-1.5">Usuário</label>
+      <input [value]="username()" disabled class="input-field opacity-60 cursor-not-allowed" />
+    </div>
+
+    <!-- Nome -->
+    <div>
+      <label class="block text-sm text-[var(--color-text-primary)] mb-1.5">Nome</label>
+      <input [value]="firstName()" (input)="firstName.set($any($event.target).value)" class="input-field"
+        placeholder="Seu nome" />
+    </div>
+
+    <!-- Sobrenome -->
+    <div>
+      <label class="block text-sm text-[var(--color-text-primary)] mb-1.5">Sobrenome</label>
+      <input [value]="lastName()" (input)="lastName.set($any($event.target).value)" class="input-field"
+        placeholder="Seu sobrenome" />
+    </div>
+
+    <!-- E-mail -->
+    <div>
+      <label class="block text-sm text-[var(--color-text-primary)] mb-1.5">E-mail</label>
+      <input type="email" [value]="email()" (input)="email.set($any($event.target).value)" class="input-field"
+        placeholder="email@exemplo.com" />
+    </div>
+
+    <!-- Telefone -->
+    <div>
+      <label class="block text-sm text-[var(--color-text-primary)] mb-1.5">Telefone</label>
+      <input [value]="telefone()" (input)="telefone.set($any($event.target).value)" class="input-field"
+        placeholder="(00) 00000-0000" />
+    </div>
+
+    <!-- Especialidade -->
+    <div>
+      <label class="block text-sm text-[var(--color-text-primary)] mb-1.5">Especialidade</label>
+      <input [value]="especialidade()" (input)="especialidade.set($any($event.target).value)" class="input-field"
+        placeholder="Ex: Fisioterapia Ortopédica" />
+    </div>
+
+    <!-- CREFITO -->
+    <div>
+      <label class="block text-sm text-[var(--color-text-primary)] mb-1.5">CREFITO</label>
+      <input [value]="crefito()" (input)="crefito.set($any($event.target).value)"
+        [class]="'input-field' + (erroCrefito() ? ' input-field--error' : '')"
+        placeholder="CREFITO-X/000000" />
+      @if (erroCrefito()) {
+      <p class="text-xs text-[var(--color-danger)] mt-1 animate-in">{{ erroCrefito() }}</p>
+      }
+    </div>
+
+    <!-- Actions -->
+    <div class="flex gap-3 pt-2">
+      <button type="button" (click)="cancelar()" class="flex-1 rounded-xl border border-[var(--color-border)] py-2.5 text-[var(--color-text-primary)] font-medium text-sm
+                 hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer">
+        Cancelar
+      </button>
+      <button type="submit" [disabled]="salvando()" class="flex-1 rounded-xl bg-primary py-2.5 text-white font-medium text-sm
+                 hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
+        @if (salvando()) {
+        <span class="flex items-center justify-center gap-2">
+          <span class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block"></span>
+          Salvando...
+        </span>
+        } @else {
+        Salvar
+        }
+      </button>
+    </div>
+  </form>
+  }
+</div>
