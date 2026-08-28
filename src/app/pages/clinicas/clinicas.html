@@ -7,7 +7,7 @@
       <span class="page-counter">{{ totalCadastradas() }} cadastradas</span>
       }
     </div>
-    <a routerLink="/clinicas/novo" class="btn-nova-clinica desktop-only">
+    <a routerLink="/clinicas/novo" class="btn-nova-clinica">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
         class="btn-icon">
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -176,13 +176,7 @@
   </div>
   }
 
-  <!-- FAB (mobile only) -->
-  <a routerLink="/clinicas/novo" class="fab mobile-only">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"
-      class="fab-icon">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-    </svg>
-  </a>
+
 
   <!-- Confirm Delete Modal -->
   @if (confirmandoExclusao()) {
