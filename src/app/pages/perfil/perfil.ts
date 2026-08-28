@@ -1,6 +1,7 @@
 import { Component, inject, signal, effect } from '@angular/core';
 import { Router } from '@angular/router';
 import { PerfilService, Perfil } from '../../services/perfil.service';
+import { Auth } from '../../services/auth';
 
 @Component({
   selector: 'app-perfil',
@@ -11,6 +12,7 @@ import { PerfilService, Perfil } from '../../services/perfil.service';
 export class PerfilPage {
   private router = inject(Router);
   readonly perfilService = inject(PerfilService);
+  private auth = inject(Auth);
 
   // Form fields
   firstName = signal('');
@@ -160,5 +162,12 @@ export class PerfilPage {
 
   cancelar() {
     this.router.navigate(['/agenda']);
+  }
+
+  sair() {
+    this.auth.logout().subscribe({
+      next: () => this.router.navigate(['/login']),
+      error: () => this.router.navigate(['/login']),
+    });
   }
 }
