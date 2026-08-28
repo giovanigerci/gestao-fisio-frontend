@@ -1,8 +1,9 @@
 @if (mostrarNav()) {
 <app-nav-bar />
+<app-mobile-header />
 }
 
-<main [class]="mostrarNav() ? 'pb-20 lg:pb-0 lg:pl-56' : ''">
+<main [class]="mostrarNav() ? 'pt-14 pb-20 lg:pt-0 lg:pb-0 lg:pl-56' : ''">
   <div [class]="mostrarNav() ? 'lg:max-w-6xl lg:mx-auto' : ''">
     <router-outlet />
   </div>

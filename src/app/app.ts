@@ -1,11 +1,12 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { NavBar } from './components/nav-bar/nav-bar';
+import { MobileHeader } from './components/mobile-header/mobile-header';
 import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, NavBar],
+  imports: [RouterOutlet, NavBar, MobileHeader],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
