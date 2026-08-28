@@ -1,0 +1,17 @@
+<header class="mobile-header">
+  <!-- Logo icon only -->
+  <div class="mobile-header-logo">
+    <img src="/logo.png" alt="Gestão Fisio" class="mobile-header-logo-img" />
+  </div>
+
+  <!-- Profile avatar -->
+  @if (perfilService.perfil(); as perfil) {
+    <a routerLink="/perfil" class="mobile-header-avatar">
+      @if (perfil.foto) {
+        <img [src]="perfil.foto" alt="Meu perfil" class="mobile-header-avatar-img" />
+      } @else {
+        <span class="mobile-header-avatar-initials">{{ perfilService.iniciais() }}</span>
+      }
+    </a>
+  }
+</header>
