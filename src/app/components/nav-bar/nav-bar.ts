@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { Auth } from '../../services/auth';
 import { PerfilService } from '../../services/perfil.service';
-import { ClinicaService } from '../../services/clinica.service';
+import { PacienteService } from '../../services/paciente.service';
 
 @Component({
   selector: 'app-nav-bar',
@@ -14,14 +14,14 @@ export class NavBar {
   private auth = inject(Auth);
   private router = inject(Router);
   readonly perfilService = inject(PerfilService);
-  private clinicaService = inject(ClinicaService);
+  private pacienteService = inject(PacienteService);
 
-  clinicasCount = signal<number | null>(null);
+  pacientesCount = signal<number | null>(null);
 
   constructor() {
     this.perfilService.carregar();
-    this.clinicaService.listar().subscribe({
-      next: (resp) => this.clinicasCount.set(resp.count),
+    this.pacienteService.listar().subscribe({
+      next: (resp) => this.pacientesCount.set(resp.count),
     });
   }
 

@@ -70,7 +70,7 @@
       <div class="profile-info">
         <span class="profile-name">{{ perfilService.nomeExibicao() }}</span>
         <span class="profile-subtitle">
-          {{ clinicasCount() ?? '–' }} clínicas · CREFITO {{ perfil.crefito }}
+          {{ pacientesCount() ?? '–' }} pacientes
         </span>
       </div>
     </a>
@@ -78,8 +78,10 @@
 
     <!-- Sair (desktop) -->
     <button (click)="logout()" class="nav-link text-left hover:text-red-400 cursor-pointer">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="nav-icon">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        class="nav-icon">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
       </svg>
       <span class="nav-label">Sair</span>
     </button>
