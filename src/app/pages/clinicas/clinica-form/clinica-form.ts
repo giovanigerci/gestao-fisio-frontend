@@ -1,10 +1,11 @@
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ClinicaService } from '../../../services/clinica.service';
+import { TelefoneMaskDirective } from '../../../shared/directives/telefone-mask.directive';
 
 @Component({
   selector: 'app-clinica-form',
-  imports: [],
+  imports: [TelefoneMaskDirective],
   templateUrl: './clinica-form.html',
   styleUrl: './clinica-form.css',
 })

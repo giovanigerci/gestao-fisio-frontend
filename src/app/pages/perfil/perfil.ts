@@ -2,10 +2,11 @@ import { Component, inject, signal, effect } from '@angular/core';
 import { Router } from '@angular/router';
 import { PerfilService, Perfil } from '../../services/perfil.service';
 import { Auth } from '../../services/auth';
+import { TelefoneMaskDirective } from '../../shared/directives/telefone-mask.directive';
 
 @Component({
   selector: 'app-perfil',
-  imports: [],
+  imports: [TelefoneMaskDirective],
   templateUrl: './perfil.html',
   styleUrl: './perfil.css',
 })

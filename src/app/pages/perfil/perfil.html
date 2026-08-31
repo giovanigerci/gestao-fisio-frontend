@@ -116,7 +116,7 @@
     <!-- Telefone -->
     <div>
       <label class="block text-sm text-[var(--color-text-primary)] mb-1.5">Telefone</label>
-      <input [value]="telefone()" (input)="telefone.set($any($event.target).value)" class="input-field"
+      <input type="tel" [appTelefoneMask]="telefone()" (valorLimpo)="telefone.set($event)" class="input-field"
         placeholder="(00) 00000-0000" />
     </div>
 

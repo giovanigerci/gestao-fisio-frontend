@@ -1,10 +1,11 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PacienteService } from '../../../services/paciente.service';
+import { TelefoneMaskDirective } from '../../../shared/directives/telefone-mask.directive';
 
 @Component({
   selector: 'app-paciente-form',
-  imports: [],
+  imports: [TelefoneMaskDirective],
   templateUrl: './paciente-form.html',
   styleUrl: './paciente-form.css',
 })
