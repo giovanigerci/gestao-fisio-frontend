@@ -6,10 +6,11 @@ import { EmptyState } from '../../shared/components/empty-state/empty-state';
 import { Badge, BadgeVariant } from '../../shared/components/badge/badge';
 import { ConfirmModal } from '../../shared/components/confirm-modal/confirm-modal';
 import { corDoPaciente } from '../../shared/utils/clinic-colors';
+import { TelefonePipe } from '../../shared/pipes/telefone.pipe';
 
 @Component({
   selector: 'app-pacientes',
-  imports: [RouterLink, Card, EmptyState, Badge, ConfirmModal],
+  imports: [RouterLink, Card, EmptyState, Badge, ConfirmModal, TelefonePipe],
   templateUrl: './pacientes.html',
   styleUrl: './pacientes.css',
 })

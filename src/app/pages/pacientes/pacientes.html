@@ -105,7 +105,7 @@
               </td>
 
               <!-- Telefone -->
-              <td class="td-telefone">{{ paciente.telefone }}</td>
+              <td class="td-telefone">{{ paciente.telefone | telefone }}</td>
 
               <!-- Última Visita -->
               <td class="td-visita"
@@ -156,7 +156,7 @@
                 <p class="card-nome">{{ paciente.nome }}</p>
                 <app-badge [variant]="getStatusVariant(paciente.status)"></app-badge>
               </div>
-              <p class="card-telefone">{{ paciente.telefone }}</p>
+              <p class="card-telefone">{{ paciente.telefone | telefone }}</p>
               @if (paciente.ultima_visita) {
                 <p class="card-visita">Última visita: {{ formatarUltimaVisita(paciente.ultima_visita) }}</p>
               }
