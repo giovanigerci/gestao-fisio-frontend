@@ -1,9 +1,11 @@
-import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
+import { HttpInterceptorFn, HttpErrorResponse, HttpContextToken } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { catchError, switchMap, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
+
+export const SKIP_AUTH_RETRY = new HttpContextToken<boolean>(() => false);
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
@@ -11,10 +13,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   const reqComCredenciais = req.clone({ withCredentials: true });
   const requisicaoToken = req.url.includes('/auth/token/');
+  const skipRetry = req.context.get(SKIP_AUTH_RETRY);
 
   return next(reqComCredenciais).pipe(
     catchError((erro: HttpErrorResponse) => {
-      if (erro.status === 401 && !requisicaoToken) {
+      if (erro.status === 401 && !requisicaoToken && !skipRetry) {
         return http
           .post(`${environment.apiUrl}/auth/token/refresh/`, {}, { withCredentials: true })
           .pipe(
