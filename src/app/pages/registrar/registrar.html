@@ -1,0 +1,170 @@
+<div class="login-page">
+  <!-- Background Glows -->
+  <div class="login-bg-glow login-bg-glow--top"></div>
+  <div class="login-bg-glow login-bg-glow--bottom"></div>
+
+  <div class="login-container">
+
+    <!-- Brand -->
+    <div class="login-brand">
+      <div class="login-brand__icon">
+        <img src="/logo.png" alt="Gestão Fisio Logo" style="width: 48px; height: 48px; object-fit: contain;" />
+      </div>
+      <h1 class="login-brand__title">
+        <span style="color: var(--color-primary);">Gestão</span> <span style="color: var(--color-accent);">Fisio</span>
+      </h1>
+      <p class="login-brand__subtitle">Crie sua conta para começar</p>
+    </div>
+
+    <!-- Register Card -->
+    <div class="login-card">
+      <form (submit)="$event.preventDefault(); registrar()" class="login-form">
+
+        <!-- Username -->
+        <div class="form-field">
+          <label for="reg-username" class="form-field__label">USUÁRIO</label>
+          <div class="form-field__input-wrapper">
+            <svg class="form-field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+            <input id="reg-username" type="text" autocomplete="username" placeholder="Escolha um nome de usuário"
+              [value]="username()" (input)="username.set($any($event.target).value)"
+              [class.form-field__input--error]="temErro('username')" class="form-field__input" />
+          </div>
+          @for (msg of mensagensErro('username'); track msg) {
+          <span class="field-error">{{ msg }}</span>
+          }
+        </div>
+
+        <!-- Password -->
+        <div class="form-field">
+          <label for="reg-password" class="form-field__label">SENHA</label>
+          <div class="form-field__input-wrapper">
+            <svg class="form-field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            <input id="reg-password" [type]="mostrarSenha() ? 'text' : 'password'" autocomplete="new-password"
+              placeholder="Crie uma senha" [value]="password()" (input)="password.set($any($event.target).value)"
+              [class.form-field__input--error]="temErro('password')"
+              class="form-field__input form-field__input--has-toggle" />
+            <button type="button" (click)="alternarVisibilidadeSenha()"
+              [attr.aria-label]="mostrarSenha() ? 'Ocultar senha' : 'Mostrar senha'" class="form-field__toggle">
+              @if (mostrarSenha()) {
+              <svg class="form-field__toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path
+                  d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                <line x1="1" y1="1" x2="23" y2="23" />
+              </svg>
+              } @else {
+              <svg class="form-field__toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              }
+            </button>
+          </div>
+          @for (msg of mensagensErro('password'); track msg) {
+          <span class="field-error">{{ msg }}</span>
+          }
+        </div>
+
+        <!-- Telefone -->
+        <div class="form-field">
+          <label for="reg-telefone" class="form-field__label">TELEFONE</label>
+          <div class="form-field__input-wrapper">
+            <svg class="form-field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path
+                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+            </svg>
+            <input id="reg-telefone" type="tel" autocomplete="tel" placeholder="(00) 00000-0000"
+              [appTelefoneMask]="telefone()" (valorLimpo)="telefone.set($event)"
+              [class.form-field__input--error]="temErro('telefone')" class="form-field__input" />
+          </div>
+          @for (msg of mensagensErro('telefone'); track msg) {
+          <span class="field-error">{{ msg }}</span>
+          }
+        </div>
+
+        <!-- Especialidade -->
+        <div class="form-field">
+          <label for="reg-especialidade" class="form-field__label">ESPECIALIDADE</label>
+          <div class="form-field__input-wrapper">
+            <svg class="form-field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+            </svg>
+            <input id="reg-especialidade" type="text" autocomplete="off" placeholder="Ex: Ortopedia, Neurologia..."
+              [value]="especialidade()" (input)="especialidade.set($any($event.target).value)"
+              [class.form-field__input--error]="temErro('especialidade')" class="form-field__input" />
+          </div>
+          @for (msg of mensagensErro('especialidade'); track msg) {
+          <span class="field-error">{{ msg }}</span>
+          }
+        </div>
+
+        <!-- CREFITO -->
+        <div class="form-field">
+          <label for="reg-crefito" class="form-field__label">CREFITO</label>
+          <div class="form-field__input-wrapper">
+            <svg class="form-field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+              <polyline points="10 9 9 9 8 9" />
+            </svg>
+            <input id="reg-crefito" type="text" autocomplete="off" placeholder="Seu número CREFITO" [value]="crefito()"
+              (input)="crefito.set($any($event.target).value)" [class.form-field__input--error]="temErro('crefito')"
+              class="form-field__input" />
+          </div>
+          @for (msg of mensagensErro('crefito'); track msg) {
+          <span class="field-error">{{ msg }}</span>
+          }
+        </div>
+
+        <!-- General Error -->
+        @if (erroGeral()) {
+        <div class="login-error">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="15" y1="9" x2="9" y2="15" />
+            <line x1="9" y1="9" x2="15" y2="15" />
+          </svg>
+          <span>{{ erroGeral() }}</span>
+        </div>
+        }
+
+        <!-- Submit -->
+        <button type="submit" [disabled]="carregando()" class="login-btn" [class.login-btn--loading]="carregando()">
+          @if (carregando()) {
+          <span class="login-btn__spinner"></span>
+          <span>Criando conta...</span>
+          } @else {
+          <span>Criar conta</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+            <circle cx="8.5" cy="7" r="4" />
+            <line x1="20" y1="8" x2="20" y2="14" />
+            <line x1="23" y1="11" x2="17" y2="11" />
+          </svg>
+          }
+        </button>
+      </form>
+    </div>
+
+    <!-- Footer -->
+    <p class="login-footer">
+      <a routerLink="/login" class="login-link">Já tenho conta</a>
+    </p>
+  </div>
+</div>

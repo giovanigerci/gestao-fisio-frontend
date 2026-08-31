@@ -24,6 +24,6 @@ export class App {
   }
 
   private atualizarNav(url: string) {
-    this.mostrarNav.set(!url.startsWith('/login'));
+    this.mostrarNav.set(!url.startsWith('/login') && !url.startsWith('/registrar'));
   }
 }

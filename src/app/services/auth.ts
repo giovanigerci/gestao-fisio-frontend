@@ -6,11 +6,19 @@ import { environment } from '../../environments/environment';
 export class Auth {
     private http = inject(HttpClient);
 
-    login(username: string, password: string) {
+    login(username: string, password: string, manterConectado: boolean = false) {
         return this.http.post(
-            `${environment.apiUrl}/auth/token/`, 
-            { username, password },
-            {withCredentials: true}
+            `${environment.apiUrl}/auth/token/`,
+            { username, password, manter_conectado: manterConectado },
+            { withCredentials: true }
+        );
+    }
+
+    registrar(dados: { username: string; password: string; telefone: string; especialidade: string; crefito: string }) {
+        return this.http.post(
+            `${environment.apiUrl}/auth/registrar/`,
+            dados,
+            { withCredentials: true }
         );
     }
 
@@ -18,14 +26,14 @@ export class Auth {
         return this.http.post(
             `${environment.apiUrl}/auth/logout/`,
             {},
-            {withCredentials: true}
+            { withCredentials: true }
         );
     }
 
     perfil() {
         return this.http.get(
             `${environment.apiUrl}/auth/me/`,
-            {withCredentials: true}
+            { withCredentials: true }
         );
     }
 }

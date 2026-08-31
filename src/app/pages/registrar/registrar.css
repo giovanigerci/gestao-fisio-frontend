@@ -1,0 +1,16 @@
+@import '../login/login.css';
+
+/* 
+  Registrar page reuses all login-* and form-field* classes 
+  from login.css.
+  Only page-specific additions go here.
+*/
+
+/* ─── Scrollable adjustment for many fields ─── */
+@media (max-height: 700px) {
+  .login-page {
+    align-items: flex-start;
+    padding-top: 32px;
+    padding-bottom: 32px;
+  }
+}
