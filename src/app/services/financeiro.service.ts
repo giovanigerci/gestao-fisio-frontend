@@ -20,9 +20,9 @@ export class FinanceiroService {
   private readonly url = `${environment.apiUrl}/resumo-financeiro/`;
 
   buscarResumo(periodo: 'mes' | 'semana', data?: string) {
-    let params: any = { periodo };
+    let params: { [key: string]: string } = { periodo };
     if (data) {
-      params.data = data;
+      params['data'] = data;
     }
     return this.http.get<ResumoFinanceiro>(this.url, { params });
   }
