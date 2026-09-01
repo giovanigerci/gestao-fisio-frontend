@@ -1,7 +1,7 @@
 import { Component, inject, signal, effect } from '@angular/core';
 import { Router } from '@angular/router';
 import { PerfilService, Perfil } from '../../services/perfil.service';
-import { Auth } from '../../services/auth';
+import { AuthService } from '../../services/auth.service';
 import { TelefoneMaskDirective } from '../../shared/directives/telefone-mask.directive';
 
 @Component({
@@ -13,7 +13,7 @@ import { TelefoneMaskDirective } from '../../shared/directives/telefone-mask.dir
 export class PerfilPage {
   private router = inject(Router);
   readonly perfilService = inject(PerfilService);
-  private auth = inject(Auth);
+  private auth = inject(AuthService);
 
   // Form fields
   firstName = signal('');

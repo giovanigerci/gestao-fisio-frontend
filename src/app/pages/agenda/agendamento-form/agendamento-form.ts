@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AgendamentoService } from '../../../services/agendamento.service';
 import { PacienteService, Paciente } from '../../../services/paciente.service';
 import { ClinicaService, Clinica } from '../../../services/clinica.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-agendamento-form',
@@ -169,7 +170,7 @@ export class AgendamentoForm {
     }
   }
 
-  private tratarErro(err: any) {
+  private tratarErro(err: HttpErrorResponse) {
     if (err.error && typeof err.error === 'object') {
       const mensagens = Object.entries(err.error)
         .map(([campo, msgs]) => `${campo}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`)

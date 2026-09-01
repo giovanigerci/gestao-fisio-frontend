@@ -1,17 +1,17 @@
 import { Component, inject, signal, OnInit, ViewEncapsulation } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
-import { Auth } from '../../services/auth';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
-  imports: [FormsModule, RouterLink],
+  imports: [RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.css',
   encapsulation: ViewEncapsulation.None,
 })
 export class Login implements OnInit {
-  private authService = inject(Auth);
+  private authService = inject(AuthService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 

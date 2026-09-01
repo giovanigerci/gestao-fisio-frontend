@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
-import { Auth } from '../../services/auth';
+import { AuthService } from '../../services/auth.service';
 import { PerfilService } from '../../services/perfil.service';
 import { PacienteService } from '../../services/paciente.service';
 
@@ -11,7 +11,7 @@ import { PacienteService } from '../../services/paciente.service';
   styleUrl: './nav-bar.css',
 })
 export class NavBar {
-  private auth = inject(Auth);
+  private auth = inject(AuthService);
   private router = inject(Router);
   readonly perfilService = inject(PerfilService);
   private pacienteService = inject(PacienteService);

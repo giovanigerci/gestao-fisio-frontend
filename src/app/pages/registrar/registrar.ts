@@ -1,19 +1,19 @@
 import { Component, inject, signal, ViewEncapsulation } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Auth } from '../../services/auth';
+import { AuthService } from '../../services/auth.service';
 import { TelefoneMaskDirective } from '../../shared/directives/telefone-mask.directive';
 
 @Component({
   selector: 'app-registrar',
-  imports: [FormsModule, RouterLink, TelefoneMaskDirective],
+  imports: [RouterLink, TelefoneMaskDirective],
   templateUrl: './registrar.html',
   styleUrl: './registrar.css',
   encapsulation: ViewEncapsulation.None,
 })
 export class Registrar {
-  private authService = inject(Auth);
+  private authService = inject(AuthService);
   private router = inject(Router);
 
   username = signal('');

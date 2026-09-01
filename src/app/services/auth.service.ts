@@ -1,13 +1,23 @@
 import { Service, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import { Perfil } from './perfil.service';
+
+export interface LoginResponse {
+    detail?: string;
+}
+
+export interface RegistroResponse {
+    username: string;
+    email: string;
+}
 
 @Service()
-export class Auth {
+export class AuthService {
     private http = inject(HttpClient);
 
     login(username: string, password: string, manterConectado: boolean = false) {
-        return this.http.post(
+        return this.http.post<LoginResponse>(
             `${environment.apiUrl}/auth/token/`,
             { username, password, manter_conectado: manterConectado },
             { withCredentials: true }
@@ -15,7 +25,7 @@ export class Auth {
     }
 
     registrar(dados: { username: string; password: string; telefone: string; especialidade: string; crefito: string }) {
-        return this.http.post(
+        return this.http.post<RegistroResponse>(
             `${environment.apiUrl}/auth/registrar/`,
             dados,
             { withCredentials: true }
@@ -23,7 +33,7 @@ export class Auth {
     }
 
     logout() {
-        return this.http.post(
+        return this.http.post<{ detail?: string }>(
             `${environment.apiUrl}/auth/logout/`,
             {},
             { withCredentials: true }
@@ -31,7 +41,7 @@ export class Auth {
     }
 
     perfil() {
-        return this.http.get(
+        return this.http.get<Perfil>(
             `${environment.apiUrl}/auth/me/`,
             { withCredentials: true }
         );
