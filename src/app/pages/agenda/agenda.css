@@ -543,33 +543,8 @@
   }
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
+/* Animations fadeIn, fadeInUp, and spin are defined globally in styles.css */
 
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
 
 /* ─── Desktop: Modal centered (>= 1024px) ─── */
 @media (min-width: 1024px) {

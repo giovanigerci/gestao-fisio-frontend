@@ -87,3 +87,7 @@ body {
     box-shadow: 0 0 24px rgba(83, 131, 163, 0.4);
   }
 }
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
