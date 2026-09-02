@@ -12,7 +12,7 @@ import { TelefonePipe } from '../../shared/pipes/telefone.pipe';
   selector: 'app-pacientes',
   imports: [RouterLink, Card, EmptyState, Badge, ConfirmModal, TelefonePipe],
   templateUrl: './pacientes.html',
-  styleUrl: './pacientes.css',
+  styleUrls: ['../../../styles/list-page.css', './pacientes.css'],
 })
 export class Pacientes {
   private pacienteService = inject(PacienteService);

@@ -11,7 +11,7 @@ import { corDoPaciente } from '../../shared/utils/clinic-colors';
   selector: 'app-clinicas',
   imports: [RouterLink, Card, EmptyState, Badge, ConfirmModal],
   templateUrl: './clinicas.html',
-  styleUrl: './clinicas.css',
+  styleUrls: ['../../../styles/list-page.css', './clinicas.css'],
 })
 export class Clinicas {
   private clinicaService = inject(ClinicaService);

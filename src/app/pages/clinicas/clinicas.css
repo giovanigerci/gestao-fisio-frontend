@@ -1,5 +1,7 @@
 /* ═══════════════════════════════════════════════════════
-   Clínicas — Page Styles
+   Clínicas — Page-Specific Styles
+   Shared classes (header, search, states, avatar, table,
+   cards, responsive) come from list-page.css via styleUrls.
    ═══════════════════════════════════════════════════════ */
 
 /* ─── Page Layout ─── */
@@ -15,199 +17,7 @@
   }
 }
 
-/* ─── Header ─── */
-.page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
-}
-
-.header-left {
-  display: flex;
-  align-items: baseline;
-  gap: 0.75rem;
-}
-
-.page-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin: 0;
-}
-
-.page-counter {
-  font-size: 0.8125rem;
-  color: var(--color-text-muted);
-  font-weight: 400;
-}
-
-.btn-nova-clinica {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  background: var(--color-primary);
-  color: #fff;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  padding: 0.5rem 1rem;
-  border-radius: 0.625rem;
-  text-decoration: none;
-  transition: filter 0.15s, transform 0.1s;
-}
-
-.btn-nova-clinica:hover {
-  filter: brightness(1.12);
-  transform: translateY(-1px);
-}
-
-.btn-nova-clinica:active {
-  transform: scale(0.97);
-}
-
-.btn-icon {
-  width: 1rem;
-  height: 1rem;
-}
-
-/* ─── Search ─── */
-.search-container {
-  position: relative;
-  margin-bottom: 1.5rem;
-}
-
-.search-icon {
-  position: absolute;
-  left: 0.875rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 1.25rem;
-  height: 1.25rem;
-  color: var(--color-text-muted);
-  pointer-events: none;
-}
-
-.search-input {
-  width: 100%;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 0.75rem;
-  padding: 0.625rem 1rem 0.625rem 2.75rem;
-  color: var(--color-text-primary);
-  font-size: 0.875rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.search-input::placeholder {
-  color: var(--color-text-muted);
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 20%, transparent);
-}
-
-/* ─── States (loading / error) ─── */
-.state-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 5rem 0;
-}
-
-.spinner {
-  width: 2rem;
-  height: 2rem;
-  border: 2px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
-  border-top-color: var(--color-primary);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.state-text {
-  color: var(--color-text-muted);
-  font-size: 0.875rem;
-  margin-top: 1rem;
-}
-
-.error-container {
-  background: color-mix(in srgb, var(--color-danger) 8%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-danger) 20%, transparent);
-  border-radius: 0.75rem;
-  padding: 1rem;
-  margin-bottom: 1rem;
-}
-
-.error-text {
-  color: var(--color-danger);
-  font-size: 0.875rem;
-  margin: 0;
-}
-
-.error-retry {
-  background: none;
-  border: none;
-  color: var(--color-danger);
-  font-size: 0.8125rem;
-  margin-top: 0.5rem;
-  text-decoration: underline;
-  cursor: pointer;
-  padding: 0;
-  opacity: 0.85;
-  transition: opacity 0.15s;
-}
-
-.error-retry:hover {
-  opacity: 1;
-}
-
-/* ─── Shared: Avatar ─── */
-.avatar {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 0.8125rem;
-  flex-shrink: 0;
-  letter-spacing: 0.02em;
-}
-
-/* ─── Shared: Delete button ─── */
-.icon-delete {
-  width: 1.125rem;
-  height: 1.125rem;
-}
-
-/* ════════════════════════════════════════════════════════
-   DESKTOP TABLE (≥ 1024px)
-   ════════════════════════════════════════════════════════ */
-.table-wrapper {
-  border-radius: 0.75rem;
-  overflow: hidden;
-  border: 1px solid var(--color-border);
-  animation: fadeInUp 0.35s ease-out;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
+/* ─── Desktop Table (specific columns) ─── */
 .clinicas-table {
   width: 100%;
   border-collapse: collapse;
@@ -236,28 +46,6 @@
 
 .clinicas-table th.th-acoes {
   width: 3.5rem;
-}
-
-.table-row {
-  background: var(--color-bg);
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.table-row:hover {
-  background: var(--color-surface-hover);
-}
-
-.table-row td {
-  padding: 0.75rem 1rem;
-  font-size: 0.875rem;
-  color: var(--color-text-secondary);
-  border-bottom: 1px solid color-mix(in srgb, var(--color-border) 50%, transparent);
-  vertical-align: middle;
-}
-
-.table-row:last-child td {
-  border-bottom: none;
 }
 
 /* Cell: Clínica (avatar + nome + endereço) */
@@ -293,7 +81,7 @@
 
 /* Cell: Receita Total */
 .receita-total {
-  color: var(--color-money, #22c55e); /* fallback if not defined */
+  color: var(--color-money, #34d399);
   font-weight: 500;
 }
 
@@ -304,66 +92,7 @@
   color: var(--color-text-primary);
 }
 
-/* Cell: Delete */
-.btn-delete {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: 0.5rem;
-  border: none;
-  background: transparent;
-  color: var(--color-text-muted);
-  cursor: pointer;
-  transition: color 0.15s, background 0.15s;
-}
-
-.btn-delete:hover {
-  color: var(--color-danger);
-  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
-}
-
-/* ════════════════════════════════════════════════════════
-   MOBILE CARDS (< 1024px)
-   ════════════════════════════════════════════════════════ */
-.cards-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.card-content {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  cursor: pointer;
-}
-
-.card-content:active {
-  transform: scale(0.98);
-}
-
-.card-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.card-top-row {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.card-nome {
-  color: var(--color-text-primary);
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin: 0;
-}
-
+/* ─── Mobile Card (specific fields) ─── */
 .card-endereco {
   color: var(--color-text-muted);
   font-size: 0.75rem;
@@ -393,50 +122,6 @@
 }
 
 .card-receita {
-  color: var(--color-money, #22c55e);
+  color: var(--color-money, #34d399);
   font-weight: 500;
-}
-
-.btn-delete-card {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: 0.5rem;
-  border: none;
-  background: transparent;
-  color: var(--color-text-muted);
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: color 0.15s, background 0.15s;
-}
-
-.btn-delete-card:hover {
-  color: var(--color-danger);
-  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
-}
-
-/* ════════════════════════════════════════════════════════
-   RESPONSIVE BREAKPOINT
-   ════════════════════════════════════════════════════════ */
-
-/* Desktop only — hidden on mobile */
-.desktop-only {
-  display: none;
-}
-
-@media (min-width: 1024px) {
-  .desktop-only {
-    display: flex;
-  }
-
-  /* table-wrapper should be block, not flex */
-  .table-wrapper.desktop-only {
-    display: block;
-  }
-
-  .mobile-only {
-    display: none !important;
-  }
 }
