@@ -1,87 +1,80 @@
-<div class="min-h-screen px-4 pt-6 pb-8">
+<div class="form-page">
   <!-- Header -->
-  <div class="flex items-center gap-3 mb-8">
-    <button (click)="cancelar()" aria-label="Voltar"
-      class="w-10 h-10 rounded-lg flex items-center justify-center text-[var(--color-text-secondary)]
-                   hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer">
+  <div class="form-header">
+    <button (click)="cancelar()" aria-label="Voltar" class="form-back-btn">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-        class="w-5 h-5">
+        class="form-back-icon">
         <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
       </svg>
     </button>
-    <h1 class="text-xl font-semibold text-[var(--color-text-primary)]">
+    <h1 class="form-title">
       {{ modoEdicao() ? 'Editar Clínica' : 'Nova Clínica' }}
     </h1>
   </div>
 
   <!-- Loading -->
   @if (carregando()) {
-  <div class="flex items-center justify-center py-20">
-    <div class="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+  <div class="form-loading">
+    <div class="form-spinner"></div>
   </div>
   }
 
   <!-- Form -->
   @if (!carregando()) {
-  <form (submit)="$event.preventDefault(); salvar()" class="flex flex-col gap-5 max-w-lg lg:mx-auto">
+  <form (submit)="$event.preventDefault(); salvar()" class="form-container">
 
     <!-- Error -->
     @if (erro()) {
-    <div class="bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/20 rounded-xl p-4 animate-in">
-      <p class="text-[var(--color-danger)] text-sm">{{ erro() }}</p>
+    <div class="form-alert form-alert--error">
+      <p>{{ erro() }}</p>
     </div>
     }
 
     <!-- Nome -->
     <div>
-      <label class="block text-sm text-[var(--color-text-primary)] mb-1.5">Nome <span
-          class="text-[var(--color-danger)]">*</span></label>
+      <label class="form-label">Nome <span class="form-required">*</span></label>
       <input [value]="nome()" (input)="nome.set($any($event.target).value)" class="input-field"
         placeholder="Nome da clínica" />
     </div>
 
     <!-- Endereço -->
     <div>
-      <label class="block text-sm text-[var(--color-text-primary)] mb-1.5">Endereço <span
-          class="text-[var(--color-danger)]">*</span></label>
+      <label class="form-label">Endereço <span class="form-required">*</span></label>
       <input [value]="endereco()" (input)="endereco.set($any($event.target).value)" class="input-field"
         placeholder="Rua, número, bairro, cidade..." />
     </div>
 
     <!-- Telefone -->
     <div>
-      <label class="block text-sm text-[var(--color-text-primary)] mb-1.5">Telefone</label>
+      <label class="form-label">Telefone</label>
       <input type="tel" [appTelefoneMask]="telefone()" (valorLimpo)="telefone.set($event)" class="input-field"
         placeholder="(00) 00000-0000" />
     </div>
 
     <!-- Valor por atendimento -->
     <div>
-      <label class="block text-sm text-[var(--color-text-primary)] mb-1.5">Valor por atendimento <span
-          class="text-[var(--color-danger)]">*</span></label>
+      <label class="form-label">Valor por atendimento <span class="form-required">*</span></label>
       <input type="text" inputmode="decimal" [value]="valorPorAtendimento()"
         (input)="valorPorAtendimento.set($any($event.target).value)" class="input-field" placeholder="40.00" />
     </div>
 
     <!-- Ativo -->
-    <div class="flex items-center justify-between">
-      <label class="text-sm text-[var(--color-text-primary)]">Clínica ativa</label>
+    <div class="form-toggle-row">
+      <label class="form-label" style="margin-bottom: 0">Clínica ativa</label>
       <button type="button" (click)="toggleAtivo()" class="toggle-track cursor-pointer" [class.active]="ativo()">
         <div class="toggle-thumb"></div>
       </button>
     </div>
 
     <!-- Actions -->
-    <div class="flex gap-3 pt-2">
-      <button type="button" (click)="cancelar()" class="flex-1 rounded-xl border border-[var(--color-border)] py-2.5 text-[var(--color-text-primary)] font-medium text-sm
-                 hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer">
+    <div class="form-actions">
+      <button type="button" (click)="cancelar()" class="form-btn form-btn--cancel">
         Cancelar
       </button>
-      <button type="submit" [disabled]="salvando()" class="flex-1 rounded-xl bg-primary py-2.5 text-white font-medium text-sm
-                 hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
+      <button type="submit" [disabled]="salvando()" class="form-btn form-btn--submit">
         @if (salvando()) {
-        <span class="flex items-center justify-center gap-2">
-          <span class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block"></span>
+        <span class="form-btn-loading">
+          <span class="form-btn-spinner"></span>
           Salvando...
         </span>
         } @else {

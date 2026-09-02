@@ -1,44 +1,42 @@
-<div class="min-h-screen px-4 pt-6 pb-8">
+<div class="form-page">
   <!-- Header -->
-  <div class="flex items-center gap-3 mb-8">
-    <button (click)="cancelar()" aria-label="Voltar"
-      class="w-10 h-10 rounded-lg flex items-center justify-center text-[var(--color-text-secondary)]
-                   hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer">
+  <div class="form-header">
+    <button (click)="cancelar()" aria-label="Voltar" class="form-back-btn">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-        class="w-5 h-5">
+        class="form-back-icon">
         <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
       </svg>
     </button>
-    <h1 class="text-xl font-semibold text-[var(--color-text-primary)]">
+    <h1 class="form-title">
       {{ modoEdicao() ? 'Editar Agendamento' : 'Novo Agendamento' }}
     </h1>
   </div>
 
   <!-- Loading -->
   @if (carregando() || carregandoDropdowns()) {
-  <div class="flex items-center justify-center py-20">
-    <div class="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin"></div>
+  <div class="form-loading">
+    <div class="form-spinner"></div>
   </div>
   }
 
   <!-- Resultado parcial (conflitos de recorrência) -->
   @if (conflitos().length > 0) {
-  <div class="max-w-lg lg:mx-auto flex flex-col gap-4">
-    <div class="rounded-xl border border-[var(--color-warning,#f59e0b)]/30 bg-[var(--color-warning,#f59e0b)]/10 p-4 animate-in">
-      <div class="flex items-start gap-3">
+  <div class="form-warning-card">
+    <div class="form-alert form-alert--warning" style="margin-bottom: 1rem;">
+      <div class="form-warning-content">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-          stroke="var(--color-warning,#f59e0b)" class="w-5 h-5 mt-0.5 shrink-0">
+          stroke="var(--color-warning,#f59e0b)" class="form-warning-icon">
           <path stroke-linecap="round" stroke-linejoin="round"
             d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
         </svg>
-        <div class="flex-1">
-          <p class="text-sm font-medium text-[var(--color-text-primary)] mb-1">
+        <div class="form-warning-body">
+          <p class="form-warning-title">
             {{ totalCriados() }} agendamento{{ totalCriados() > 1 ? 's criados' : ' criado' }} com sucesso
           </p>
-          <p class="text-sm text-[var(--color-text-secondary)] mb-2">
+          <p class="form-warning-text">
             {{ conflitos().length }} data{{ conflitos().length > 1 ? 's foram puladas' : ' foi pulada' }} por já possuir agendamento nesse horário:
           </p>
-          <ul class="list-disc list-inside text-sm text-[var(--color-text-secondary)]">
+          <ul class="form-warning-list">
             @for (data of conflitos(); track data) {
             <li>{{ data }}</li>
             }
@@ -46,9 +44,7 @@
         </div>
       </div>
     </div>
-    <button type="button" (click)="cancelar()"
-      class="w-full rounded-xl bg-primary py-2.5 text-white font-medium text-sm
-             hover:brightness-110 transition-all cursor-pointer">
+    <button type="button" (click)="cancelar()" class="form-btn form-btn--submit" style="width: 100%;">
       Ir para a Agenda
     </button>
   </div>
@@ -56,19 +52,18 @@
 
   <!-- Form -->
   @if (!carregando() && !carregandoDropdowns() && conflitos().length === 0) {
-  <form (submit)="$event.preventDefault(); salvar()" class="flex flex-col gap-5 max-w-lg lg:mx-auto">
+  <form (submit)="$event.preventDefault(); salvar()" class="form-container">
 
     <!-- Error -->
     @if (erro()) {
-    <div class="bg-[var(--color-danger)]/10 border border-[var(--color-danger)]/20 rounded-xl p-4 animate-in">
-      <p class="text-[var(--color-danger)] text-sm">{{ erro() }}</p>
+    <div class="form-alert form-alert--error">
+      <p>{{ erro() }}</p>
     </div>
     }
 
     <!-- Paciente (dropdown) -->
     <div>
-      <label class="block text-sm text-[var(--color-text-primary)] mb-1.5">Paciente <span
-          class="text-[var(--color-danger)]">*</span></label>
+      <label class="form-label">Paciente <span class="form-required">*</span></label>
       <select (change)="paciente.set(+$any($event.target).value || null)"
         class="input-field">
         <option value="" disabled [selected]="!paciente()">Selecione o paciente</option>
@@ -80,8 +75,7 @@
 
     <!-- Clínica (dropdown) -->
     <div>
-      <label class="block text-sm text-[var(--color-text-primary)] mb-1.5">Clínica <span
-          class="text-[var(--color-danger)]">*</span></label>
+      <label class="form-label">Clínica <span class="form-required">*</span></label>
       <select (change)="clinica.set(+$any($event.target).value || null)" class="input-field">
         <option value="" disabled [selected]="!clinica()">Selecione a clínica</option>
         @for (c of clinicas(); track c.id) {
@@ -92,28 +86,25 @@
 
     <!-- Data -->
     <div>
-      <label class="block text-sm text-[var(--color-text-primary)] mb-1.5">Data <span
-          class="text-[var(--color-danger)]">*</span></label>
+      <label class="form-label">Data <span class="form-required">*</span></label>
       <input type="date" [value]="data()" (input)="data.set($any($event.target).value)" class="input-field" />
     </div>
 
     <!-- Horários -->
-    <div class="grid grid-cols-2 gap-4">
+    <div class="form-row">
       <div>
-        <label class="block text-sm text-[var(--color-text-primary)] mb-1.5">Hora início <span
-            class="text-[var(--color-danger)]">*</span></label>
+        <label class="form-label">Hora início <span class="form-required">*</span></label>
         <input type="time" [value]="horaInicio()" (input)="onHoraInicioChange($any($event.target).value)"
           class="input-field" />
       </div>
       <div>
-        <label class="block text-sm text-[var(--color-text-primary)] mb-1.5">Hora fim <span
-            class="text-[var(--color-danger)]">*</span></label>
+        <label class="form-label">Hora fim <span class="form-required">*</span></label>
         <input type="time" [value]="horaFim()" (input)="horaFim.set($any($event.target).value)" class="input-field" />
       </div>
     </div>
 
     <!-- Checkboxes -->
-    <div class="flex flex-col gap-3 pt-1">
+    <div style="display: flex; flex-direction: column; gap: 0.75rem; padding-top: 0.25rem;">
       <label class="checkbox-field">
         <input type="checkbox" [checked]="ehExperimental()" (change)="ehExperimental.set($any($event.target).checked)"
           class="checkbox-input" />
@@ -138,25 +129,22 @@
     <!-- Repetições (visível apenas quando repetir semanal está marcado) -->
     @if (repetirSemanal() && !modoEdicao()) {
     <div>
-      <label class="block text-sm text-[var(--color-text-primary)] mb-1.5">Quantas vezes <span
-          class="text-[var(--color-danger)]">*</span></label>
+      <label class="form-label">Quantas vezes <span class="form-required">*</span></label>
       <input type="number" [value]="repeticoes()" (input)="repeticoes.set(+$any($event.target).value)"
         min="1" max="12" class="input-field" placeholder="Ex: 4" />
-      <span class="block text-xs text-[var(--color-text-secondary)] mt-1">De 1 a 12 semanas</span>
+      <span class="form-hint">De 1 a 12 semanas</span>
     </div>
     }
 
     <!-- Actions -->
-    <div class="flex gap-3 pt-2">
-      <button type="button" (click)="cancelar()" class="flex-1 rounded-xl border border-[var(--color-border)] py-2.5 text-[var(--color-text-primary)] font-medium text-sm
-                 hover:bg-[var(--color-surface-hover)] transition-colors cursor-pointer">
+    <div class="form-actions">
+      <button type="button" (click)="cancelar()" class="form-btn form-btn--cancel">
         Cancelar
       </button>
-      <button type="submit" [disabled]="salvando()" class="flex-1 rounded-xl bg-primary py-2.5 text-white font-medium text-sm
-                 hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
+      <button type="submit" [disabled]="salvando()" class="form-btn form-btn--submit">
         @if (salvando()) {
-        <span class="flex items-center justify-center gap-2">
-          <span class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin inline-block"></span>
+        <span class="form-btn-loading">
+          <span class="form-btn-spinner"></span>
           Salvando...
         </span>
         } @else {

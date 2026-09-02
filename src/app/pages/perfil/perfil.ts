@@ -8,7 +8,7 @@ import { TelefoneMaskDirective } from '../../shared/directives/telefone-mask.dir
   selector: 'app-perfil',
   imports: [TelefoneMaskDirective],
   templateUrl: './perfil.html',
-  styleUrl: './perfil.css',
+  styleUrls: ['../../../styles/form-page.css', './perfil.css'],
 })
 export class PerfilPage {
   private router = inject(Router);

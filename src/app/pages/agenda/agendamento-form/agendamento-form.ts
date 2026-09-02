@@ -9,7 +9,7 @@ import { HttpErrorResponse } from '@angular/common/http';
   selector: 'app-agendamento-form',
   imports: [],
   templateUrl: './agendamento-form.html',
-  styleUrl: './agendamento-form.css',
+  styleUrls: ['../../../../styles/form-page.css', './agendamento-form.css'],
 })
 export class AgendamentoForm {
   private route = inject(ActivatedRoute);

@@ -1,0 +1,314 @@
+/* ═══════════════════════════════════════════════════════
+   Form Page — Shared Styles
+   Estrutura comum dos formulários:
+   PacienteForm, ClinicaForm, AgendamentoForm, Perfil
+   ═══════════════════════════════════════════════════════ */
+
+/* ─── Page Wrapper ─── */
+.form-page {
+  min-height: 100vh;
+  padding: 1.5rem 1rem 2rem;
+}
+
+/* ─── Header (back button + title) ─── */
+.form-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.form-back-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+
+.form-back-btn:hover {
+  color: var(--color-text-primary);
+  background: var(--color-surface-hover);
+}
+
+.form-back-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.form-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+/* ─── Loading State ─── */
+.form-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5rem 0;
+}
+
+.form-spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+/* ─── Form Container ─── */
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 32rem;
+}
+
+@media (min-width: 1024px) {
+  .form-container {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* ─── Labels ─── */
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+  margin-bottom: 0.375rem;
+}
+
+.form-required {
+  color: var(--color-danger);
+}
+
+/* ─── Alert boxes (error, success, warning) ─── */
+.form-alert {
+  border-radius: 0.75rem;
+  padding: 1rem;
+  font-size: 0.875rem;
+  animation: fadeSlideIn 0.25s ease-out;
+}
+
+.form-alert--error {
+  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-danger) 20%, transparent);
+  color: var(--color-danger);
+}
+
+.form-alert--success {
+  background: color-mix(in srgb, var(--color-money) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-money) 20%, transparent);
+  color: var(--color-money);
+}
+
+.form-alert--warning {
+  background: color-mix(in srgb, var(--color-warning) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-warning) 30%, transparent);
+}
+
+/* ─── Field-level error text ─── */
+.form-field-error {
+  font-size: 0.75rem;
+  margin-top: 0.375rem;
+  color: var(--color-danger);
+  animation: fadeSlideIn 0.25s ease-out;
+}
+
+/* ─── Hint / helper text ─── */
+.form-hint {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  margin-top: 0.25rem;
+}
+
+/* ─── Row layout (e.g. horários side by side) ─── */
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+/* ─── Actions (Cancel + Submit) ─── */
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+
+.form-btn {
+  flex: 1;
+  border-radius: 0.75rem;
+  padding: 0.625rem 1rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.form-btn--cancel {
+  border: 1px solid var(--color-border);
+  background: none;
+  color: var(--color-text-primary);
+}
+
+.form-btn--cancel:hover {
+  background: var(--color-surface-hover);
+}
+
+.form-btn--submit {
+  border: none;
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+.form-btn--submit:hover {
+  filter: brightness(1.1);
+}
+
+.form-btn--submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.form-btn--danger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--color-danger) 30%, transparent);
+  background: none;
+  padding: 0.625rem 1rem;
+  color: var(--color-danger);
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.form-btn--danger:hover {
+  background: color-mix(in srgb, var(--color-danger) 8%, transparent);
+}
+
+.form-btn-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* ─── Submit spinner ─── */
+.form-btn-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.form-btn-spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  display: inline-block;
+}
+
+/* ─── Divider ─── */
+.form-divider {
+  border-top: 1px solid var(--color-border);
+  margin-top: 1rem;
+  padding-top: 1.25rem;
+}
+
+/* ─── Avatar area (used by Perfil) ─── */
+.form-avatar-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ─── Action link (small clickable text) ─── */
+.form-action-link {
+  font-size: 0.75rem;
+  color: var(--color-danger);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.form-action-link:hover {
+  text-decoration: underline;
+}
+
+/* ─── Warning card (conflicts, etc.) ─── */
+.form-warning-card {
+  max-width: 32rem;
+}
+
+@media (min-width: 1024px) {
+  .form-warning-card {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.form-warning-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.form-warning-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.125rem;
+  flex-shrink: 0;
+}
+
+.form-warning-body {
+  flex: 1;
+}
+
+.form-warning-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.form-warning-text {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.form-warning-list {
+  list-style: disc;
+  list-style-position: inside;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+/* ─── Toggle row (label + toggle) ─── */
+.form-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

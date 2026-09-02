@@ -7,7 +7,7 @@ import { TelefoneMaskDirective } from '../../../shared/directives/telefone-mask.
   selector: 'app-paciente-form',
   imports: [TelefoneMaskDirective],
   templateUrl: './paciente-form.html',
-  styleUrl: './paciente-form.css',
+  styleUrls: ['../../../../styles/form-page.css', './paciente-form.css'],
 })
 export class PacienteForm {
   private route = inject(ActivatedRoute);
