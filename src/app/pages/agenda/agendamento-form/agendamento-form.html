@@ -55,9 +55,9 @@
   <form (submit)="$event.preventDefault(); salvar()" class="form-container">
 
     <!-- Error -->
-    @if (erro()) {
+    @if (erroGeral()) {
     <div class="form-alert form-alert--error">
-      <p>{{ erro() }}</p>
+      <p>{{ erroGeral() }}</p>
     </div>
     }
 
@@ -65,29 +65,38 @@
     <div>
       <label class="form-label">Paciente <span class="form-required">*</span></label>
       <select (change)="paciente.set(+$any($event.target).value || null)"
-        class="input-field">
+        class="input-field" [class.input-field--error]="temErro('paciente')">
         <option value="" disabled [selected]="!paciente()">Selecione o paciente</option>
         @for (p of pacientes(); track p.id) {
         <option [value]="p.id" [selected]="p.id === paciente()">{{ p.nome }}</option>
         }
       </select>
+      @if (temErro('paciente')) {
+        <p class="form-field-error">{{ mensagensErro('paciente').join(' ') }}</p>
+      }
     </div>
 
     <!-- Clínica (dropdown) -->
     <div>
       <label class="form-label">Clínica <span class="form-required">*</span></label>
-      <select (change)="clinica.set(+$any($event.target).value || null)" class="input-field">
+      <select (change)="clinica.set(+$any($event.target).value || null)" class="input-field" [class.input-field--error]="temErro('clinica')">
         <option value="" disabled [selected]="!clinica()">Selecione a clínica</option>
         @for (c of clinicas(); track c.id) {
         <option [value]="c.id" [selected]="c.id === clinica()">{{ c.nome }}</option>
         }
       </select>
+      @if (temErro('clinica')) {
+        <p class="form-field-error">{{ mensagensErro('clinica').join(' ') }}</p>
+      }
     </div>
 
     <!-- Data -->
     <div>
       <label class="form-label">Data <span class="form-required">*</span></label>
-      <input type="date" [value]="data()" (input)="data.set($any($event.target).value)" class="input-field" />
+      <input type="date" [value]="data()" (input)="data.set($any($event.target).value)" class="input-field" [class.input-field--error]="temErro('data')" />
+      @if (temErro('data')) {
+        <p class="form-field-error">{{ mensagensErro('data').join(' ') }}</p>
+      }
     </div>
 
     <!-- Horários -->
@@ -95,11 +104,17 @@
       <div>
         <label class="form-label">Hora início <span class="form-required">*</span></label>
         <input type="time" [value]="horaInicio()" (input)="onHoraInicioChange($any($event.target).value)"
-          class="input-field" />
+          class="input-field" [class.input-field--error]="temErro('hora_inicio')" />
+        @if (temErro('hora_inicio')) {
+          <p class="form-field-error">{{ mensagensErro('hora_inicio').join(' ') }}</p>
+        }
       </div>
       <div>
         <label class="form-label">Hora fim <span class="form-required">*</span></label>
-        <input type="time" [value]="horaFim()" (input)="horaFim.set($any($event.target).value)" class="input-field" />
+        <input type="time" [value]="horaFim()" (input)="horaFim.set($any($event.target).value)" class="input-field" [class.input-field--error]="temErro('hora_fim')" />
+        @if (temErro('hora_fim')) {
+          <p class="form-field-error">{{ mensagensErro('hora_fim').join(' ') }}</p>
+        }
       </div>
     </div>
 
@@ -131,8 +146,12 @@
     <div>
       <label class="form-label">Quantas vezes <span class="form-required">*</span></label>
       <input type="number" [value]="repeticoes()" (input)="repeticoes.set(+$any($event.target).value)"
-        min="1" max="12" class="input-field" placeholder="Ex: 4" />
-      <span class="form-hint">De 1 a 12 semanas</span>
+        min="1" max="12" class="input-field" [class.input-field--error]="temErro('repeticoes')" placeholder="Ex: 4" />
+      @if (temErro('repeticoes')) {
+        <p class="form-field-error">{{ mensagensErro('repeticoes').join(' ') }}</p>
+      } @else {
+        <span class="form-hint">De 1 a 12 semanas</span>
+      }
     </div>
     }
 

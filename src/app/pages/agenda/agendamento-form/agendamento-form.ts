@@ -4,6 +4,7 @@ import { AgendamentoService } from '../../../services/agendamento.service';
 import { PacienteService, Paciente } from '../../../services/paciente.service';
 import { ClinicaService, Clinica } from '../../../services/clinica.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { tratarErrosApi, temErro, mensagensErro } from '../../../shared/utils/form-errors';
 
 @Component({
   selector: 'app-agendamento-form',
@@ -22,7 +23,8 @@ export class AgendamentoForm {
   agendamentoId = signal<number | null>(null);
   carregando = signal(false);
   salvando = signal(false);
-  erro = signal('');
+  erroGeral = signal('');
+  erros = signal<Record<string, string[]>>({});
 
   // Dropdown data
   pacientes = signal<{ id: number, nome: string }[]>([]);
@@ -74,7 +76,7 @@ export class AgendamentoForm {
         verificarCompleto();
       },
       error: () => {
-        this.erro.set('Erro ao carregar lista de pacientes.');
+        this.erroGeral.set('Erro ao carregar lista de pacientes.');
         verificarCompleto();
       },
     });
@@ -85,7 +87,7 @@ export class AgendamentoForm {
         verificarCompleto();
       },
       error: () => {
-        this.erro.set('Erro ao carregar lista de clínicas.');
+        this.erroGeral.set('Erro ao carregar lista de clínicas.');
         verificarCompleto();
       },
     });
@@ -104,28 +106,30 @@ export class AgendamentoForm {
         this.carregando.set(false);
       },
       error: () => {
-        this.erro.set('Erro ao carregar dados do agendamento.');
+        this.erroGeral.set('Erro ao carregar dados do agendamento.');
         this.carregando.set(false);
       },
     });
   }
 
   salvar() {
+    this.erros.set({});
+    this.erroGeral.set('');
+
     if (!this.paciente() || !this.clinica() || !this.data() || !this.horaInicio() || !this.horaFim()) {
-      this.erro.set('Preencha todos os campos obrigatórios (*).');
+      this.erroGeral.set('Preencha todos os campos obrigatórios (*).');
       return;
     }
 
     if (this.repetirSemanal() && !this.modoEdicao()) {
       const rep = this.repeticoes();
       if (!rep || rep < 1 || rep > 12) {
-        this.erro.set('Informe a quantidade de repetições (entre 1 e 12).');
+        this.erroGeral.set('Informe a quantidade de repetições (entre 1 e 12).');
         return;
       }
     }
 
     this.salvando.set(true);
-    this.erro.set('');
     this.conflitos.set([]);
 
     const dados = {
@@ -171,14 +175,15 @@ export class AgendamentoForm {
   }
 
   private tratarErro(err: HttpErrorResponse) {
-    if (err.error && typeof err.error === 'object') {
-      const mensagens = Object.entries(err.error)
-        .map(([campo, msgs]) => `${campo}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`)
-        .join(' | ');
-      this.erro.set(mensagens || 'Erro ao salvar agendamento.');
-    } else {
-      this.erro.set('Erro ao salvar agendamento. Tente novamente.');
-    }
+    tratarErrosApi(err, this.erros, this.erroGeral, 'Erro ao salvar agendamento.');
+  }
+
+  temErro(campo: string): boolean {
+    return temErro(this.erros(), campo);
+  }
+
+  mensagensErro(campo: string): string[] {
+    return mensagensErro(this.erros(), campo);
   }
 
   private formatarData(dataISO: string): string {
