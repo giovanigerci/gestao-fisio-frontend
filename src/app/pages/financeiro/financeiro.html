@@ -1,18 +1,19 @@
 <div class="fin-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-left">
+      <h1 class="page-title">Financeiro</h1>
+    </div>
+  </div>
 
   <!-- Controls -->
   <div class="fin-controls">
     <!-- Period Toggle -->
     <div class="fin-toggle-wrapper">
-      <button
-        (click)="trocarPeriodo('mes')"
-        [class.fin-toggle--active]="periodo() === 'mes'"
-        class="fin-toggle-btn">
+      <button (click)="trocarPeriodo('mes')" [class.fin-toggle--active]="periodo() === 'mes'" class="fin-toggle-btn">
         Mês
       </button>
-      <button
-        (click)="trocarPeriodo('semana')"
-        [class.fin-toggle--active]="periodo() === 'semana'"
+      <button (click)="trocarPeriodo('semana')" [class.fin-toggle--active]="periodo() === 'semana'"
         class="fin-toggle-btn">
         Semana
       </button>
@@ -21,13 +22,15 @@
     <!-- Date Navigator -->
     <div class="fin-date-nav">
       <button class="fin-nav-btn" (click)="periodoAnterior()" aria-label="Período anterior">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="fin-nav-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="fin-nav-icon">
           <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
         </svg>
       </button>
       <span class="fin-date-label">{{ periodoLabel() }}</span>
       <button class="fin-nav-btn" (click)="proximoPeriodo()" aria-label="Próximo período">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="fin-nav-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          class="fin-nav-icon">
           <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
         </svg>
       </button>
@@ -36,104 +39,106 @@
 
   <!-- Error -->
   @if (erro() && !carregando()) {
-    <div class="error-container">
-      <p class="error-text">{{ erro() }}</p>
-      <button (click)="carregarResumo(periodo(), dataReferencia())" class="error-retry">
-        Tentar novamente
-      </button>
-    </div>
+  <div class="error-container">
+    <p class="error-text">{{ erro() }}</p>
+    <button (click)="carregarResumo(periodo(), dataReferencia())" class="error-retry">
+      Tentar novamente
+    </button>
+  </div>
   }
 
   <!-- Loading -->
   @if (carregando()) {
-    <div class="state-container">
-      <div class="spinner"></div>
-      <p class="state-text">Carregando resumo financeiro...</p>
-    </div>
+  <div class="state-container">
+    <div class="spinner"></div>
+    <p class="state-text">Carregando resumo financeiro...</p>
+  </div>
   }
 
   <!-- Content -->
   @if (!carregando() && !erro()) {
 
-    <!-- Total Geral Card -->
-    <div class="fin-total-card">
-      <div class="fin-total-label">Receita do período</div>
-      <div class="fin-total-valor">{{ formatarValor(totalGeral()) }}</div>
-      
-      <div class="fin-total-divider"></div>
-      
-      <div class="fin-total-stats">
-        <div class="fin-stat-col">
-          <span class="fin-stat-label">Atendimentos</span>
-          <span class="fin-stat-value">{{ totalAtendimentos() }}</span>
-        </div>
-        <div class="fin-stat-col">
-          <span class="fin-stat-label">Clínicas</span>
-          <span class="fin-stat-value">{{ totalClinicas() }}</span>
-        </div>
-        <div class="fin-stat-col">
-          <span class="fin-stat-label">Ticket Médio</span>
-          <span class="fin-stat-value">{{ formatarValor(ticketMedio()) }}</span>
-        </div>
+  <!-- Total Geral Card -->
+  <div class="fin-total-card">
+    <div class="fin-total-label">Receita do período</div>
+    <div class="fin-total-valor">{{ formatarValor(totalGeral()) }}</div>
+
+    <div class="fin-total-divider"></div>
+
+    <div class="fin-total-stats">
+      <div class="fin-stat-col">
+        <span class="fin-stat-label">Atendimentos</span>
+        <span class="fin-stat-value">{{ totalAtendimentos() }}</span>
+      </div>
+      <div class="fin-stat-col">
+        <span class="fin-stat-label">Clínicas</span>
+        <span class="fin-stat-value">{{ totalClinicas() }}</span>
+      </div>
+      <div class="fin-stat-col">
+        <span class="fin-stat-label">Ticket Médio</span>
+        <span class="fin-stat-value">{{ formatarValor(ticketMedio()) }}</span>
       </div>
     </div>
+  </div>
 
-    <!-- Empty State -->
-    @if (porClinica().length === 0) {
-      <app-empty-state
-        title="Nenhuma receita encontrada"
-        [subtitle]="'Não há atendimentos realizados ' + getPeriodoLabel()">
-        <svg icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
-        </svg>
-      </app-empty-state>
-    }
+  <!-- Empty State -->
+  @if (porClinica().length === 0) {
+  <app-empty-state title="Nenhuma receita encontrada"
+    [subtitle]="'Não há atendimentos realizados ' + getPeriodoLabel()">
+    <svg icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+      stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round"
+        d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+    </svg>
+  </app-empty-state>
+  }
 
-    <!-- Progress Bar & Clinic Cards -->
-    @if (porClinica().length > 0) {
-      <div class="fin-distribution">
-        <h2 class="fin-section-title">Distribuição por Clínica</h2>
-        <app-progress-bar [segments]="progressSegments()" [height]="12" />
-        
-        <div class="fin-legend">
-          @for (item of porClinica(); track item.clinica) {
-            <div class="fin-legend-item">
-              <span class="fin-legend-dot" [style.background-color]="corDaClinica(item.clinica)"></span>
-              <span class="fin-legend-label">{{ item.clinica__nome }}</span>
-            </div>
-          }
+  <!-- Progress Bar & Clinic Cards -->
+  @if (porClinica().length > 0) {
+  <div class="fin-distribution">
+    <h2 class="fin-section-title">Distribuição por Clínica</h2>
+    <app-progress-bar [segments]="progressSegments()" [height]="12" />
+
+    <div class="fin-legend">
+      @for (item of porClinica(); track item.clinica) {
+      <div class="fin-legend-item">
+        <span class="fin-legend-dot" [style.background-color]="corDaClinica(item.clinica)"></span>
+        <span class="fin-legend-label">{{ item.clinica__nome }}</span>
+      </div>
+      }
+    </div>
+  </div>
+
+  <div class="fin-cards">
+    @for (item of porClinica(); track item.clinica) {
+    <div class="fin-clinic-card">
+      <div class="fin-clinic-card-header">
+        <div class="fin-clinic-info">
+          <span class="fin-legend-dot" [style.background-color]="corDaClinica(item.clinica)"></span>
+          <span class="fin-clinic-name">{{ item.clinica__nome }}</span>
+        </div>
+        <div class="fin-clinic-money">
+          {{ formatarValor(item.receita_total) }}
         </div>
       </div>
 
-      <div class="fin-cards">
-        @for (item of porClinica(); track item.clinica) {
-          <div class="fin-clinic-card">
-            <div class="fin-clinic-card-header">
-              <div class="fin-clinic-info">
-                <span class="fin-legend-dot" [style.background-color]="corDaClinica(item.clinica)"></span>
-                <span class="fin-clinic-name">{{ item.clinica__nome }}</span>
-              </div>
-              <div class="fin-clinic-money">
-                {{ formatarValor(item.receita_total) }}
-              </div>
-            </div>
-            
-            <div class="fin-clinic-card-sub">
-              <div class="fin-clinic-atendimentos">
-                {{ item.total_atendimentos }} atendimentos
-              </div>
-              <div class="fin-clinic-pct">
-                {{ porcentagem(item.receita_total) }} do total
-              </div>
-            </div>
-            
-            <div class="fin-clinic-bar-bg">
-              <div class="fin-clinic-bar-fill" [style.width]="porcentagem(item.receita_total)" [style.background-color]="corDaClinica(item.clinica)"></div>
-            </div>
-          </div>
-        }
+      <div class="fin-clinic-card-sub">
+        <div class="fin-clinic-atendimentos">
+          {{ item.total_atendimentos }} atendimentos
+        </div>
+        <div class="fin-clinic-pct">
+          {{ porcentagem(item.receita_total) }} do total
+        </div>
       </div>
+
+      <div class="fin-clinic-bar-bg">
+        <div class="fin-clinic-bar-fill" [style.width]="porcentagem(item.receita_total)"
+          [style.background-color]="corDaClinica(item.clinica)"></div>
+      </div>
+    </div>
     }
+  </div>
+  }
   }
 
 </div>

@@ -1,3 +1,16 @@
+/* ─── Page Layout ─── */
+.fin-page {
+  min-height: 100vh;
+  background: var(--color-bg);
+  padding: 1.5rem 1rem 1rem;
+}
+
+@media (min-width: 1024px) {
+  .fin-page {
+    padding: 2rem 2.5rem 2rem;
+  }
+}
+
 /* ─── Controls ─── */
 .fin-controls {
   display: flex;

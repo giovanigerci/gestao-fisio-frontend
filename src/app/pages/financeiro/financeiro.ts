@@ -8,7 +8,7 @@ import { corDaClinica } from '../../shared/utils/clinic-colors';
   selector: 'app-financeiro',
   imports: [EmptyState, ProgressBar],
   templateUrl: './financeiro.html',
-  styleUrl: './financeiro.css',
+  styleUrls: ['../../../styles/list-page.css', './financeiro.css'],
 })
 export class Financeiro {
   private financeiroService = inject(FinanceiroService);
