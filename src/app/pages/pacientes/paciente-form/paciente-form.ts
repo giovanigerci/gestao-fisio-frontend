@@ -2,6 +2,7 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PacienteService } from '../../../services/paciente.service';
 import { TelefoneMaskDirective } from '../../../shared/directives/telefone-mask.directive';
+import { tratarErrosApi, temErro, mensagensErro } from '../../../shared/utils/form-errors';
 
 @Component({
   selector: 'app-paciente-form',
@@ -18,7 +19,8 @@ export class PacienteForm {
   pacienteId = signal<number | null>(null);
   carregando = signal(false);
   salvando = signal(false);
-  erro = signal('');
+  erroGeral = signal('');
+  erros = signal<Record<string, string[]>>({});
 
   // Form fields
   nome = signal('');
@@ -84,26 +86,28 @@ export class PacienteForm {
         this.carregando.set(false);
       },
       error: () => {
-        this.erro.set('Erro ao carregar dados do paciente.');
+        this.erroGeral.set('Erro ao carregar dados do paciente.');
         this.carregando.set(false);
       },
     });
   }
 
   salvar() {
+    this.erros.set({});
+    this.erroGeral.set('');
+
     if (!this.nome().trim() || !this.cpf().trim() || !this.telefone().trim()) {
-      this.erro.set('Preencha todos os campos obrigatórios (*).');
+      this.erroGeral.set('Preencha todos os campos obrigatórios (*).');
       return;
     }
 
     if (!this.dataValida()) {
       this.validarDataNascimento();
-      this.erro.set('Corrija os erros antes de salvar.');
+      this.erroGeral.set('Corrija os erros antes de salvar.');
       return;
     }
 
     this.salvando.set(true);
-    this.erro.set('');
 
     const dados = {
       nome: this.nome().trim(),
@@ -125,28 +129,17 @@ export class PacienteForm {
       },
       error: (err) => {
         this.salvando.set(false);
-        if (err.status === 400 && err.error && typeof err.error === 'object') {
-          const nomesAmigaveis: Record<string, string> = {
-            nome: 'Nome',
-            cpf: 'CPF',
-            telefone: 'Telefone',
-            email: 'E-mail',
-            data_nascimento: 'Data de nascimento',
-            endereco: 'Endereço',
-            historico_medico: 'Histórico médico',
-          };
-          const mensagens = Object.entries(err.error)
-            .map(([campo, msgs]) => {
-              const label = nomesAmigaveis[campo] || campo;
-              return `${label}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`;
-            })
-            .join(' | ');
-          this.erro.set(mensagens || 'Erro ao salvar paciente.');
-        } else {
-          this.erro.set('Erro ao salvar paciente. Tente novamente.');
-        }
+        tratarErrosApi(err, this.erros, this.erroGeral, 'Erro ao salvar paciente.');
       },
     });
+  }
+
+  temErro(campo: string): boolean {
+    return temErro(this.erros(), campo);
+  }
+
+  mensagensErro(campo: string): string[] {
+    return mensagensErro(this.erros(), campo);
   }
 
   cancelar() {
