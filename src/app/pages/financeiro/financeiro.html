@@ -36,9 +36,9 @@
 
   <!-- Error -->
   @if (erro() && !carregando()) {
-    <div class="fin-error">
-      <p class="fin-error-text">{{ erro() }}</p>
-      <button (click)="carregarResumo(periodo(), dataReferencia())" class="fin-error-retry">
+    <div class="error-container">
+      <p class="error-text">{{ erro() }}</p>
+      <button (click)="carregarResumo(periodo(), dataReferencia())" class="error-retry">
         Tentar novamente
       </button>
     </div>
@@ -46,9 +46,9 @@
 
   <!-- Loading -->
   @if (carregando()) {
-    <div class="fin-loading">
-      <div class="fin-spinner"></div>
-      <p class="fin-loading-text">Carregando resumo financeiro...</p>
+    <div class="state-container">
+      <div class="spinner"></div>
+      <p class="state-text">Carregando resumo financeiro...</p>
     </div>
   }
 
