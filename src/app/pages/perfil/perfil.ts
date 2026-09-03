@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { PerfilService, Perfil } from '../../services/perfil.service';
 import { AuthService } from '../../services/auth.service';
 import { TelefoneMaskDirective } from '../../shared/directives/telefone-mask.directive';
+import { tratarErrosApi, temErro, mensagensErro } from '../../shared/utils/form-errors';
 
 @Component({
   selector: 'app-perfil',
@@ -26,12 +27,12 @@ export class PerfilPage {
 
   // UI state
   salvando = signal(false);
-  erro = signal('');
-  erroCrefito = signal('');
+  erroGeral = signal('');
+  erros = signal<Record<string, string[]>>({});
+  erroFoto = signal('');
   sucesso = signal('');
   uploadingFoto = signal(false);
   removendoFoto = signal(false);
-  erroFoto = signal('');
 
   constructor() {
     // Garante que o perfil seja carregado (idempotente — se já carregou, não faz nada)
@@ -57,10 +58,10 @@ export class PerfilPage {
   }
 
   salvar() {
-    this.salvando.set(true);
-    this.erro.set('');
-    this.erroCrefito.set('');
+    this.erros.set({});
+    this.erroGeral.set('');
     this.sucesso.set('');
+    this.salvando.set(true);
 
     const dados: Partial<Perfil> = {
       first_name: this.firstName().trim(),
@@ -79,30 +80,17 @@ export class PerfilPage {
       },
       error: (err) => {
         this.salvando.set(false);
-        if (err.status === 400 && err.error && typeof err.error === 'object') {
-          // Erro específico de CREFITO duplicado
-          if (err.error.crefito) {
-            const msg = Array.isArray(err.error.crefito)
-              ? err.error.crefito.join(', ')
-              : err.error.crefito;
-            this.erroCrefito.set(msg);
-          }
-          // Outros erros de campo
-          const outrosErros = Object.entries(err.error)
-            .filter(([campo]) => campo !== 'crefito')
-            .map(([campo, msgs]) => {
-              const label = campo.replace('_', ' ');
-              return `${label}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`;
-            })
-            .join(' | ');
-          if (outrosErros) {
-            this.erro.set(outrosErros);
-          }
-        } else {
-          this.erro.set('Erro ao salvar perfil. Tente novamente.');
-        }
+        tratarErrosApi(err, this.erros, this.erroGeral, 'Erro ao salvar perfil.');
       },
     });
+  }
+
+  temErro(campo: string): boolean {
+    return temErro(this.erros(), campo);
+  }
+
+  mensagensErro(campo: string): string[] {
+    return mensagensErro(this.erros(), campo);
   }
 
   onFotoSelecionada(event: Event) {

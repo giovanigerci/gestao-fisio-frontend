@@ -77,9 +77,9 @@
     }
 
     <!-- Error -->
-    @if (erro()) {
+    @if (erroGeral()) {
     <div class="form-alert form-alert--error">
-      <p>{{ erro() }}</p>
+      <p>{{ erroGeral() }}</p>
     </div>
     }
 
@@ -93,45 +93,60 @@
     <div>
       <label class="form-label">Nome</label>
       <input [value]="firstName()" (input)="firstName.set($any($event.target).value)" class="input-field"
-        placeholder="Seu nome" />
+        [class.input-field--error]="temErro('first_name')" placeholder="Seu nome" />
+      @if (temErro('first_name')) {
+        <p class="form-field-error">{{ mensagensErro('first_name').join(' ') }}</p>
+      }
     </div>
 
     <!-- Sobrenome -->
     <div>
       <label class="form-label">Sobrenome</label>
       <input [value]="lastName()" (input)="lastName.set($any($event.target).value)" class="input-field"
-        placeholder="Seu sobrenome" />
+        [class.input-field--error]="temErro('last_name')" placeholder="Seu sobrenome" />
+      @if (temErro('last_name')) {
+        <p class="form-field-error">{{ mensagensErro('last_name').join(' ') }}</p>
+      }
     </div>
 
     <!-- E-mail -->
     <div>
       <label class="form-label">E-mail</label>
       <input type="email" [value]="email()" (input)="email.set($any($event.target).value)" class="input-field"
-        placeholder="email@exemplo.com" />
+        [class.input-field--error]="temErro('email')" placeholder="email@exemplo.com" />
+      @if (temErro('email')) {
+        <p class="form-field-error">{{ mensagensErro('email').join(' ') }}</p>
+      }
     </div>
 
     <!-- Telefone -->
     <div>
       <label class="form-label">Telefone</label>
       <input type="tel" [appTelefoneMask]="telefone()" (valorLimpo)="telefone.set($event)" class="input-field"
-        placeholder="(00) 00000-0000" />
+        [class.input-field--error]="temErro('telefone')" placeholder="(00) 00000-0000" />
+      @if (temErro('telefone')) {
+        <p class="form-field-error">{{ mensagensErro('telefone').join(' ') }}</p>
+      }
     </div>
 
     <!-- Especialidade -->
     <div>
       <label class="form-label">Especialidade</label>
       <input [value]="especialidade()" (input)="especialidade.set($any($event.target).value)" class="input-field"
-        placeholder="Ex: Fisioterapia Ortopédica" />
+        [class.input-field--error]="temErro('especialidade')" placeholder="Ex: Fisioterapia Ortopédica" />
+      @if (temErro('especialidade')) {
+        <p class="form-field-error">{{ mensagensErro('especialidade').join(' ') }}</p>
+      }
     </div>
 
     <!-- CREFITO -->
     <div>
       <label class="form-label">CREFITO</label>
       <input [value]="crefito()" (input)="crefito.set($any($event.target).value)"
-        [class]="'input-field' + (erroCrefito() ? ' input-field--error' : '')"
+        [class]="'input-field' + (temErro('crefito') ? ' input-field--error' : '')"
         placeholder="CREFITO-X/000000" />
-      @if (erroCrefito()) {
-      <p class="form-field-error">{{ erroCrefito() }}</p>
+      @if (temErro('crefito')) {
+      <p class="form-field-error">{{ mensagensErro('crefito').join(' ') }}</p>
       }
     </div>
 
