@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ClinicaService } from '../../../services/clinica.service';
 import { TelefoneMaskDirective } from '../../../shared/directives/telefone-mask.directive';
+import { tratarErrosApi, temErro, mensagensErro } from '../../../shared/utils/form-errors';
 
 @Component({
   selector: 'app-clinica-form',
@@ -18,7 +19,8 @@ export class ClinicaForm {
   clinicaId = signal<number | null>(null);
   carregando = signal(false);
   salvando = signal(false);
-  erro = signal('');
+  erroGeral = signal('');
+  erros = signal<Record<string, string[]>>({});
 
   // Form fields
   nome = signal('');
@@ -48,7 +50,7 @@ export class ClinicaForm {
         this.carregando.set(false);
       },
       error: () => {
-        this.erro.set('Erro ao carregar dados da clínica.');
+        this.erroGeral.set('Erro ao carregar dados da clínica.');
         this.carregando.set(false);
       },
     });
@@ -59,13 +61,15 @@ export class ClinicaForm {
   }
 
   salvar() {
+    this.erros.set({});
+    this.erroGeral.set('');
+
     if (!this.nome().trim() || !this.endereco().trim() || !this.valorPorAtendimento().trim()) {
-      this.erro.set('Preencha todos os campos obrigatórios (*).');
+      this.erroGeral.set('Preencha todos os campos obrigatórios (*).');
       return;
     }
 
     this.salvando.set(true);
-    this.erro.set('');
 
     const dados = {
       nome: this.nome().trim(),
@@ -85,16 +89,17 @@ export class ClinicaForm {
       },
       error: (err) => {
         this.salvando.set(false);
-        if (err.error && typeof err.error === 'object') {
-          const mensagens = Object.entries(err.error)
-            .map(([campo, msgs]) => `${campo}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`)
-            .join(' | ');
-          this.erro.set(mensagens || 'Erro ao salvar clínica.');
-        } else {
-          this.erro.set('Erro ao salvar clínica. Tente novamente.');
-        }
+        tratarErrosApi(err, this.erros, this.erroGeral, 'Erro ao salvar clínica.');
       },
     });
+  }
+
+  temErro(campo: string): boolean {
+    return temErro(this.erros(), campo);
+  }
+
+  mensagensErro(campo: string): string[] {
+    return mensagensErro(this.erros(), campo);
   }
 
   cancelar() {

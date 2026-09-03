@@ -24,9 +24,9 @@
   <form (submit)="$event.preventDefault(); salvar()" class="form-container">
 
     <!-- Error -->
-    @if (erro()) {
+    @if (erroGeral()) {
     <div class="form-alert form-alert--error">
-      <p>{{ erro() }}</p>
+      <p>{{ erroGeral() }}</p>
     </div>
     }
 
@@ -34,28 +34,41 @@
     <div>
       <label class="form-label">Nome <span class="form-required">*</span></label>
       <input [value]="nome()" (input)="nome.set($any($event.target).value)" class="input-field"
-        placeholder="Nome da clínica" />
+        [class.input-field--error]="temErro('nome')" placeholder="Nome da clínica" />
+      @if (temErro('nome')) {
+        <p class="form-field-error">{{ mensagensErro('nome').join(' ') }}</p>
+      }
     </div>
 
     <!-- Endereço -->
     <div>
       <label class="form-label">Endereço <span class="form-required">*</span></label>
       <input [value]="endereco()" (input)="endereco.set($any($event.target).value)" class="input-field"
-        placeholder="Rua, número, bairro, cidade..." />
+        [class.input-field--error]="temErro('endereco')" placeholder="Rua, número, bairro, cidade..." />
+      @if (temErro('endereco')) {
+        <p class="form-field-error">{{ mensagensErro('endereco').join(' ') }}</p>
+      }
     </div>
 
     <!-- Telefone -->
     <div>
       <label class="form-label">Telefone</label>
       <input type="tel" [appTelefoneMask]="telefone()" (valorLimpo)="telefone.set($event)" class="input-field"
-        placeholder="(00) 00000-0000" />
+        [class.input-field--error]="temErro('telefone')" placeholder="(00) 00000-0000" />
+      @if (temErro('telefone')) {
+        <p class="form-field-error">{{ mensagensErro('telefone').join(' ') }}</p>
+      }
     </div>
 
     <!-- Valor por atendimento -->
     <div>
       <label class="form-label">Valor por atendimento <span class="form-required">*</span></label>
       <input type="text" inputmode="decimal" [value]="valorPorAtendimento()"
-        (input)="valorPorAtendimento.set($any($event.target).value)" class="input-field" placeholder="40.00" />
+        (input)="valorPorAtendimento.set($any($event.target).value)" class="input-field" 
+        [class.input-field--error]="temErro('valor_por_atendimento')" placeholder="40.00" />
+      @if (temErro('valor_por_atendimento')) {
+        <p class="form-field-error">{{ mensagensErro('valor_por_atendimento').join(' ') }}</p>
+      }
     </div>
 
     <!-- Ativo -->
