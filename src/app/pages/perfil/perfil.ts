@@ -36,7 +36,7 @@ export class PerfilPage {
 
   constructor() {
     // Garante que o perfil seja carregado (idempotente — se já carregou, não faz nada)
-    this.perfilService.carregar();
+    this.perfilService.carregar().subscribe();
 
     // Preenche os campos quando o perfil estiver disponível
     effect(() => {
