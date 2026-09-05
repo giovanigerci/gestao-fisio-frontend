@@ -33,6 +33,10 @@ export class PacienteService {
     return this.http.get<RespostaPaginada<Paciente>>(this.url);
   }
 
+  contar() {
+    return this.http.get<{ count: number }>(`${this.url}count/`);
+  }
+
   buscarOpcoes() {
     return this.http.get<{ id: number, nome: string }[]>(`${this.url}opcoes/`);
   }
