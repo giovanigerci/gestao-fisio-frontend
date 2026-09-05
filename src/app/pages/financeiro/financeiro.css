@@ -53,7 +53,8 @@
 
 /* ─── Date Navigator ─── */
 .fin-date-nav {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 12px;
 }
@@ -62,14 +63,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   border: none;
   background: var(--color-surface);
-  border-radius: 10px;
+  border-radius: 12px;
   color: var(--color-text-muted);
   cursor: pointer;
   transition: all 0.2s ease;
+}
+
+.fin-nav-icon {
+  width: 30px;
+  height: 30px;
 }
 
 .fin-nav-btn:hover {
@@ -78,9 +84,11 @@
 }
 
 .fin-date-label {
-  font-size: 0.8125rem;
+  font-size: 0.9rem;
   font-weight: 500;
   color: var(--color-text-primary);
+  text-align: center;
+  min-width: 120px;
 }
 
 /* ─── Total Card ─── */
