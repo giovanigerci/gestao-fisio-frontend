@@ -93,7 +93,7 @@
   cursor: pointer;
   border: none;
   background: transparent;
-  min-width: 48px;
+  min-width: 40px;
   border-radius: 15px;
   /* Capsule shape */
   transition: all 0.15s ease;
