@@ -27,10 +27,18 @@
   --color-warning: #fbbf24;
 }
 
+/* ─── Global Box Sizing ─── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 /* ─── Base Overrides ─── */
 html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
 }
 
 body {
@@ -38,6 +46,7 @@ body {
   color: var(--color-text-primary);
   min-height: 100dvh;
 }
+
 
 /* ─── Scrollbar ─── */
 ::-webkit-scrollbar {
