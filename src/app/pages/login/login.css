@@ -27,8 +27,8 @@
 }
 
 .login-bg-glow--top {
-  width: 500px;
-  height: 500px;
+  width: min(500px, 80vw);
+  height: min(500px, 80vw);
   top: -160px;
   right: -120px;
   background: radial-gradient(circle, var(--color-primary) 0%, transparent 70%);
@@ -36,8 +36,8 @@
 }
 
 .login-bg-glow--bottom {
-  width: 400px;
-  height: 400px;
+  width: min(400px, 70vw);
+  height: min(400px, 70vw);
   bottom: -120px;
   left: -100px;
   background: radial-gradient(circle, var(--color-accent) 0%, transparent 70%);
