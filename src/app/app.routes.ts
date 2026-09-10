@@ -9,6 +9,7 @@ import { Agenda } from './pages/agenda/agenda';
 import { AgendamentoForm } from './pages/agenda/agendamento-form/agendamento-form';
 import { Financeiro } from './pages/financeiro/financeiro';
 import { PerfilPage } from './pages/perfil/perfil';
+import { NotFound } from './pages/not-found/not-found';
 import { authGuard } from './guards/auth-guard';
 import { guestGuard } from './guards/guest-guard';
 
@@ -27,5 +28,6 @@ export const routes: Routes = [
     { path: 'clinicas/:id/editar', component: ClinicaForm, canActivate: [authGuard] },
     { path: 'financeiro', component: Financeiro, canActivate: [authGuard] },
     { path: 'perfil', component: PerfilPage, canActivate: [authGuard] },
-    { path: '**', redirectTo: 'agenda' },
+    { path: '**', component: NotFound },
 ];
+
