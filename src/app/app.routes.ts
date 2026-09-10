@@ -1,33 +1,23 @@
 import { Routes } from '@angular/router';
-import { Login } from './pages/login/login';
-import { Registrar } from './pages/registrar/registrar';
-import { Pacientes } from './pages/pacientes/pacientes';
-import { PacienteForm } from './pages/pacientes/paciente-form/paciente-form';
-import { Clinicas } from './pages/clinicas/clinicas';
-import { ClinicaForm } from './pages/clinicas/clinica-form/clinica-form';
-import { Agenda } from './pages/agenda/agenda';
-import { AgendamentoForm } from './pages/agenda/agendamento-form/agendamento-form';
-import { Financeiro } from './pages/financeiro/financeiro';
-import { PerfilPage } from './pages/perfil/perfil';
-import { NotFound } from './pages/not-found/not-found';
 import { authGuard } from './guards/auth-guard';
 import { guestGuard } from './guards/guest-guard';
+import { NotFound } from './pages/not-found/not-found';
 
 export const routes: Routes = [
-    { path: 'login', component: Login, canActivate: [guestGuard] },
-    { path: 'registrar', component: Registrar, canActivate: [guestGuard] },
+    { path: 'login', loadComponent: () => import('./pages/login/login').then(m => m.Login), canActivate: [guestGuard] },
+    { path: 'registrar', loadComponent: () => import('./pages/registrar/registrar').then(m => m.Registrar), canActivate: [guestGuard] },
     { path: '', redirectTo: 'agenda', pathMatch: 'full' },
-    { path: 'agenda', component: Agenda, canActivate: [authGuard] },
-    { path: 'agenda/novo', component: AgendamentoForm, canActivate: [authGuard] },
-    { path: 'agenda/:id/editar', component: AgendamentoForm, canActivate: [authGuard] },
-    { path: 'pacientes', component: Pacientes, canActivate: [authGuard] },
-    { path: 'pacientes/novo', component: PacienteForm, canActivate: [authGuard] },
-    { path: 'pacientes/:id/editar', component: PacienteForm, canActivate: [authGuard] },
-    { path: 'clinicas', component: Clinicas, canActivate: [authGuard] },
-    { path: 'clinicas/novo', component: ClinicaForm, canActivate: [authGuard] },
-    { path: 'clinicas/:id/editar', component: ClinicaForm, canActivate: [authGuard] },
-    { path: 'financeiro', component: Financeiro, canActivate: [authGuard] },
-    { path: 'perfil', component: PerfilPage, canActivate: [authGuard] },
+    { path: 'agenda', loadComponent: () => import('./pages/agenda/agenda').then(m => m.Agenda), canActivate: [authGuard] },
+    { path: 'agenda/novo', loadComponent: () => import('./pages/agenda/agendamento-form/agendamento-form').then(m => m.AgendamentoForm), canActivate: [authGuard] },
+    { path: 'agenda/:id/editar', loadComponent: () => import('./pages/agenda/agendamento-form/agendamento-form').then(m => m.AgendamentoForm), canActivate: [authGuard] },
+    { path: 'pacientes', loadComponent: () => import('./pages/pacientes/pacientes').then(m => m.Pacientes), canActivate: [authGuard] },
+    { path: 'pacientes/novo', loadComponent: () => import('./pages/pacientes/paciente-form/paciente-form').then(m => m.PacienteForm), canActivate: [authGuard] },
+    { path: 'pacientes/:id/editar', loadComponent: () => import('./pages/pacientes/paciente-form/paciente-form').then(m => m.PacienteForm), canActivate: [authGuard] },
+    { path: 'clinicas', loadComponent: () => import('./pages/clinicas/clinicas').then(m => m.Clinicas), canActivate: [authGuard] },
+    { path: 'clinicas/novo', loadComponent: () => import('./pages/clinicas/clinica-form/clinica-form').then(m => m.ClinicaForm), canActivate: [authGuard] },
+    { path: 'clinicas/:id/editar', loadComponent: () => import('./pages/clinicas/clinica-form/clinica-form').then(m => m.ClinicaForm), canActivate: [authGuard] },
+    { path: 'financeiro', loadComponent: () => import('./pages/financeiro/financeiro').then(m => m.Financeiro), canActivate: [authGuard] },
+    { path: 'perfil', loadComponent: () => import('./pages/perfil/perfil').then(m => m.PerfilPage), canActivate: [authGuard] },
     { path: '**', component: NotFound },
 ];
 
