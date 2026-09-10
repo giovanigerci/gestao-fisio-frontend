@@ -152,12 +152,16 @@ export class Agenda {
     // Carregar pacientes e clínicas para lookup de nomes
     this.pacienteService.listar().subscribe({
       next: (resp) => this.pacientes.set(resp.results),
-      error: () => { },
+      error: () => {
+        this.erro.set('Erro ao carregar pacientes.');
+      },
     });
 
     this.clinicaService.listar().subscribe({
       next: (resp) => this.clinicas.set(resp.results),
-      error: () => { },
+      error: () => {
+        this.erro.set('Erro ao carregar clínicas.');
+      },
     });
 
     // Sempre que a semana mudar, buscar agendamentos do intervalo correto
