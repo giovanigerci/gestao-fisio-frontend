@@ -1,0 +1,90 @@
+<div class="login-page">
+  <!-- Background Glows -->
+  <div class="login-bg-glow login-bg-glow--top"></div>
+  <div class="login-bg-glow login-bg-glow--bottom"></div>
+
+  <div class="login-container">
+
+    <!-- Brand -->
+    <div class="login-brand">
+      <div class="login-brand__icon">
+        <img src="/logo.png" alt="Gestão Fisio Logo" style="width: 48px; height: 48px; object-fit: contain;" />
+      </div>
+      <h1 class="login-brand__title">
+        <span style="color: var(--color-primary);">Gestão</span> <span style="color: var(--color-accent);">Fisio</span>
+      </h1>
+      <p class="login-brand__subtitle">Recuperação de senha</p>
+    </div>
+
+    <!-- Card -->
+    <div class="login-card">
+      @if (sucesso()) {
+        <div class="reset-success-container">
+          <div class="reset-success-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
+          </div>
+          <h2 class="reset-success-title">Verifique seu e-mail</h2>
+          <p class="reset-success-text">
+            Enviamos um link de recuperação para <strong>{{ email() }}</strong>.
+            Por favor, verifique sua caixa de entrada e a pasta de spam.
+          </p>
+          <a routerLink="/login" class="login-btn reset-success-btn">
+            Voltar para o Login
+          </a>
+        </div>
+      } @else {
+        <form (submit)="$event.preventDefault(); enviar()" class="login-form">
+          <p class="reset-instructions">
+            Informe o e-mail cadastrado e enviaremos um link para você criar uma nova senha.
+          </p>
+
+          <!-- E-mail -->
+          <div class="form-field">
+            <label for="reset-email" class="form-field__label">E-MAIL</label>
+            <div class="form-field__input-wrapper">
+              <svg class="form-field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+              <input id="reset-email" type="email" autocomplete="email" placeholder="Seu e-mail"
+                [value]="email()" (input)="email.set($any($event.target).value)"
+                class="form-field__input" />
+            </div>
+          </div>
+
+          <!-- Error -->
+          @if (erro()) {
+          <div class="login-error">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="15" y1="9" x2="9" y2="15" />
+              <line x1="9" y1="9" x2="15" y2="15" />
+            </svg>
+            <span>{{ erro() }}</span>
+          </div>
+          }
+
+          <!-- Submit -->
+          <button type="submit" [disabled]="carregando()"
+            class="login-btn" [class.login-btn--loading]="carregando()">
+            @if (carregando()) {
+            <span class="login-btn__spinner"></span>
+            <span>Enviando...</span>
+            } @else {
+            <span>Enviar link de recuperação</span>
+            }
+          </button>
+        </form>
+      }
+    </div>
+
+    <!-- Footer -->
+    <div class="login-footer">
+      <a routerLink="/login" class="login-link">Voltar para o Login</a>
+    </div>
+  </div>
+</div>
