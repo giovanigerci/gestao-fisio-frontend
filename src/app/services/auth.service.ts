@@ -40,5 +40,27 @@ export class AuthService {
         );
     }
 
+    trocarSenha(senhaAtual: string, novaSenha: string, confirmarSenha: string) {
+        return this.http.post<{ detail?: string }>(
+            `${environment.apiUrl}/auth/trocar-senha/`,
+            { senha_atual: senhaAtual, nova_senha: novaSenha, confirmar_senha: confirmarSenha },
+            { withCredentials: true }
+        );
+    }
 
+    solicitarResetSenha(email: string) {
+        return this.http.post<{ detail?: string }>(
+            `${environment.apiUrl}/auth/esqueci-senha/`,
+            { email },
+            { withCredentials: true }
+        );
+    }
+
+    redefinirSenha(uid: string, token: string, novaSenha: string, confirmarSenha: string) {
+        return this.http.post<{ detail?: string }>(
+            `${environment.apiUrl}/auth/redefinir-senha/`,
+            { uid, token, nova_senha: novaSenha, confirmar_senha: confirmarSenha },
+            { withCredentials: true }
+        );
+    }
 }
