@@ -34,6 +34,19 @@ export class PerfilPage {
   uploadingFoto = signal(false);
   removendoFoto = signal(false);
 
+  // Trocar senha
+  mostrarTrocarSenha = signal(false);
+  senhaAtual = signal('');
+  novaSenha = signal('');
+  confirmarSenha = signal('');
+  salvandoSenha = signal(false);
+  errosSenha = signal<Record<string, string[]>>({});
+  erroGeralSenha = signal('');
+  sucessoSenha = signal('');
+  mostrarSenhaAtual = signal(false);
+  mostrarNovaSenha = signal(false);
+  mostrarConfirmarSenha = signal(false);
+
   constructor() {
     // Garante que o perfil seja carregado (idempotente — se já carregou, não faz nada)
     this.perfilService.carregar().subscribe();
@@ -91,6 +104,55 @@ export class PerfilPage {
 
   mensagensErro(campo: string): string[] {
     return mensagensErro(this.erros(), campo);
+  }
+
+  temErroSenha(campo: string): boolean {
+    return temErro(this.errosSenha(), campo);
+  }
+
+  mensagensErroSenha(campo: string): string[] {
+    return mensagensErro(this.errosSenha(), campo);
+  }
+
+  toggleTrocarSenha() {
+    this.mostrarTrocarSenha.update(v => !v);
+    if (!this.mostrarTrocarSenha()) {
+      // Limpa campos ao fechar
+      this.senhaAtual.set('');
+      this.novaSenha.set('');
+      this.confirmarSenha.set('');
+      this.errosSenha.set({});
+      this.erroGeralSenha.set('');
+      this.sucessoSenha.set('');
+    }
+  }
+
+  trocarSenha() {
+    this.errosSenha.set({});
+    this.erroGeralSenha.set('');
+    this.sucessoSenha.set('');
+
+    if (!this.senhaAtual().trim() || !this.novaSenha().trim() || !this.confirmarSenha().trim()) {
+      this.erroGeralSenha.set('Preencha todos os campos.');
+      return;
+    }
+
+    this.salvandoSenha.set(true);
+
+    this.auth.trocarSenha(this.senhaAtual(), this.novaSenha(), this.confirmarSenha()).subscribe({
+      next: () => {
+        this.salvandoSenha.set(false);
+        this.sucessoSenha.set('Senha alterada com sucesso!');
+        this.senhaAtual.set('');
+        this.novaSenha.set('');
+        this.confirmarSenha.set('');
+        setTimeout(() => this.sucessoSenha.set(''), 3000);
+      },
+      error: (err) => {
+        this.salvandoSenha.set(false);
+        tratarErrosApi(err, this.errosSenha, this.erroGeralSenha, 'Erro ao alterar senha.');
+      },
+    });
   }
 
   onFotoSelecionada(event: Event) {
@@ -160,3 +222,4 @@ export class PerfilPage {
     });
   }
 }
+
