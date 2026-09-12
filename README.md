@@ -28,7 +28,7 @@ O projeto segue uma organização modular e focada em domínios para garantir es
   - `guestGuard`: Impede que usuários já logados acessem as telas de login ou registro.
 - **`interceptors/`**: Gerenciam modificações em requisições e respostas HTTP.
   - `authInterceptor`: Configura todas as requisições para enviar credenciais (`withCredentials: true`) e gerencia a lógica de _refresh token_ automaticamente caso ocorra erro 401. A autenticação com a API é baseada em **cookies httpOnly** em vez de `localStorage`. Esta decisão técnica aumenta a segurança contra ataques XSS (Cross-Site Scripting), já que o token não fica acessível diretamente via código JavaScript no navegador.
-- **`shared/`**: Componentes reutilizáveis e utilitários isolados para manter o padrão visual em toda a aplicação. Contém componentes reais como `badge`, `card`, `confirm-modal`, `empty-state` e `progress-bar`, além de estilos reutilizados (como o `form-page` em `src/styles/`). Para mais detalhes sobre as cores, tokens e padrões visuais adotados, consulte nossa documentação de design: [`docs/design-system-frontend.md`](./docs/design-system-frontend.md).
+- **`shared/`**: Componentes reutilizáveis e utilitários isolados para manter o padrão visual em toda a aplicação. Contém componentes reais como `badge`, `card`, `confirm-modal`, `empty-state` e `progress-bar`, além de estilos reutilizados (como o `form-page` em `src/styles/`).
 
 ---
 
