@@ -15,15 +15,23 @@ export class App {
   mostrarNav = signal(false);
 
   constructor() {
-    this.atualizarNav(this.router.url);
+    this.atualizarNav(window.location.pathname);
     this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd)
     ).subscribe(event => {
-      this.atualizarNav(event.urlAfterRedirects);
+      // urlAfterRedirects contem a url completa com query params
+      // mas location.pathname também serviria aqui. Vamos usar event.urlAfterRedirects e extrair só o path:
+      const path = event.urlAfterRedirects.split('?')[0];
+      this.atualizarNav(path);
     });
   }
 
   private atualizarNav(url: string) {
-    this.mostrarNav.set(!url.startsWith('/login') && !url.startsWith('/registrar'));
+    this.mostrarNav.set(
+      !url.startsWith('/login') && 
+      !url.startsWith('/registrar') && 
+      !url.startsWith('/esqueci-senha') && 
+      !url.startsWith('/redefinir-senha')
+    );
   }
 }
