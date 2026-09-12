@@ -28,6 +28,8 @@ export class Login implements OnInit {
 
     if (params.get('mensagem') === 'conta-criada') {
       this.mensagemSucesso.set('Conta criada com sucesso! Faça login para continuar.');
+    } else if (params.get('mensagem') === 'senha-redefinida') {
+      this.mensagemSucesso.set('Senha redefinida com sucesso! Faça login com a nova senha.');
     }
 
     const usernameParam = params.get('username');

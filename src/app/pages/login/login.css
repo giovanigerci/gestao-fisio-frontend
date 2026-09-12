@@ -225,14 +225,35 @@
   height: 18px;
 }
 
+/* ─── Extra Options Row ─── */
+.login-options-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: -8px;
+  margin-bottom: 8px;
+  padding: 0 2px;
+}
+
+.login-forgot-link {
+  font-size: 0.8125rem;
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color var(--transition-fast, 0.15s);
+}
+
+.login-forgot-link:hover {
+  color: var(--color-primary-hover, #467192);
+  text-decoration: underline;
+}
+
 /* ─── Toggle Row (compact, inline) ─── */
 .login-toggle-row {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
   gap: 8px;
   cursor: pointer;
-  padding: 0 2px;
 }
 
 .login-toggle-label {

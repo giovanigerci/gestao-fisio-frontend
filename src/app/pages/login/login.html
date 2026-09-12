@@ -68,12 +68,18 @@
           </div>
         </div>
 
-        <!-- Manter Conectado -->
-        <div class="login-toggle-row" (click)="manterConectado.set(!manterConectado())">
-          <span class="login-toggle-label">Manter conectado</span>
-          <div class="toggle-track" [class.active]="manterConectado()">
-            <div class="toggle-thumb"></div>
+        <!-- Opções Extras -->
+        <div class="login-options-row">
+          <!-- Manter Conectado -->
+          <div class="login-toggle-row" (click)="manterConectado.set(!manterConectado())">
+            <div class="toggle-track" [class.active]="manterConectado()">
+              <div class="toggle-thumb"></div>
+            </div>
+            <span class="login-toggle-label">Manter conectado</span>
           </div>
+          
+          <!-- Esqueci a senha link -->
+          <a routerLink="/esqueci-senha" class="login-forgot-link">Esqueci minha senha?</a>
         </div>
 
         <!-- Success Message -->
