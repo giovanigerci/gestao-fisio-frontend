@@ -31,7 +31,9 @@ export class App {
       !url.startsWith('/login') && 
       !url.startsWith('/registrar') && 
       !url.startsWith('/esqueci-senha') && 
-      !url.startsWith('/redefinir-senha')
+      !url.startsWith('/redefinir-senha') &&
+      !url.startsWith('/termos') &&
+      !url.startsWith('/privacidade')
     );
   }
 }

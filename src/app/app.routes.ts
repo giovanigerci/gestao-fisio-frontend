@@ -8,6 +8,8 @@ export const routes: Routes = [
     { path: 'registrar', loadComponent: () => import('./pages/registrar/registrar').then(m => m.Registrar), canActivate: [guestGuard] },
     { path: 'esqueci-senha', loadComponent: () => import('./pages/esqueci-senha/esqueci-senha').then(m => m.EsqueciSenha), canActivate: [guestGuard] },
     { path: 'redefinir-senha', loadComponent: () => import('./pages/redefinir-senha/redefinir-senha').then(m => m.RedefinirSenha), canActivate: [guestGuard] },
+    { path: 'termos', loadComponent: () => import('./pages/termos/termos').then(m => m.TermosPage) },
+    { path: 'privacidade', loadComponent: () => import('./pages/privacidade/privacidade').then(m => m.PrivacidadePage) },
     { path: '', redirectTo: 'agenda', pathMatch: 'full' },
     { path: 'agenda', loadComponent: () => import('./pages/agenda/agenda').then(m => m.Agenda), canActivate: [authGuard] },
     { path: 'agenda/novo', loadComponent: () => import('./pages/agenda/agendamento-form/agendamento-form').then(m => m.AgendamentoForm), canActivate: [authGuard] },
