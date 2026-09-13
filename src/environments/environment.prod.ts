@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    apiUrl: 'https://SUBSTITUIR-PELO-DOMINIO-REAL/api',
+    apiUrl: 'https://gestao-fisio-api.onrender.com/api/',
 };
