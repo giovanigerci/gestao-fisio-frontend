@@ -1,7 +1,4 @@
 <div class="login-page">
-  <!-- Background Glows -->
-  <div class="login-bg-glow login-bg-glow--top"></div>
-  <div class="login-bg-glow login-bg-glow--bottom"></div>
 
   <div class="login-container">
 
@@ -126,8 +123,13 @@
     </div>
 
     <!-- Footer -->
-    <div class="login-footer">
+    <div class="login-footer" style="flex-direction: column; align-items: center; gap: 12px;">
       <a routerLink="/registrar" class="login-link">Criar conta</a>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <a routerLink="/termos" class="login-link" style="font-size: 0.75rem; font-weight: 400; opacity: 0.65;">Termos de Uso</a>
+        <span style="color: rgba(71,85,105,0.5); font-size: 0.75rem;">·</span>
+        <a routerLink="/privacidade" class="login-link" style="font-size: 0.75rem; font-weight: 400; opacity: 0.65;">Política de Privacidade</a>
+      </div>
     </div>
   </div>
 </div>

@@ -1,7 +1,5 @@
 <div class="login-page">
-  <!-- Background Glows -->
-  <div class="login-bg-glow login-bg-glow--top"></div>
-  <div class="login-bg-glow login-bg-glow--bottom"></div>
+
 
   <div class="login-container">
 
@@ -143,6 +141,14 @@
         </div>
         }
 
+        <!-- Legal Acceptance -->
+        <p class="legal-accept-text">
+          Ao criar sua conta, você declara que leu e concorda com os nossos
+          <a routerLink="/termos" target="_blank" class="login-link" style="font-size: inherit; font-weight: 500;">Termos de Uso</a>
+          e a
+          <a routerLink="/privacidade" target="_blank" class="login-link" style="font-size: inherit; font-weight: 500;">Política de Privacidade</a>.
+        </p>
+
         <!-- Submit -->
         <button type="submit" [disabled]="carregando()" class="login-btn" [class.login-btn--loading]="carregando()">
           @if (carregando()) {
@@ -163,8 +169,13 @@
     </div>
 
     <!-- Footer -->
-    <p class="login-footer">
+    <div class="login-footer" style="flex-direction: column; align-items: center; gap: 12px;">
       <a routerLink="/login" class="login-link">Já tenho conta</a>
-    </p>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <a routerLink="/termos" class="login-link" style="font-size: 0.75rem; font-weight: 400; opacity: 0.65;">Termos de Uso</a>
+        <span style="color: rgba(71,85,105,0.5); font-size: 0.75rem;">·</span>
+        <a routerLink="/privacidade" class="login-link" style="font-size: 0.75rem; font-weight: 400; opacity: 0.65;">Política de Privacidade</a>
+      </div>
+    </div>
   </div>
 </div>
