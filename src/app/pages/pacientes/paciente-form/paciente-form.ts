@@ -2,11 +2,12 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PacienteService } from '../../../services/paciente.service';
 import { TelefoneMaskDirective } from '../../../shared/directives/telefone-mask.directive';
+import { CpfMaskDirective } from '../../../shared/directives/cpf-mask.directive';
 import { tratarErrosApi, temErro, mensagensErro } from '../../../shared/utils/form-errors';
 
 @Component({
   selector: 'app-paciente-form',
-  imports: [TelefoneMaskDirective],
+  imports: [TelefoneMaskDirective, CpfMaskDirective],
   templateUrl: './paciente-form.html',
   styleUrls: ['../../../../styles/form-page.css', './paciente-form.css'],
 })

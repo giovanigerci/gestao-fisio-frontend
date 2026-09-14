@@ -43,7 +43,7 @@
     <!-- CPF -->
     <div>
       <label class="form-label">CPF <span class="form-required">*</span></label>
-      <input [value]="cpf()" (input)="cpf.set($any($event.target).value)" class="input-field"
+      <input [appCpfMask]="cpf()" (valorLimpo)="cpf.set($event)" class="input-field"
         [class.input-field--error]="temErro('cpf')" placeholder="000.000.000-00" />
       @if (temErro('cpf')) {
         <p class="form-field-error">{{ mensagensErro('cpf').join(' ') }}</p>
