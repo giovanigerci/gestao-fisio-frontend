@@ -140,10 +140,15 @@ export class Agenda {
   clinicasDoDia = computed(() => {
     const dia = this.diaSelecionado();
     if (!dia) return [];
-    const clinicaIds = [...new Set(dia.agendamentos.map(a => a.clinica))];
-    return clinicaIds.map(id => ({
+    const clinicasMap = new Map<number, string>();
+    dia.agendamentos.forEach(a => {
+      if (!clinicasMap.has(a.clinica)) {
+        clinicasMap.set(a.clinica, a.nome_clinica || '—');
+      }
+    });
+    return Array.from(clinicasMap.entries()).map(([id, nome]) => ({
       id,
-      nome: this.getNomeClinica(id),
+      nome,
       cor: corDaClinica(id),
     }));
   });
@@ -312,27 +317,6 @@ export class Agenda {
       case 'CA': return 'cancelado';
       default: return 'agendado';
     }
-  }
-
-  getNomePaciente(pacienteId: number): string {
-    return this.pacientes().find(p => p.id === pacienteId)?.nome || 'Desconhecido';
-  }
-
-  getIdadePaciente(pacienteId: number): string {
-    const p = this.pacientes().find(p => p.id === pacienteId);
-    if (!p || !p.data_nascimento) return '';
-    const hoje = new Date();
-    const nasc = new Date(p.data_nascimento);
-    let idade = hoje.getFullYear() - nasc.getFullYear();
-    const m = hoje.getMonth() - nasc.getMonth();
-    if (m < 0 || (m === 0 && hoje.getDate() < nasc.getDate())) {
-      idade--;
-    }
-    return `${idade} Anos`;
-  }
-
-  getNomeClinica(id: number): string {
-    return this.clinicas().find(c => c.id === id)?.nome ?? '—';
   }
 
   getIniciais(nome: string): string {

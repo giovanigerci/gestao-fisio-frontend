@@ -117,8 +117,8 @@
 
                 <!-- Content -->
                 <div class="agenda-item-content">
-                  <span class="agenda-item-paciente">{{ getNomePaciente(ag.paciente) }}</span>
-                  <span class="agenda-item-clinica">{{ getNomeClinica(ag.clinica) }}</span>
+                  <span class="agenda-item-paciente">{{ ag.nome_paciente || 'Desconhecido' }}</span>
+                  <span class="agenda-item-clinica">{{ ag.nome_clinica || '—' }}</span>
                 </div>
 
                 <!-- Value + Badge -->
@@ -158,13 +158,13 @@
         <div class="agenda-modal-row">
           <div class="agenda-modal-field">
             <span class="agenda-modal-label">Paciente</span>
-            <span class="agenda-modal-value">{{ getNomePaciente(agendamentoSelecionado()!.paciente) }}</span>
+            <span class="agenda-modal-value">{{ agendamentoSelecionado()!.nome_paciente || 'Desconhecido' }}</span>
           </div>
 
-          @if (getIdadePaciente(agendamentoSelecionado()!.paciente)) {
+          @if (agendamentoSelecionado()!.idade_paciente) {
             <div class="agenda-modal-field">
               <span class="agenda-modal-label">Idade</span>
-              <span class="agenda-modal-value">{{ getIdadePaciente(agendamentoSelecionado()!.paciente) }}</span>
+              <span class="agenda-modal-value">{{ agendamentoSelecionado()!.idade_paciente }}</span>
             </div>
           }
         </div>
@@ -172,7 +172,7 @@
         <!-- Clinic -->
         <div class="agenda-modal-field">
           <span class="agenda-modal-label">Clínica</span>
-          <span class="agenda-modal-value">{{ getNomeClinica(agendamentoSelecionado()!.clinica) }}</span>
+          <span class="agenda-modal-value">{{ agendamentoSelecionado()!.nome_clinica || '—' }}</span>
         </div>
 
         <!-- Date/time -->
@@ -253,7 +253,7 @@
   @if (confirmandoExclusao()) {
     <app-confirm-modal
       title="Excluir agendamento"
-      [message]="'Deseja realmente excluir o agendamento de ' + getNomePaciente(confirmandoExclusao()!.paciente) + '?'"
+      [message]="'Deseja realmente excluir o agendamento de ' + (confirmandoExclusao()!.nome_paciente || 'Desconhecido') + '?'"
       confirmLabel="Excluir"
       cancelLabel="Voltar"
       variant="danger"

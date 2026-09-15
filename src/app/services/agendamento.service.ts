@@ -14,6 +14,9 @@ export interface Agendamento {
   status: 'AG' | 'RE' | 'CA';
   eh_experimental: boolean;
   valor_calculado: number;
+  nome_paciente?: string;
+  nome_clinica?: string;
+  idade_paciente?: string;
 }
 
 export interface RespostaRecorrente {
