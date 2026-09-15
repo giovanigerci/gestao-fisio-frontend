@@ -1,4 +1,7 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, DestroyRef, ElementRef, viewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs';
 import { Router, RouterLink } from '@angular/router';
 import { ClinicaService, Clinica } from '../../services/clinica.service';
 import { Card } from '../../shared/components/card/card';
@@ -13,39 +16,47 @@ import { corDoPaciente } from '../../shared/utils/clinic-colors';
   templateUrl: './clinicas.html',
   styleUrls: ['../../../styles/list-page.css', './clinicas.css'],
 })
-export class Clinicas {
+export class Clinicas implements AfterViewInit, OnDestroy {
   private clinicaService = inject(ClinicaService);
+  private destroyRef = inject(DestroyRef);
   private router = inject(Router);
 
   clinicas = signal<Clinica[]>([]);
   termoBusca = signal('');
   carregando = signal(true);
+  carregandoMais = signal(false);
   erro = signal('');
   processandoAcao = signal(false);
   confirmandoExclusao = signal<Clinica | null>(null);
+  nextUrl = signal<string | null>(null);
 
   corDoPaciente = corDoPaciente;
 
-  clinicasFiltradas = computed(() => {
-    const termo = this.termoBusca().toLowerCase().trim();
-    if (!termo) return this.clinicas();
-    return this.clinicas().filter(c =>
-      c.nome.toLowerCase().includes(termo)
-    );
-  });
-
   totalCadastradas = signal(0);
 
-  constructor() {
-    this.carregarClinicas();
-  }
+  /** Referência ao elemento sentinela para IntersectionObserver */
+  scrollSentinel = viewChild<ElementRef>('scrollSentinel');
+  private observer: IntersectionObserver | null = null;
 
-  carregarClinicas() {
-    this.carregando.set(true);
-    this.erro.set('');
-    this.clinicaService.listar().subscribe({
+  constructor() {
+    // ── Busca reativa com debounce ──
+    toObservable(this.termoBusca).pipe(
+      debounceTime(350),
+      distinctUntilChanged(),
+      tap(() => {
+        // RESET: limpa lista e nextUrl ANTES de disparar a requisição
+        this.clinicas.set([]);
+        this.nextUrl.set(null);
+        this.carregando.set(true);
+        this.erro.set('');
+      }),
+      // switchMap cancela a requisição anterior automaticamente
+      switchMap(termo => this.clinicaService.listar(1, termo)),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
       next: (resposta) => {
         this.clinicas.set(resposta.results);
+        this.nextUrl.set(resposta.next);
         this.totalCadastradas.set(resposta.count);
         this.carregando.set(false);
       },
@@ -54,6 +65,58 @@ export class Clinicas {
         this.carregando.set(false);
       },
     });
+  }
+
+  ngAfterViewInit() {
+    this.setupIntersectionObserver();
+  }
+
+  ngOnDestroy() {
+    this.observer?.disconnect();
+  }
+
+  private setupIntersectionObserver() {
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          this.carregarMais();
+        }
+      },
+      { rootMargin: '200px' }
+    );
+
+    // Observar quando o elemento sentinela existir no DOM
+    const check = () => {
+      const el = this.scrollSentinel()?.nativeElement;
+      if (el) {
+        this.observer!.observe(el);
+      } else {
+        // Tentar novamente após renderização
+        requestAnimationFrame(check);
+      }
+    };
+    check();
+  }
+
+  carregarMais() {
+    const url = this.nextUrl();
+    if (!url || this.carregandoMais() || this.carregando()) return;
+
+    this.carregandoMais.set(true);
+    this.clinicaService.listarPorUrl(url).subscribe({
+      next: (resposta) => {
+        this.clinicas.update(lista => [...lista, ...resposta.results]);
+        this.nextUrl.set(resposta.next);
+        this.carregandoMais.set(false);
+      },
+      error: () => {
+        this.carregandoMais.set(false);
+      },
+    });
+  }
+
+  recarregar() {
+    this.termoBusca.set('');
   }
 
   editarClinica(clinica: Clinica) {
