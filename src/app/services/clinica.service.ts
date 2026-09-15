@@ -1,5 +1,5 @@
 import { Service, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { RespostaPaginada } from './paciente.service';
 
@@ -20,8 +20,16 @@ export class ClinicaService {
   private http = inject(HttpClient);
   private readonly url = `${environment.apiUrl}/clinicas/`;
 
-  listar() {
-    return this.http.get<RespostaPaginada<Clinica>>(this.url);
+  listar(page = 1, search = '') {
+    let params = new HttpParams().set('page', page);
+    if (search) {
+      params = params.set('search', search);
+    }
+    return this.http.get<RespostaPaginada<Clinica>>(this.url, { params });
+  }
+
+  listarPorUrl(url: string) {
+    return this.http.get<RespostaPaginada<Clinica>>(url);
   }
 
   buscarOpcoes() {
