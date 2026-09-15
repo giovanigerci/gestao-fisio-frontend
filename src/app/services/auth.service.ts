@@ -1,7 +1,8 @@
 import { Service, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-
+import { PerfilService } from './perfil.service';
+import { tap } from 'rxjs';
 
 export interface LoginResponse {
     detail?: string;
@@ -15,8 +16,11 @@ export interface RegistroResponse {
 @Service()
 export class AuthService {
     private http = inject(HttpClient);
+    private perfilService = inject(PerfilService);
 
     login(username: string, password: string, manterConectado: boolean = false) {
+        this.perfilService.limpar();
+
         return this.http.post<LoginResponse>(
             `${environment.apiUrl}/auth/token/`,
             { username, password, manter_conectado: manterConectado },
@@ -37,6 +41,8 @@ export class AuthService {
             `${environment.apiUrl}/auth/logout/`,
             {},
             { withCredentials: true }
+        ).pipe(
+            tap(() => this.perfilService.limpar())
         );
     }
 

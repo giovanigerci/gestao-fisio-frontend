@@ -47,6 +47,11 @@ export class PerfilService {
 
   private _perfilRequest$: Observable<Perfil> | null = null;
 
+  limpar() {
+    this._perfil.set(null);
+    this._carregado = false;
+    this._perfilRequest$ = null;
+  }
 
   carregar(): Observable<Perfil> {
     const atual = this._perfil();
@@ -63,6 +68,7 @@ export class PerfilService {
             this._perfilRequest$ = null;
           },
           error: () => {
+            this._perfil.set(null);
             this._carregado = false;
             this._carregando.set(false);
             this._perfilRequest$ = null;

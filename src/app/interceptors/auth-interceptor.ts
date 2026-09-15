@@ -4,12 +4,14 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { catchError, switchMap, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { PerfilService } from '../services/perfil.service';
 
 export const SKIP_AUTH_RETRY = new HttpContextToken<boolean>(() => false);
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const http = inject(HttpClient);
+  const perfilService = inject(PerfilService);
 
   const reqComCredenciais = req.clone({ withCredentials: true });
   const requisicaoToken = req.url.includes('/auth/token/');
@@ -23,6 +25,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           .pipe(
             switchMap(() => next(reqComCredenciais)),
             catchError((erroRefresh) => {
+              perfilService.limpar();
               router.navigate(['/login']);
               return throwError(() => erroRefresh);
             })
