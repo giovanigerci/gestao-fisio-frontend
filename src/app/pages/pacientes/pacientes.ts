@@ -1,4 +1,7 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, DestroyRef, ElementRef, viewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs';
 import { Router, RouterLink } from '@angular/router';
 import { PacienteService, Paciente } from '../../services/paciente.service';
 import { Card } from '../../shared/components/card/card';
@@ -14,39 +17,47 @@ import { TelefonePipe } from '../../shared/pipes/telefone.pipe';
   templateUrl: './pacientes.html',
   styleUrls: ['../../../styles/list-page.css', './pacientes.css'],
 })
-export class Pacientes {
+export class Pacientes implements AfterViewInit, OnDestroy {
   private pacienteService = inject(PacienteService);
+  private destroyRef = inject(DestroyRef);
   private router = inject(Router);
 
   pacientes = signal<Paciente[]>([]);
   termoBusca = signal('');
   carregando = signal(true);
+  carregandoMais = signal(false);
   erro = signal('');
   processandoAcao = signal(false);
   confirmandoExclusao = signal<Paciente | null>(null);
+  nextUrl = signal<string | null>(null);
 
   corDoPaciente = corDoPaciente;
 
-  pacientesFiltrados = computed(() => {
-    const termo = this.termoBusca().toLowerCase().trim();
-    if (!termo) return this.pacientes();
-    return this.pacientes().filter(p =>
-      p.nome.toLowerCase().includes(termo)
-    );
-  });
-
   totalCadastrados = signal(0);
 
-  constructor() {
-    this.carregarPacientes();
-  }
+  /** Referência ao elemento sentinela para IntersectionObserver */
+  scrollSentinel = viewChild<ElementRef>('scrollSentinel');
+  private observer: IntersectionObserver | null = null;
 
-  carregarPacientes() {
-    this.carregando.set(true);
-    this.erro.set('');
-    this.pacienteService.listar().subscribe({
+  constructor() {
+    // ── Busca reativa com debounce ──
+    toObservable(this.termoBusca).pipe(
+      debounceTime(350),
+      distinctUntilChanged(),
+      tap(() => {
+        // RESET: limpa lista e nextUrl ANTES de disparar a requisição
+        this.pacientes.set([]);
+        this.nextUrl.set(null);
+        this.carregando.set(true);
+        this.erro.set('');
+      }),
+      // switchMap cancela a requisição anterior automaticamente
+      switchMap(termo => this.pacienteService.listar(1, termo)),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
       next: (resposta) => {
         this.pacientes.set(resposta.results);
+        this.nextUrl.set(resposta.next);
         this.totalCadastrados.set(resposta.count);
         this.carregando.set(false);
       },
@@ -55,6 +66,58 @@ export class Pacientes {
         this.carregando.set(false);
       },
     });
+  }
+
+  ngAfterViewInit() {
+    this.setupIntersectionObserver();
+  }
+
+  ngOnDestroy() {
+    this.observer?.disconnect();
+  }
+
+  private setupIntersectionObserver() {
+    this.observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          this.carregarMais();
+        }
+      },
+      { rootMargin: '200px' }
+    );
+
+    // Observar quando o elemento sentinela existir no DOM
+    const check = () => {
+      const el = this.scrollSentinel()?.nativeElement;
+      if (el) {
+        this.observer!.observe(el);
+      } else {
+        // Tentar novamente após renderização
+        requestAnimationFrame(check);
+      }
+    };
+    check();
+  }
+
+  carregarMais() {
+    const url = this.nextUrl();
+    if (!url || this.carregandoMais() || this.carregando()) return;
+
+    this.carregandoMais.set(true);
+    this.pacienteService.listarPorUrl(url).subscribe({
+      next: (resposta) => {
+        this.pacientes.update(lista => [...lista, ...resposta.results]);
+        this.nextUrl.set(resposta.next);
+        this.carregandoMais.set(false);
+      },
+      error: () => {
+        this.carregandoMais.set(false);
+      },
+    });
+  }
+
+  recarregar() {
+    this.termoBusca.set('');
   }
 
   editarPaciente(paciente: Paciente) {

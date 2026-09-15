@@ -42,14 +42,14 @@
   @if (erro() && !carregando()) {
     <div class="error-container">
       <p class="error-text">{{ erro() }}</p>
-      <button (click)="carregarPacientes()" class="error-retry">
+      <button (click)="recarregar()" class="error-retry">
         Tentar novamente
       </button>
     </div>
   }
 
   <!-- Empty state (no patients at all) -->
-  @if (!carregando() && !erro() && pacientes().length === 0) {
+  @if (!carregando() && !erro() && pacientes().length === 0 && !termoBusca()) {
     <app-empty-state
       title="Nenhum paciente cadastrado"
       subtitle="Toque no botão + para adicionar">
@@ -60,7 +60,7 @@
   }
 
   <!-- Search empty state -->
-  @if (!carregando() && !erro() && pacientes().length > 0 && pacientesFiltrados().length === 0) {
+  @if (!carregando() && !erro() && pacientes().length === 0 && termoBusca()) {
     <app-empty-state
       title="Nenhum paciente encontrado"
       [subtitle]="'Não achamos resultados para \'' + termoBusca() + '\''">
@@ -71,7 +71,7 @@
   }
 
   <!-- ═══════════ DESKTOP TABLE (≥ 1024px) ═══════════ -->
-  @if (!carregando() && !erro() && pacientesFiltrados().length > 0) {
+  @if (!carregando() && !erro() && pacientes().length > 0) {
     <div class="table-wrapper desktop-only">
       <table class="pacientes-table">
         <thead>
@@ -85,7 +85,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (paciente of pacientesFiltrados(); track paciente.id) {
+          @for (paciente of pacientes(); track paciente.id) {
             <tr class="table-row" (click)="editarPaciente(paciente)">
               <!-- Paciente (avatar + nome) -->
               <td class="td-paciente">
@@ -132,9 +132,9 @@
   }
 
   <!-- ═══════════ MOBILE CARDS (< 1024px) ═══════════ -->
-  @if (!carregando() && !erro() && pacientesFiltrados().length > 0) {
+  @if (!carregando() && !erro() && pacientes().length > 0) {
     <div class="cards-wrapper mobile-only">
-      @for (paciente of pacientesFiltrados(); track paciente.id) {
+      @for (paciente of pacientes(); track paciente.id) {
         <app-card>
           <div
             (click)="editarPaciente(paciente)"
@@ -171,7 +171,16 @@
     </div>
   }
 
-
+  <!-- ═══════════ INFINITE SCROLL ═══════════ -->
+  @if (!carregando() && !erro() && pacientes().length > 0) {
+    @if (carregandoMais()) {
+      <div class="load-more-container">
+        <div class="spinner-small"></div>
+        <span class="load-more-text">Carregando mais...</span>
+      </div>
+    }
+    <div class="scroll-sentinel" #scrollSentinel></div>
+  }
 
   <!-- Confirm Delete Modal -->
   @if (confirmandoExclusao()) {
