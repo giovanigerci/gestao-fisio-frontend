@@ -1,5 +1,5 @@
 import { Component, inject, signal, computed, effect } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AgendamentoService, Agendamento } from '../../services/agendamento.service';
 import { PacienteService, Paciente } from '../../services/paciente.service';
 import { ClinicaService, Clinica } from '../../services/clinica.service';
@@ -31,6 +31,7 @@ export class Agenda {
   private pacienteService = inject(PacienteService);
   private clinicaService = inject(ClinicaService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   agendamentos = signal<Agendamento[]>([]);
   pacientes = signal<Paciente[]>([]);
@@ -154,6 +155,19 @@ export class Agenda {
   });
 
   constructor() {
+    const dataParam = this.route.snapshot.queryParamMap.get('data');
+    if (dataParam) {
+      const partes = dataParam.split('-');
+      if (partes.length === 3) {
+        const ano = +partes[0];
+        const mes = +partes[1] - 1;
+        const dia = +partes[2];
+        const dataRef = new Date(ano, mes, dia);
+        this.dataReferencia.set(dataRef);
+        this.dataSelecionada.set(dataParam);
+      }
+    }
+
     // Carregar pacientes e clínicas para lookup de nomes
     this.pacienteService.listar().subscribe({
       next: (resp) => this.pacientes.set(resp.results),

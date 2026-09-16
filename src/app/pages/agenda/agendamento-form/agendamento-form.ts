@@ -146,7 +146,7 @@ export class AgendamentoForm {
         next: (resp) => {
           this.salvando.set(false);
           if (resp.agendamentos_conflitantes.length === 0) {
-            this.router.navigate(['/agenda']);
+            this.router.navigate(['/agenda'], { queryParams: { data: this.data() } });
           } else {
             this.totalCriados.set(resp.agendamentos_criados.length);
             this.conflitos.set(resp.agendamentos_conflitantes.map(d => this.formatarData(d)));
@@ -164,7 +164,7 @@ export class AgendamentoForm {
 
       operacao.subscribe({
         next: () => {
-          this.router.navigate(['/agenda']);
+          this.router.navigate(['/agenda'], { queryParams: { data: this.data() } });
         },
         error: (err) => {
           this.salvando.set(false);
@@ -201,6 +201,10 @@ export class AgendamentoForm {
   }
 
   cancelar() {
-    this.router.navigate(['/agenda']);
+    if (this.data()) {
+      this.router.navigate(['/agenda'], { queryParams: { data: this.data() } });
+    } else {
+      this.router.navigate(['/agenda']);
+    }
   }
 }
