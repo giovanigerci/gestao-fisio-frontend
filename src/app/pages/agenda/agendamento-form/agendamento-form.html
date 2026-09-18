@@ -118,42 +118,51 @@
       </div>
     </div>
 
-    <!-- Checkboxes -->
-    <div style="display: flex; flex-direction: column; gap: 0.75rem; padding-top: 0.25rem;">
-      <label class="checkbox-field">
-        <input type="checkbox" [checked]="ehExperimental()" (change)="ehExperimental.set($any($event.target).checked)"
-          class="checkbox-input" />
-        <div class="checkbox-content">
-          <span class="checkbox-label">Aula experimental</span>
-          <span class="checkbox-hint">Marca este agendamento como aula experimental</span>
+    <!-- Opções -->
+    <div style="display: flex; flex-direction: column; gap: 1rem; padding-top: 0.5rem; padding-bottom: 0.5rem;">
+      <!-- Aula Experimental -->
+      <div class="option-card" (click)="ehExperimental.set(!ehExperimental())">
+        <div class="option-card-icon-wrapper">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+          </svg>
         </div>
-      </label>
+        <div class="option-card-content">
+          <span class="option-card-title">Aula experimental</span>
+          <span class="option-card-subtitle">Marca este agendamento como aula experimental</span>
+        </div>
+        <input type="checkbox" [checked]="ehExperimental()" class="option-card-toggle" style="pointer-events: none;" />
+      </div>
 
+      <!-- Repetir Semanalmente -->
       @if (!modoEdicao()) {
-      <label class="checkbox-field">
-        <input type="checkbox" [checked]="repetirSemanal()" (change)="repetirSemanal.set($any($event.target).checked)"
-          class="checkbox-input" />
-        <div class="checkbox-content">
-          <span class="checkbox-label">Repetir semanalmente</span>
-          <span class="checkbox-hint">Cria agendamentos recorrentes nas próximas semanas</span>
+      <div class="option-card" [style.align-items]="repetirSemanal() ? 'flex-start' : 'center'" (click)="repetirSemanal.set(!repetirSemanal())">
+        <div class="option-card-icon-wrapper">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+          </svg>
         </div>
-      </label>
+        <div class="option-card-content">
+          <span class="option-card-title">Repetir semanalmente</span>
+          <span class="option-card-subtitle">Cria agendamentos recorrentes nas próximas semanas</span>
+          
+          @if (repetirSemanal()) {
+          <div class="animate-in" style="margin-top: 16px;" (click)="$event.stopPropagation()">
+            <label class="form-label" style="font-size: 0.85rem;">Quantas semanas <span class="form-required">*</span></label>
+            <input type="number" [value]="repeticoes()" (input)="repeticoes.set(+$any($event.target).value)"
+              min="1" max="12" class="input-field" [class.input-field--error]="temErro('repeticoes')" placeholder="Ex: 4" style="background: var(--color-surface);" />
+            @if (temErro('repeticoes')) {
+              <p class="form-field-error" style="margin-top: 6px;">{{ mensagensErro('repeticoes').join(' ') }}</p>
+            } @else {
+              <span class="form-hint" style="margin-top: 6px; display: block;">De 1 a 12 semanas</span>
+            }
+          </div>
+          }
+        </div>
+        <input type="checkbox" [checked]="repetirSemanal()" class="option-card-toggle" style="pointer-events: none;" />
+      </div>
       }
     </div>
-
-    <!-- Repetições (visível apenas quando repetir semanal está marcado) -->
-    @if (repetirSemanal() && !modoEdicao()) {
-    <div>
-      <label class="form-label">Quantas vezes <span class="form-required">*</span></label>
-      <input type="number" [value]="repeticoes()" (input)="repeticoes.set(+$any($event.target).value)"
-        min="1" max="12" class="input-field" [class.input-field--error]="temErro('repeticoes')" placeholder="Ex: 4" />
-      @if (temErro('repeticoes')) {
-        <p class="form-field-error">{{ mensagensErro('repeticoes').join(' ') }}</p>
-      } @else {
-        <span class="form-hint">De 1 a 12 semanas</span>
-      }
-    </div>
-    }
 
     <!-- Actions -->
     <div class="form-actions">

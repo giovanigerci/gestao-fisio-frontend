@@ -108,34 +108,95 @@ input[type="date"].input-field {
   color: var(--color-text-secondary);
 }
 
-/* Toggle switch */
-.toggle-track {
-  position: relative;
+/* Option Card */
+.option-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: color-mix(in srgb, var(--color-surface) 60%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-border) 70%, transparent);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.option-card:hover {
+  border-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
+  background: color-mix(in srgb, var(--color-surface) 80%, transparent);
+}
+
+.option-card-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--color-surface) 80%, transparent);
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.option-card-icon-wrapper svg {
+  width: 24px;
+  height: 24px;
+}
+
+.option-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-grow: 1;
+}
+
+.option-card-title {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.option-card-subtitle {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+.option-card-toggle {
+  appearance: none;
+  -webkit-appearance: none;
   width: 44px;
   height: 24px;
+  background-color: var(--color-surface);
   border-radius: 12px;
-  background-color: var(--color-border);
+  position: relative;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  outline: none;
+  transition: background-color 0.3s;
+  flex-shrink: 0;
+  border: 1px solid var(--color-border);
 }
 
-.toggle-track.active {
-  background-color: var(--color-money);
-}
-
-.toggle-thumb {
+.option-card-toggle::after {
+  content: '';
   position: absolute;
-  top: 2px;
+  top: 1px;
   left: 2px;
   width: 20px;
   height: 20px;
+  background-color: var(--color-text-secondary);
   border-radius: 50%;
-  background-color: white;
-  transition: transform 0.2s ease;
+  transition: transform 0.3s, background-color 0.3s;
 }
 
-.toggle-track.active .toggle-thumb {
-  transform: translateX(20px);
+.option-card-toggle:checked {
+  background-color: color-mix(in srgb, var(--color-primary) 30%, var(--color-surface));
+  border-color: var(--color-primary);
+}
+
+.option-card-toggle:checked::after {
+  transform: translateX(18px);
+  background-color: var(--color-primary);
 }
 
 /* ─── Animations ─── */
