@@ -1,8 +1,6 @@
 import { Component, inject, signal, computed, effect } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AgendamentoService, Agendamento } from '../../services/agendamento.service';
-import { PacienteService, Paciente } from '../../services/paciente.service';
-import { ClinicaService, Clinica } from '../../services/clinica.service';
 import { Badge, BadgeVariant } from '../../shared/components/badge/badge';
 import { Card } from '../../shared/components/card/card';
 import { EmptyState } from '../../shared/components/empty-state/empty-state';
@@ -28,14 +26,10 @@ interface DiaAgenda {
 })
 export class Agenda {
   private agendamentoService = inject(AgendamentoService);
-  private pacienteService = inject(PacienteService);
-  private clinicaService = inject(ClinicaService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
 
   agendamentos = signal<Agendamento[]>([]);
-  pacientes = signal<Paciente[]>([]);
-  clinicas = signal<Clinica[]>([]);
   carregando = signal(true);
   erro = signal('');
   dataReferencia = signal(new Date());
@@ -168,20 +162,6 @@ export class Agenda {
       }
     }
 
-    // Carregar pacientes e clínicas para lookup de nomes
-    this.pacienteService.listar().subscribe({
-      next: (resp) => this.pacientes.set(resp.results),
-      error: () => {
-        this.erro.set('Erro ao carregar pacientes.');
-      },
-    });
-
-    this.clinicaService.listar().subscribe({
-      next: (resp) => this.clinicas.set(resp.results),
-      error: () => {
-        this.erro.set('Erro ao carregar clínicas.');
-      },
-    });
 
     // Sempre que a semana mudar, buscar agendamentos do intervalo correto
     effect(() => {
