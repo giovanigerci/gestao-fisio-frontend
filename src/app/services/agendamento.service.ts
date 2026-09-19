@@ -59,4 +59,12 @@ export class AgendamentoService {
   excluir(id: number) {
     return this.http.delete(`${this.url}${id}/`);
   }
+
+  confirmarDia(data: string) {
+    return this.http.patch<{
+      mensagem: string;
+      total_confirmados: number;
+      agendamentos: Agendamento[];
+    }>(`${this.url}confirmar-dia/`, {}, { params: { data } });
+  }
 }
