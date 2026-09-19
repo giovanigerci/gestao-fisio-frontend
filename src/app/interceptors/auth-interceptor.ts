@@ -2,7 +2,7 @@ import { HttpInterceptorFn, HttpErrorResponse, HttpContextToken } from '@angular
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { catchError, switchMap, throwError } from 'rxjs';
+import { catchError, switchMap, throwError, retry, timer } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { PerfilService } from '../services/perfil.service';
 
@@ -23,10 +23,21 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         return http
           .post(`${environment.apiUrl}/auth/token/refresh/`, {}, { withCredentials: true })
           .pipe(
+            retry({
+              count: 3,
+              delay: (error, retryCount) => {
+                if (error.status === 0 || error.status >= 500) {
+                  return timer(retryCount * 3000);
+                }
+                return throwError(() => error);
+              }
+            }),
             switchMap(() => next(reqComCredenciais)),
-            catchError((erroRefresh) => {
-              perfilService.limpar();
-              router.navigate(['/login']);
+            catchError((erroRefresh: HttpErrorResponse) => {
+              if (erroRefresh.status === 401 || erroRefresh.status === 403) {
+                perfilService.limpar();
+                router.navigate(['/login']);
+              }
               return throwError(() => erroRefresh);
             })
           );
