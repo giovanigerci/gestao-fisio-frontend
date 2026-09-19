@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, effect } from '@angular/core';
+import { Component, inject, signal, computed, effect, DestroyRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AgendamentoService, Agendamento } from '../../services/agendamento.service';
 import { Badge, BadgeVariant } from '../../shared/components/badge/badge';
@@ -28,6 +28,7 @@ export class Agenda {
   private agendamentoService = inject(AgendamentoService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private destroyRef = inject(DestroyRef);
 
   agendamentos = signal<Agendamento[]>([]);
   carregando = signal(true);
@@ -37,6 +38,9 @@ export class Agenda {
   agendamentoSelecionado = signal<Agendamento | null>(null);
   processandoAcao = signal(false);
   confirmandoExclusao = signal<Agendamento | null>(null);
+  mostrandoModalConfirmacao = signal(false);
+  processandoConfirmacaoDia = signal(false);
+  relogio = signal(new Date());
 
   corDaClinica = corDaClinica;
 
@@ -148,7 +152,91 @@ export class Agenda {
     }));
   });
 
+  expedienteEncerrado = computed(() => {
+    const dia = this.diaSelecionado();
+    if (!dia || dia.agendamentos.length === 0) return false;
+
+    const agora = this.relogio();
+    const hojeStr = this.formatarData(agora);
+
+    if (dia.data < hojeStr) {
+      return true;
+    }
+    if (dia.data > hojeStr) {
+      return false;
+    }
+
+    // Dia de hoje: verificar se o horário do último agendamento já passou
+    let maxHora = '00:00';
+    for (const ag of dia.agendamentos) {
+      const horaComp = (ag.hora_fim || ag.hora_inicio).substring(0, 5);
+      if (horaComp > maxHora) {
+        maxHora = horaComp;
+      }
+    }
+
+    const horaAtualStr = `${String(agora.getHours()).padStart(2, '0')}:${String(agora.getMinutes()).padStart(2, '0')}`;
+    return horaAtualStr >= maxHora;
+  });
+
+  dadosConfirmacaoDia = computed(() => {
+    const dia = this.diaSelecionado();
+    if (!dia) {
+      return {
+        estado: 'nenhum' as const,
+        pendentes: [],
+        cancelados: [],
+        realizados: [],
+        valorPendente: 0,
+        valorRealizado: 0,
+        totalSessoes: 0,
+      };
+    }
+
+    const ags = dia.agendamentos;
+    const pendentes = ags.filter(a => a.status === 'AG');
+    const cancelados = ags.filter(a => a.status === 'CA');
+    const realizados = ags.filter(a => a.status === 'RE');
+
+    const valorPendente = pendentes
+      .filter(a => !a.eh_experimental)
+      .reduce((sum, a) => sum + (Number(a.valor_calculado) || 0), 0);
+
+    const valorRealizado = realizados
+      .filter(a => !a.eh_experimental)
+      .reduce((sum, a) => sum + (Number(a.valor_calculado) || 0), 0);
+
+    const encerrado = this.expedienteEncerrado();
+
+    let estado: 'durante' | 'aguardando_confirmacao' | 'confirmado' | 'nenhum' = 'nenhum';
+
+    if (ags.length > 0) {
+      if (encerrado && pendentes.length > 0) {
+        estado = 'aguardando_confirmacao'; // Estado 2
+      } else if (encerrado && pendentes.length === 0 && realizados.length > 0) {
+        estado = 'confirmado'; // Estado 4
+      } else {
+        estado = 'durante'; // Estado 1
+      }
+    }
+
+    return {
+      estado,
+      pendentes,
+      cancelados,
+      realizados,
+      valorPendente,
+      valorRealizado,
+      totalSessoes: ags.length,
+    };
+  });
+
   constructor() {
+    const intervalId = setInterval(() => {
+      this.relogio.set(new Date());
+    }, 30000);
+    this.destroyRef.onDestroy(() => clearInterval(intervalId));
+
     const dataParam = this.route.snapshot.queryParamMap.get('data');
     if (dataParam) {
       const partes = dataParam.split('-');
@@ -161,7 +249,6 @@ export class Agenda {
         this.dataSelecionada.set(dataParam);
       }
     }
-
 
     // Sempre que a semana mudar, buscar agendamentos do intervalo correto
     effect(() => {
@@ -353,5 +440,43 @@ export class Agenda {
       return `${partes[2]}/${partes[1]}/${partes[0]}`;
     }
     return dataStr;
+  }
+
+  abrirModalConfirmacaoDia() {
+    this.mostrandoModalConfirmacao.set(true);
+  }
+
+  fecharModalConfirmacaoDia() {
+    this.mostrandoModalConfirmacao.set(false);
+  }
+
+  confirmarDia() {
+    const dia = this.diaSelecionado();
+    if (!dia) return;
+
+    this.processandoConfirmacaoDia.set(true);
+    this.erro.set('');
+
+    this.agendamentoService.confirmarDia(dia.data).subscribe({
+      next: (resp) => {
+        if (resp.agendamentos && resp.agendamentos.length > 0) {
+          const atualizadosMap = new Map(resp.agendamentos.map(a => [a.id, a]));
+          this.agendamentos.update(lista =>
+            lista.map(a => atualizadosMap.get(a.id) || a)
+          );
+        } else {
+          this.agendamentos.update(lista =>
+            lista.map(a => (a.data === dia.data && a.status === 'AG') ? { ...a, status: 'RE' as const } : a)
+          );
+        }
+        this.processandoConfirmacaoDia.set(false);
+        this.fecharModalConfirmacaoDia();
+      },
+      error: (err) => {
+        const mensagem = err.error?.erro || 'Erro ao confirmar atendimentos do dia.';
+        this.erro.set(mensagem);
+        this.processandoConfirmacaoDia.set(false);
+      }
+    });
   }
 }
