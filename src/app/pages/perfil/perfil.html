@@ -1,7 +1,7 @@
 <div class="form-page">
   <!-- Header -->
   <div class="form-header">
-    <button (click)="cancelar()" aria-label="Voltar" class="form-back-btn">
+    <button (click)="voltar()" aria-label="Voltar" class="form-back-btn">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
         class="form-back-icon">
         <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
@@ -26,13 +26,13 @@
     <!-- Avatar area -->
     <div class="form-avatar-area">
       <div class="avatar-container">
-        @if (uploadingFoto() || removendoFoto()) {
+        @if (processandoFoto()) {
         <div class="avatar-large">
           <div class="form-spinner"></div>
         </div>
-        } @else if (perfil.foto) {
-        <div class="avatar-large">
-          <img [src]="perfil.foto" alt="Foto de perfil" class="avatar-large-img" />
+        } @else if (fotoExibida(); as foto) {
+        <div class="avatar-large" [class.avatar-large--removendo]="remocaoPendente()">
+          <img [src]="foto" alt="Foto de perfil" class="avatar-large-img" />
         </div>
         } @else {
         <div class="avatar-large">
@@ -42,7 +42,7 @@
 
         <!-- Camera button -->
         <button type="button" (click)="fileInput.click()"
-          [disabled]="uploadingFoto() || removendoFoto()"
+          [disabled]="processandoFoto() || salvando()" aria-label="Alterar foto"
           class="avatar-camera-btn">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
             class="form-back-icon">
@@ -53,11 +53,24 @@
           </svg>
         </button>
 
-        <input #fileInput type="file" accept="image/*" class="hidden" (change)="onFotoSelecionada($event)" />
+        <input #fileInput type="file" accept="image/jpeg,image/png,image/webp" class="hidden"
+          (change)="onFotoSelecionada($event)" />
       </div>
 
+      <!-- Pending photo changes (applied on "Salvar") -->
+      @if (fotoPendente()) {
+      <p class="form-hint">Nova foto selecionada — será salva ao clicar em Salvar.</p>
+      } @else if (remocaoPendente()) {
+      <p class="form-hint">
+        A foto será removida ao clicar em Salvar.
+        <button type="button" (click)="desfazerRemocao()" class="form-action-link form-action-link--neutral">
+          Desfazer
+        </button>
+      </p>
+      }
+
       <!-- Remove photo -->
-      @if (perfil.foto && !uploadingFoto() && !removendoFoto()) {
+      @if ((fotoPendente() || (perfil.foto && !remocaoPendente())) && !processandoFoto() && !salvando()) {
       <button type="button" (click)="removerFoto()" class="form-action-link">
         Remover foto
       </button>
@@ -313,6 +326,13 @@
       </button>
     </div>
   </form>
+  }
+
+  <!-- Unsaved changes confirmation (Cancelar / leaving the route / logout) -->
+  @if (confirmacao(); as c) {
+  <app-confirm-modal [title]="c.titulo" [message]="c.mensagem" [confirmLabel]="c.confirmarLabel"
+    cancelLabel="Continuar editando" variant="danger"
+    (confirmed)="responderConfirmacao(true)" (cancelled)="responderConfirmacao(false)" />
   }
 </div>
 

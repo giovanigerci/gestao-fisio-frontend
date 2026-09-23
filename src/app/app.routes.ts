@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth-guard';
 import { guestGuard } from './guards/guest-guard';
+import { alteracoesPendentesGuard } from './guards/alteracoes-pendentes-guard';
 import { NotFound } from './pages/not-found/not-found';
 
 export const routes: Routes = [
@@ -21,7 +22,7 @@ export const routes: Routes = [
     { path: 'clinicas/novo', loadComponent: () => import('./pages/clinicas/clinica-form/clinica-form').then(m => m.ClinicaForm), canActivate: [authGuard] },
     { path: 'clinicas/:id/editar', loadComponent: () => import('./pages/clinicas/clinica-form/clinica-form').then(m => m.ClinicaForm), canActivate: [authGuard] },
     { path: 'financeiro', loadComponent: () => import('./pages/financeiro/financeiro').then(m => m.Financeiro), canActivate: [authGuard] },
-    { path: 'perfil', loadComponent: () => import('./pages/perfil/perfil').then(m => m.PerfilPage), canActivate: [authGuard] },
+    { path: 'perfil', loadComponent: () => import('./pages/perfil/perfil').then(m => m.PerfilPage), canActivate: [authGuard], canDeactivate: [alteracoesPendentesGuard] },
     { path: '**', component: NotFound },
 ];
 
