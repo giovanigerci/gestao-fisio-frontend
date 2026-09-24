@@ -1,12 +1,11 @@
-import { HttpInterceptorFn, HttpErrorResponse, HttpContextToken } from '@angular/common/http';
+import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { catchError, switchMap, throwError, retry, timer } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { PerfilService } from '../services/perfil.service';
-
-export const SKIP_AUTH_RETRY = new HttpContextToken<boolean>(() => false);
+import { SKIP_AUTH_RETRY } from './auth-context';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);

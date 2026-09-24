@@ -1,7 +1,8 @@
 import { Service, inject, signal, computed } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { tap, shareReplay, Observable, of } from 'rxjs';
+import { tap, shareReplay, Observable, of, map, catchError } from 'rxjs';
+import { SKIP_AUTH_RETRY } from '../interceptors/auth-context';
 
 export interface Perfil {
   id: number;
@@ -78,6 +79,24 @@ export class PerfilService {
       );
     }
     return this._perfilRequest$;
+  }
+
+  /**
+   * Consulta se há sessão ativa sem acionar o refresh do interceptor
+   * (usado pelo guestGuard: um 401 aqui só significa "visitante").
+   * Se houver sessão, o perfil já fica em cache para o authGuard e a nav-bar.
+   */
+  verificarSessao(): Observable<boolean> {
+    return this.http.get<Perfil>(this.url, {
+      context: new HttpContext().set(SKIP_AUTH_RETRY, true),
+    }).pipe(
+      tap((perfil) => {
+        this._perfil.set(perfil);
+        this._carregado = true;
+      }),
+      map(() => true),
+      catchError(() => of(false))
+    );
   }
 
   atualizar(dados: Partial<Perfil>) {
