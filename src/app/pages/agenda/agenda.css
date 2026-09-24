@@ -104,6 +104,13 @@
   box-shadow: 0 4px 12px color-mix(in srgb, var(--color-primary) 30%, transparent);
 }
 
+/* Hover só em dispositivos com mouse (no touch o hover fica "preso" após o toque) */
+@media (hover: hover) {
+  .agenda-day-item:not(.agenda-day-item--selected):hover {
+    background: var(--color-surface-hover);
+  }
+}
+
 .agenda-day-abbrev {
   font-size: 0.625rem;
   font-weight: 600;
@@ -146,6 +153,15 @@
   width: 4px;
   height: 4px;
   border-radius: 50%;
+}
+
+/* Desktop: dias mais largos (vale para todos, para o layout não mudar ao trocar de dia) */
+@media (min-width: 1024px) {
+  .agenda-day-item {
+    min-width: 88px;
+    padding: 12px 20px;
+    border-radius: 16px;
+  }
 }
 
 /* ─── Selected Day Section ─── */
