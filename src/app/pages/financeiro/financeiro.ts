@@ -3,6 +3,7 @@ import { FinanceiroService, ResumoClinica } from '../../services/financeiro.serv
 import { EmptyState } from '../../shared/components/empty-state/empty-state';
 import { ProgressBar } from '../../shared/components/progress-bar/progress-bar';
 import { corDaClinica } from '../../shared/utils/clinic-colors';
+import { formatarDataISO, parseDataISO } from '../../shared/utils/datas';
 
 @Component({
   selector: 'app-financeiro',
@@ -14,7 +15,7 @@ export class Financeiro {
   private financeiroService = inject(FinanceiroService);
 
   periodo = signal<'mes' | 'semana'>('mes');
-  dataReferencia = signal<string>(new Date().toISOString().split('T')[0]);
+  dataReferencia = signal<string>(formatarDataISO());
   porClinica = signal<ResumoClinica[]>([]);
   totalGeral = signal(0);
   carregando = signal(true);
@@ -37,14 +38,14 @@ export class Financeiro {
   });
 
   periodoLabel = computed(() => {
-    const data = new Date(this.dataReferencia() + 'T12:00:00');
+    const data = parseDataISO(this.dataReferencia());
     const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
     const mesesCompletos = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 
     if (this.periodo() === 'mes') {
       return `${mesesCompletos[data.getMonth()]} ${data.getFullYear()}`;
     } else {
-      const d = new Date(this.dataReferencia() + 'T12:00:00');
+      const d = parseDataISO(this.dataReferencia());
       const dia = d.getDay();
       const diff = dia === 0 ? 6 : dia - 1; // Considerar segunda-feira como início
       d.setDate(d.getDate() - diff);
@@ -102,27 +103,27 @@ export class Financeiro {
 
   trocarPeriodo(periodo: 'mes' | 'semana') {
     this.periodo.set(periodo);
-    this.dataReferencia.set(new Date().toISOString().split('T')[0]);
+    this.dataReferencia.set(formatarDataISO());
   }
 
   periodoAnterior() {
-    const d = new Date(this.dataReferencia() + 'T12:00:00');
+    const d = parseDataISO(this.dataReferencia());
     if (this.periodo() === 'mes') {
-      d.setMonth(d.getMonth() - 1);
+      d.setMonth(d.getMonth() - 1, 1); // dia 1: evita pular mês a partir do dia 29–31
     } else {
       d.setDate(d.getDate() - 7);
     }
-    this.dataReferencia.set(d.toISOString().split('T')[0]);
+    this.dataReferencia.set(formatarDataISO(d));
   }
 
   proximoPeriodo() {
-    const d = new Date(this.dataReferencia() + 'T12:00:00');
+    const d = parseDataISO(this.dataReferencia());
     if (this.periodo() === 'mes') {
-      d.setMonth(d.getMonth() + 1);
+      d.setMonth(d.getMonth() + 1, 1);
     } else {
       d.setDate(d.getDate() + 7);
     }
-    this.dataReferencia.set(d.toISOString().split('T')[0]);
+    this.dataReferencia.set(formatarDataISO(d));
   }
 
   formatarValor(valor: number): string {

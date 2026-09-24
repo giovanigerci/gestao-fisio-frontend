@@ -4,6 +4,7 @@ import { PacienteService } from '../../../services/paciente.service';
 import { TelefoneMaskDirective } from '../../../shared/directives/telefone-mask.directive';
 import { CpfMaskDirective } from '../../../shared/directives/cpf-mask.directive';
 import { tratarErrosApi, temErro, mensagensErro } from '../../../shared/utils/form-errors';
+import { formatarDataISO } from '../../../shared/utils/datas';
 
 @Component({
   selector: 'app-paciente-form',
@@ -34,11 +35,11 @@ export class PacienteForm {
   historicoMedico = signal('');
 
   // Limites para data de nascimento
-  readonly hoje = new Date().toISOString().split('T')[0];
+  readonly hoje = formatarDataISO();
   readonly dataMinima = (() => {
     const d = new Date();
     d.setFullYear(d.getFullYear() - 120);
-    return d.toISOString().split('T')[0];
+    return formatarDataISO(d);
   })();
 
   readonly dataValida = computed(() => {

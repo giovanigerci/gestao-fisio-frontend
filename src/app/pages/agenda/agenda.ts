@@ -7,6 +7,7 @@ import { EmptyState } from '../../shared/components/empty-state/empty-state';
 import { ProgressBar } from '../../shared/components/progress-bar/progress-bar';
 import { ConfirmModal } from '../../shared/components/confirm-modal/confirm-modal';
 import { corDaClinica } from '../../shared/utils/clinic-colors';
+import { formatarDataISO } from '../../shared/utils/datas';
 
 interface DiaAgenda {
   data: string;
@@ -34,7 +35,7 @@ export class Agenda {
   carregando = signal(true);
   erro = signal('');
   dataReferencia = signal(new Date());
-  dataSelecionada = signal(this.formatarData(new Date()));
+  dataSelecionada = signal(formatarDataISO(new Date()));
   agendamentoSelecionado = signal<Agendamento | null>(null);
   processandoAcao = signal(false);
   confirmandoExclusao = signal<Agendamento | null>(null);
@@ -84,7 +85,7 @@ export class Agenda {
     for (let i = 0; i < 7; i++) {
       const d = new Date(inicio);
       d.setDate(d.getDate() + i);
-      const dataStr = this.formatarData(d);
+      const dataStr = formatarDataISO(d);
 
       const agendamentosDoDia = todosAgendamentos
         .filter(a => a.data === dataStr)
@@ -157,7 +158,7 @@ export class Agenda {
     if (!dia || dia.agendamentos.length === 0) return false;
 
     const agora = this.relogio();
-    const hojeStr = this.formatarData(agora);
+    const hojeStr = formatarDataISO(agora);
 
     if (dia.data < hojeStr) {
       return true;
@@ -252,8 +253,8 @@ export class Agenda {
 
     // Sempre que a semana mudar, buscar agendamentos do intervalo correto
     effect(() => {
-      const dataInicio = this.formatarData(this.inicioSemana());
-      const dataFim = this.formatarData(this.fimSemana());
+      const dataInicio = formatarDataISO(this.inicioSemana());
+      const dataFim = formatarDataISO(this.fimSemana());
       this.carregarAgendamentos(dataInicio, dataFim);
     });
   }
@@ -262,8 +263,8 @@ export class Agenda {
     if (!dataInicio || !dataFim) {
       const inicio = this.inicioSemana();
       const fim = this.fimSemana();
-      dataInicio = this.formatarData(inicio);
-      dataFim = this.formatarData(fim);
+      dataInicio = formatarDataISO(inicio);
+      dataFim = formatarDataISO(fim);
     }
 
     this.carregando.set(true);
@@ -300,7 +301,7 @@ export class Agenda {
 
   irParaHoje() {
     this.dataReferencia.set(new Date());
-    this.dataSelecionada.set(this.formatarData(new Date()));
+    this.dataSelecionada.set(formatarDataISO(new Date()));
   }
 
   selecionarDia(data: string) {
@@ -424,13 +425,6 @@ export class Agenda {
       case 'CA': return 'Cancelado';
       default: return status;
     }
-  }
-
-  formatarData(d: Date): string {
-    const ano = d.getFullYear();
-    const mes = String(d.getMonth() + 1).padStart(2, '0');
-    const dia = String(d.getDate()).padStart(2, '0');
-    return `${ano}-${mes}-${dia}`;
   }
 
   formatarDataBR(dataStr: string): string {
