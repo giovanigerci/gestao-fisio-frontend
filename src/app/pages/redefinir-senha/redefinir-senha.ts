@@ -1,11 +1,12 @@
 import { Component, inject, signal, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { tratarErrosApi, temErro, mensagensErro } from '../../shared/utils/form-errors';
+import { tratarErrosApi, temErro, mensagensErro, limparErro } from '../../shared/utils/form-errors';
+import { RequisitosSenha } from '../../shared/components/requisitos-senha/requisitos-senha';
 
 @Component({
   selector: 'app-redefinir-senha',
-  imports: [RouterLink],
+  imports: [RouterLink, RequisitosSenha],
   templateUrl: './redefinir-senha.html',
   styleUrl: './redefinir-senha.css',
   encapsulation: ViewEncapsulation.None,
@@ -49,6 +50,11 @@ export class RedefinirSenha implements OnInit {
 
   mensagensErro(campo: string): string[] {
     return mensagensErro(this.erros(), campo);
+  }
+
+  aoDigitarSenha(valor: string) {
+    this.novaSenha.set(valor);
+    limparErro(this.erros, 'nova_senha');
   }
 
   redefinir() {

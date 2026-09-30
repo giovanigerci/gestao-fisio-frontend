@@ -245,7 +245,7 @@
           <label class="form-label">Nova Senha</label>
           <div class="senha-input-wrapper">
             <input [type]="mostrarNovaSenha() ? 'text' : 'password'" autocomplete="new-password"
-              [value]="novaSenha()" (input)="novaSenha.set($any($event.target).value)"
+              [value]="novaSenha()" (input)="aoDigitarNovaSenha($any($event.target).value)"
               [class]="'input-field' + (temErroSenha('nova_senha') ? ' input-field--error' : '')"
               placeholder="Mínimo 8 caracteres" />
             <button type="button" (click)="mostrarNovaSenha.set(!mostrarNovaSenha())"
@@ -264,9 +264,7 @@
               }
             </button>
           </div>
-          @if (temErroSenha('nova_senha')) {
-          <p class="form-field-error">{{ mensagensErroSenha('nova_senha').join(' ') }}</p>
-          }
+          <app-requisitos-senha [senha]="novaSenha()" [erro]="temErroSenha('nova_senha')" />
         </div>
 
         <!-- Confirmar Senha -->

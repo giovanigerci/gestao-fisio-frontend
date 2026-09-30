@@ -5,8 +5,9 @@ import { PerfilService, Perfil } from '../../services/perfil.service';
 import { AuthService } from '../../services/auth.service';
 import { TelefoneMaskDirective } from '../../shared/directives/telefone-mask.directive';
 import { ConfirmModal } from '../../shared/components/confirm-modal/confirm-modal';
+import { RequisitosSenha } from '../../shared/components/requisitos-senha/requisitos-senha';
 import { ComAlteracoesPendentes } from '../../guards/alteracoes-pendentes-guard';
-import { tratarErrosApi, temErro, mensagensErro } from '../../shared/utils/form-errors';
+import { tratarErrosApi, temErro, mensagensErro, limparErro } from '../../shared/utils/form-errors';
 
 const TIPOS_FOTO_PERMITIDOS = ['image/jpeg', 'image/png', 'image/webp'];
 const TAMANHO_MAXIMO_FOTO = 5 * 1024 * 1024;
@@ -19,7 +20,7 @@ interface Confirmacao {
 
 @Component({
   selector: 'app-perfil',
-  imports: [TelefoneMaskDirective, ConfirmModal],
+  imports: [TelefoneMaskDirective, ConfirmModal, RequisitosSenha],
   templateUrl: './perfil.html',
   styleUrls: ['../../../styles/form-page.css', './perfil.css'],
   host: {
@@ -206,6 +207,11 @@ export class PerfilPage implements ComAlteracoesPendentes {
 
   mensagensErroSenha(campo: string): string[] {
     return mensagensErro(this.errosSenha(), campo);
+  }
+
+  aoDigitarNovaSenha(valor: string) {
+    this.novaSenha.set(valor);
+    limparErro(this.errosSenha, 'nova_senha');
   }
 
   toggleTrocarSenha() {

@@ -48,7 +48,7 @@
                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />
               </svg>
               <input id="nova-senha" [type]="mostrarNovaSenha() ? 'text' : 'password'" autocomplete="new-password"
-                placeholder="No mínimo 8 caracteres" [value]="novaSenha()" (input)="novaSenha.set($any($event.target).value)"
+                placeholder="No mínimo 8 caracteres" [value]="novaSenha()" (input)="aoDigitarSenha($any($event.target).value)"
                 [class]="'form-field__input form-field__input--has-toggle' + (temErro('nova_senha') ? ' form-field__input--error' : '')" />
               <button type="button" (click)="mostrarNovaSenha.set(!mostrarNovaSenha())"
                 [attr.aria-label]="mostrarNovaSenha() ? 'Ocultar senha' : 'Mostrar senha'"
@@ -66,9 +66,7 @@
                 }
               </button>
             </div>
-            @if (temErro('nova_senha')) {
-            <p class="field-error">{{ mensagensErro('nova_senha').join(' ') }}</p>
-            }
+            <app-requisitos-senha [senha]="novaSenha()" [erro]="temErro('nova_senha')" />
           </div>
 
           <!-- Confirmar Senha -->
