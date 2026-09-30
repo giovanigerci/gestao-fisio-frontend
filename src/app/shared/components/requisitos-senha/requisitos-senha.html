@@ -1,0 +1,10 @@
+<ul class="requisitos-senha" aria-live="polite">
+  @for (requisito of requisitos(); track requisito.texto) {
+  <li class="requisitos-senha__item" [class.requisitos-senha__item--ok]="requisito.ok"
+    [class.requisitos-senha__item--erro]="requisito.falhou"
+    [attr.aria-label]="requisito.texto + (requisito.falhou ? ': não atendido' : requisito.ok ? ': atendido' : '')">
+    <span class="requisitos-senha__icone" aria-hidden="true">{{ requisito.falhou ? '✕' : requisito.ok ? '✓' : '•' }}</span>
+    {{ requisito.texto }}
+  </li>
+  }
+</ul>

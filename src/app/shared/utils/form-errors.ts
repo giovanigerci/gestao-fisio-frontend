@@ -10,7 +10,6 @@ export function tratarErrosApi(
   erroGeralSignal: WritableSignal<string>,
   mensagemPadrao: string = 'Ocorreu um erro. Tente novamente.'
 ): void {
-  // Reseta os signals
   errosSignal.set({});
   erroGeralSignal.set('');
 
@@ -71,4 +70,10 @@ export function temErro(erros: Record<string, string[]>, campo: string): boolean
 
 export function mensagensErro(erros: Record<string, string[]>, campo: string): string[] {
   return erros[campo] || [];
+}
+
+/** Remove o erro de um campo (ex: quando o usuário volta a editá-lo). */
+export function limparErro(errosSignal: WritableSignal<Record<string, string[]>>, campo: string): void {
+  if (!(campo in errosSignal())) return;
+  errosSignal.update(({ [campo]: _removido, ...resto }) => resto);
 }

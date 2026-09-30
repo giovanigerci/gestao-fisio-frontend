@@ -1,0 +1,31 @@
+.requisitos-senha {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.requisitos-senha__item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  transition: color 0.15s ease;
+}
+
+.requisitos-senha__item--ok {
+  color: var(--color-money);
+}
+
+.requisitos-senha__item--erro {
+  color: var(--color-danger);
+}
+
+.requisitos-senha__icone {
+  width: 12px;
+  text-align: center;
+  font-weight: 700;
+}
