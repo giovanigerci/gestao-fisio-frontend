@@ -6,6 +6,57 @@
   Only page-specific additions go here.
 */
 
+.registrar-codigo__intro {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+.registrar-codigo__intro strong {
+  color: var(--color-text-primary);
+}
+
+.registrar-codigo__input {
+  padding-left: 14px; 
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.5em;
+}
+
+.registrar-codigo__sucesso {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--color-money);
+}
+
+.registrar-codigo__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.registrar-codigo__link {
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.registrar-codigo__link:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.registrar-codigo__link:disabled {
+  cursor: not-allowed;
+  color: var(--color-text-muted);
+}
+
 /* ─── Scrollable adjustment for many fields ─── */
 @media (max-height: 700px) {
   .login-page {

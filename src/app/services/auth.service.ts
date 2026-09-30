@@ -13,6 +13,15 @@ export interface RegistroResponse {
     email: string;
 }
 
+export interface DadosCadastro {
+    username: string;
+    email: string;
+    password: string;
+    telefone: string;
+    especialidade: string;
+    crefito: string;
+}
+
 @Service()
 export class AuthService {
     private http = inject(HttpClient);
@@ -28,7 +37,15 @@ export class AuthService {
         );
     }
 
-    registrar(dados: { username: string; password: string; telefone: string; especialidade: string; crefito: string }) {
+    enviarCodigoCadastro(dados: DadosCadastro) {
+        return this.http.post<{ detail: string }>(
+            `${environment.apiUrl}/auth/registrar/enviar-codigo/`,
+            dados,
+            { withCredentials: true }
+        );
+    }
+
+    registrar(dados: DadosCadastro & { codigo: string }) {
         return this.http.post<RegistroResponse>(
             `${environment.apiUrl}/auth/registrar/`,
             dados,
