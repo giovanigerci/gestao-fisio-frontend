@@ -63,9 +63,9 @@
     <!-- Valor por atendimento -->
     <div>
       <label class="form-label">Valor por atendimento <span class="form-required">*</span></label>
-      <input type="text" inputmode="decimal" [value]="valorPorAtendimento()"
-        (input)="valorPorAtendimento.set($any($event.target).value)" class="input-field" 
-        [class.input-field--error]="temErro('valor_por_atendimento')" placeholder="40.00" />
+      <input type="text" inputmode="numeric" [appMoedaMask]="valorPorAtendimento()"
+        (valorLimpo)="valorPorAtendimento.set($event)" class="input-field"
+        [class.input-field--error]="temErro('valor_por_atendimento')" placeholder="40,00" />
       @if (temErro('valor_por_atendimento')) {
         <p class="form-field-error">{{ mensagensErro('valor_por_atendimento').join(' ') }}</p>
       }

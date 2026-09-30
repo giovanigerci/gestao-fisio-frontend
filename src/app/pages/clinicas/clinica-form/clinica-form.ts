@@ -2,11 +2,12 @@ import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ClinicaService } from '../../../services/clinica.service';
 import { TelefoneMaskDirective } from '../../../shared/directives/telefone-mask.directive';
+import { MoedaMaskDirective } from '../../../shared/directives/moeda-mask.directive';
 import { tratarErrosApi, temErro, mensagensErro } from '../../../shared/utils/form-errors';
 
 @Component({
   selector: 'app-clinica-form',
-  imports: [TelefoneMaskDirective],
+  imports: [TelefoneMaskDirective, MoedaMaskDirective],
   templateUrl: './clinica-form.html',
   styleUrls: ['../../../../styles/form-page.css', './clinica-form.css'],
 })
