@@ -33,7 +33,7 @@
     <!-- Nome -->
     <div>
       <label class="form-label">Nome <span class="form-required">*</span></label>
-      <input [value]="nome()" (input)="nome.set($any($event.target).value)" class="input-field"
+      <input maxlength="150" [value]="nome()" (input)="nome.set($any($event.target).value)" class="input-field"
         [class.input-field--error]="temErro('nome')" placeholder="Nome da clínica" />
       @if (temErro('nome')) {
         <p class="form-field-error">{{ mensagensErro('nome').join(' ') }}</p>
@@ -43,7 +43,7 @@
     <!-- Endereço -->
     <div>
       <label class="form-label">Endereço <span class="form-required">*</span></label>
-      <input [value]="endereco()" (input)="endereco.set($any($event.target).value)" class="input-field"
+      <input maxlength="255" [value]="endereco()" (input)="endereco.set($any($event.target).value)" class="input-field"
         [class.input-field--error]="temErro('endereco')" placeholder="Rua, número, bairro, cidade..." />
       @if (temErro('endereco')) {
         <p class="form-field-error">{{ mensagensErro('endereco').join(' ') }}</p>

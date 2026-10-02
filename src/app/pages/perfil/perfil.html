@@ -105,7 +105,7 @@
     <!-- Nome -->
     <div>
       <label class="form-label">Nome</label>
-      <input [value]="firstName()" (input)="firstName.set($any($event.target).value)" class="input-field"
+      <input maxlength="150" [value]="firstName()" (input)="firstName.set($any($event.target).value)" class="input-field"
         [class.input-field--error]="temErro('first_name')" placeholder="Seu nome" />
       @if (temErro('first_name')) {
         <p class="form-field-error">{{ mensagensErro('first_name').join(' ') }}</p>
@@ -115,7 +115,7 @@
     <!-- Sobrenome -->
     <div>
       <label class="form-label">Sobrenome</label>
-      <input [value]="lastName()" (input)="lastName.set($any($event.target).value)" class="input-field"
+      <input maxlength="150" [value]="lastName()" (input)="lastName.set($any($event.target).value)" class="input-field"
         [class.input-field--error]="temErro('last_name')" placeholder="Seu sobrenome" />
       @if (temErro('last_name')) {
         <p class="form-field-error">{{ mensagensErro('last_name').join(' ') }}</p>
@@ -125,7 +125,7 @@
     <!-- E-mail -->
     <div>
       <label class="form-label">E-mail</label>
-      <input type="email" [value]="email()" (input)="email.set($any($event.target).value)" class="input-field"
+      <input maxlength="254" type="email" [value]="email()" (input)="email.set($any($event.target).value)" class="input-field"
         [class.input-field--error]="temErro('email')" placeholder="email@exemplo.com" />
       @if (temErro('email')) {
         <p class="form-field-error">{{ mensagensErro('email').join(' ') }}</p>
@@ -145,7 +145,7 @@
     <!-- Especialidade -->
     <div>
       <label class="form-label">Especialidade</label>
-      <input [value]="especialidade()" (input)="especialidade.set($any($event.target).value)" class="input-field"
+      <input maxlength="100" [value]="especialidade()" (input)="especialidade.set($any($event.target).value)" class="input-field"
         [class.input-field--error]="temErro('especialidade')" placeholder="Ex: Fisioterapia Ortopédica" />
       @if (temErro('especialidade')) {
         <p class="form-field-error">{{ mensagensErro('especialidade').join(' ') }}</p>
@@ -155,7 +155,7 @@
     <!-- CREFITO -->
     <div>
       <label class="form-label">CREFITO</label>
-      <input [value]="crefito()" (input)="crefito.set($any($event.target).value)"
+      <input maxlength="15" [value]="crefito()" (input)="crefito.set($any($event.target).value)"
         [class]="'input-field' + (temErro('crefito') ? ' input-field--error' : '')"
         placeholder="CREFITO-X/000000" />
       @if (temErro('crefito')) {
@@ -215,7 +215,7 @@
         <div>
           <label class="form-label">Senha Atual</label>
           <div class="senha-input-wrapper">
-            <input [type]="mostrarSenhaAtual() ? 'text' : 'password'" autocomplete="current-password"
+            <input maxlength="128" [type]="mostrarSenhaAtual() ? 'text' : 'password'" autocomplete="current-password"
               [value]="senhaAtual()" (input)="senhaAtual.set($any($event.target).value)"
               [class]="'input-field' + (temErroSenha('senha_atual') ? ' input-field--error' : '')"
               placeholder="Sua senha atual" />
@@ -244,7 +244,7 @@
         <div>
           <label class="form-label">Nova Senha</label>
           <div class="senha-input-wrapper">
-            <input [type]="mostrarNovaSenha() ? 'text' : 'password'" autocomplete="new-password"
+            <input maxlength="128" [type]="mostrarNovaSenha() ? 'text' : 'password'" autocomplete="new-password"
               [value]="novaSenha()" (input)="aoDigitarNovaSenha($any($event.target).value)"
               [class]="'input-field' + (temErroSenha('nova_senha') ? ' input-field--error' : '')"
               placeholder="Mínimo 8 caracteres" />
@@ -271,7 +271,7 @@
         <div>
           <label class="form-label">Confirmar Nova Senha</label>
           <div class="senha-input-wrapper">
-            <input [type]="mostrarConfirmarSenha() ? 'text' : 'password'" autocomplete="new-password"
+            <input maxlength="128" [type]="mostrarConfirmarSenha() ? 'text' : 'password'" autocomplete="new-password"
               [value]="confirmarSenha()" (input)="confirmarSenha.set($any($event.target).value)"
               [class]="'input-field' + (temErroSenha('confirmar_senha') ? ' input-field--error' : '')"
               placeholder="Repita a nova senha" />
