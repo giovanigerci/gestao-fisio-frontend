@@ -33,7 +33,7 @@
     <!-- Nome -->
     <div>
       <label class="form-label">Nome <span class="form-required">*</span></label>
-      <input [value]="nome()" (input)="nome.set($any($event.target).value)" class="input-field"
+      <input maxlength="100" [value]="nome()" (input)="nome.set($any($event.target).value)" class="input-field"
         [class.input-field--error]="temErro('nome')" placeholder="Nome completo" />
       @if (temErro('nome')) {
         <p class="form-field-error">{{ mensagensErro('nome').join(' ') }}</p>
@@ -63,7 +63,7 @@
     <!-- Email -->
     <div>
       <label class="form-label">E-mail</label>
-      <input type="email" [value]="email()" (input)="email.set($any($event.target).value)" class="input-field"
+      <input maxlength="254" type="email" [value]="email()" (input)="email.set($any($event.target).value)" class="input-field"
         [class.input-field--error]="temErro('email')" placeholder="email@exemplo.com" />
       @if (temErro('email')) {
         <p class="form-field-error">{{ mensagensErro('email').join(' ') }}</p>
@@ -91,7 +91,7 @@
     <!-- Endereço -->
     <div>
       <label class="form-label">Endereço</label>
-      <input [value]="endereco()" (input)="endereco.set($any($event.target).value)" class="input-field"
+      <input maxlength="255" [value]="endereco()" (input)="endereco.set($any($event.target).value)" class="input-field"
         [class.input-field--error]="temErro('endereco')" placeholder="Rua, número, bairro..." />
       @if (temErro('endereco')) {
         <p class="form-field-error">{{ mensagensErro('endereco').join(' ') }}</p>
@@ -101,8 +101,12 @@
     <!-- Histórico médico -->
     <div>
       <label class="form-label">Histórico médico</label>
-      <textarea [value]="historicoMedico()" (input)="historicoMedico.set($any($event.target).value)" rows="3"
+      <textarea [maxLength]="LIMITE_HISTORICO" [value]="historicoMedico()" (input)="historicoMedico.set($any($event.target).value)" rows="3"
         class="input-field resize-none" [class.input-field--error]="temErro('historico_medico')" placeholder="Observações médicas relevantes..."></textarea>
+      @if (mostrarContadorHistorico()) {
+        <p class="form-hint contador-historico" [class.contador-historico--limite]="historicoMedico().length >= LIMITE_HISTORICO"
+          aria-live="polite">{{ contadorHistorico() }} caracteres</p>
+      }
       @if (temErro('historico_medico')) {
         <p class="form-field-error">{{ mensagensErro('historico_medico').join(' ') }}</p>
       }

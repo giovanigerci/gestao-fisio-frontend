@@ -1,1 +1,9 @@
 /* Estilos globais movidos para src/styles/forms.css */
+
+.contador-historico {
+  text-align: right;
+}
+
+.contador-historico--limite {
+  color: var(--color-danger);
+}

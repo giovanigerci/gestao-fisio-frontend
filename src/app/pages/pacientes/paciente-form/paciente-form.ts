@@ -34,6 +34,12 @@ export class PacienteForm {
   endereco = signal('');
   historicoMedico = signal('');
 
+  readonly LIMITE_HISTORICO = 10000;
+  readonly mostrarContadorHistorico = computed(() => this.historicoMedico().length >= this.LIMITE_HISTORICO * 0.8);
+  readonly contadorHistorico = computed(
+    () => `${this.historicoMedico().length.toLocaleString('pt-BR')} / ${this.LIMITE_HISTORICO.toLocaleString('pt-BR')}`
+  );
+
   // Limites para data de nascimento
   readonly hoje = formatarDataISO();
   readonly dataMinima = (() => {
