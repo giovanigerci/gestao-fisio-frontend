@@ -52,9 +52,7 @@ export class Agenda {
 
   inicioSemana = computed(() => {
     const d = new Date(this.dataReferencia());
-    const dia = d.getDay();
-    const diff = dia === 0 ? 6 : dia - 1; // Segunda = início
-    d.setDate(d.getDate() - diff);
+    d.setDate(d.getDate() - d.getDay()); // Domingo = início (getDay(): 0 = domingo)
     d.setHours(0, 0, 0, 0);
     return d;
   });
