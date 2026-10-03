@@ -35,6 +35,14 @@ describe('Financeiro', () => {
     expect(component.periodoLabel()).toBe('Fevereiro 2026');
   });
 
+  it('semana vai de domingo a sábado, igual à agenda', () => {
+    component.trocarPeriodo('semana');
+    expect(component.periodoLabel()).toBe('25 Jan - 31 Jan');
+
+    component.proximoPeriodo();
+    expect(component.periodoLabel()).toBe('1 Fev - 7 Fev');
+  });
+
   it('navega por semana em passos de 7 dias', () => {
     component.trocarPeriodo('semana');
     component.proximoPeriodo();

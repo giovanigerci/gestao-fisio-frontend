@@ -46,9 +46,7 @@ export class Financeiro {
       return `${mesesCompletos[data.getMonth()]} ${data.getFullYear()}`;
     } else {
       const d = parseDataISO(this.dataReferencia());
-      const dia = d.getDay();
-      const diff = dia === 0 ? 6 : dia - 1; // Considerar segunda-feira como início
-      d.setDate(d.getDate() - diff);
+      d.setDate(d.getDate() - d.getDay()); // Domingo a sábado
 
       const inicio = new Date(d);
       d.setDate(d.getDate() + 6);
