@@ -389,11 +389,20 @@
 /* Rosca com o total no centro */
 .fin-rosca {
   position: relative;
+  isolation: isolate;
+}
+
+/* O canvas fica na frente do total: aparece pelo buraco da rosca, mas o tooltip (desenhado no canvas) o cobre */
+.fin-rosca app-grafico {
+  display: block;
+  position: relative;
+  z-index: 1;
 }
 
 .fin-rosca-centro {
   position: absolute;
   inset: 0;
+  z-index: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
