@@ -44,7 +44,7 @@ Telas autenticadas precisam do backend rodando localmente.
 - Foto de perfil: `POST /api/auth/me/foto/` (multipart, campo `foto`; JPEG/PNG/WEBP até 5 MB) e `DELETE` no mesmo endpoint. Na tela de perfil a foto só é enviada/removida ao clicar em "Salvar".
 - Clínicas e pacientes: listagem paginada (`?page=`, `?search=`, total em `count`) e `/opcoes/` (`[{id, nome}]`) para dropdowns.
 - Agendamentos: `?data_inicio=&data_fim=`; status individual via `PATCH /api/agendamentos/{id}/`; `POST /api/agendamentos/recorrente/`; `PATCH /api/agendamentos/confirmar-dia/?data=YYYY-MM-DD`.
-- Receita: `GET /api/resumo-financeiro/?periodo=mes|semana&data=YYYY-MM-DD`.
+- Receita: `GET /api/resumo-financeiro/?periodo=mes|semana&data=YYYY-MM-DD`. A semana vai de domingo a sábado, igual na agenda, no rótulo do financeiro e no backend — mantenha os três alinhados.
 - Não existem `/vinculos/`, `/agendamentos/blocos/`, `/financeiro/*` nem `/pacientes/count/`.
 - Erros de validação vêm como `{campo: ["mensagem"]}`; trate com `tratarErrosApi` de `form-errors.ts`.
 - Falta um dado? Proponha o campo ou endpoint no backend; não compense com lógica no frontend.
