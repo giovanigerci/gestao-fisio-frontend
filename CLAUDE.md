@@ -86,6 +86,8 @@ Telas autenticadas precisam do backend rodando localmente.
 - Paleta nova ou alterada: valide com o validador de paleta categórica (luminosidade, croma, contraste >= 3:1 e separação para daltonismo) contra a superfície escura `#131b2e`.
 - Todo gráfico tem legenda em HTML (para 2+ séries), tooltip com todas as séries do ponto e uma versão em tabela ("Ver dados em tabela"); texto nunca usa a cor da série.
 - Recarga mantém o gráfico anterior esmaecido (sem spinner nem salto de layout).
+- Colunas: no máximo 24px, cantos de 4px só na ponta do dado. O mês/ano em andamento fica esmaecido e com nota abaixo do gráfico (a coluna ainda vai crescer, não é queda). Não compare o ano em andamento com o ano anterior inteiro (por isso a visão por ano não mostra variação).
+- Aba Histórico do financeiro: busca só quando a aba é aberta, com cache por agrupamento (`mes`/`ano`); resposta que chega depois de trocar o agrupamento só vai para o cache.
 - `effect` que dispara busca HTTP: envolva a chamada em `untracked()`; se o carregamento ler signals, cada resposta re-dispara o effect (loop infinito de requisições). Specs de carregamento terminam com `http.verify()`.
 
 ## Dívidas conhecidas (apague ao resolver)
