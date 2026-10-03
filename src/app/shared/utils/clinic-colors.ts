@@ -18,14 +18,24 @@ const CORES_CLINICA = [
 /**
  * Valores raw (hex) para cenários onde `var()` não funciona (e.g. Canvas, SVG
  * inline gerado programaticamente). Manter sincronizado com tokens.css.
+ *
+ * Validados para a superfície escura (#131b2e) com o validador de paleta categórica:
+ * luminosidade na faixa do modo escuro, contraste >= 3:1 e separação para daltonismo
+ * entre cores vizinhas nesta ordem. Atenção: azul (1) e violeta (4) se confundem se
+ * ficarem lado a lado — em gráficos, mantenha as cores na ordem da paleta.
  */
 export const CORES_CLINICA_HEX = [
   '#3b82f6',
-  '#d9a566',
-  '#2dd4bf',
-  '#a78bfa',
-  '#fb7185',
+  '#b8813a',
+  '#14a08f',
+  '#8b5cf6',
+  '#e8475f',
 ] as const;
+
+/** Posição da clínica na paleta (0–4): use para ordenar marcas que se tocam (ex: fatias da rosca). */
+export function indiceCorDaClinica(clinicaId: number): number {
+  return clinicaId % CORES_CLINICA_HEX.length;
+}
 
 /**
  * Retorna a cor CSS (como `var(--color-clinic-N)`) atribuída deterministicamente
