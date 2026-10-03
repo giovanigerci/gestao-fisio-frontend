@@ -1,6 +1,13 @@
 import { Component, inject, signal, effect, computed, untracked } from '@angular/core';
 import { forkJoin } from 'rxjs';
-import { FinanceiroService, ResumoClinica, EvolucaoReceita, PeriodoFinanceiro } from '../../services/financeiro.service';
+import {
+  AgrupamentoHistorico,
+  EvolucaoReceita,
+  FinanceiroService,
+  HistoricoReceita,
+  PeriodoFinanceiro,
+  ResumoClinica,
+} from '../../services/financeiro.service';
 import { EmptyState } from '../../shared/components/empty-state/empty-state';
 import { Grafico } from '../../shared/components/grafico/grafico';
 import { formatarDataISO, parseDataISO } from '../../shared/utils/datas';
@@ -8,10 +15,16 @@ import {
   compararComAnterior,
   configuracaoComposicao,
   configuracaoEvolucao,
+  configuracaoHistorico,
   formatarMoeda,
   montarComposicao,
   montarSerieEvolucao,
+  montarSerieHistorico,
+  nomePeriodoHistorico,
+  rotuloPeriodoHistorico,
 } from './graficos-financeiro';
+
+export type AbaFinanceiro = 'periodo' | 'historico';
 
 @Component({
   selector: 'app-financeiro',
@@ -31,7 +44,17 @@ export class Financeiro {
   atualizando = signal(false); // recargas: mantém o conteúdo anterior esmaecido, sem piscar
   erro = signal('');
 
+  aba = signal<AbaFinanceiro>('periodo');
+  agrupar = signal<AgrupamentoHistorico>('mes');
+  historico = signal<HistoricoReceita | null>(null);
+  carregandoHistorico = signal(false);
+  atualizandoHistorico = signal(false);
+  erroHistorico = signal('');
+  private readonly cacheHistorico = new Map<AgrupamentoHistorico, HistoricoReceita>();
+
   readonly formatarMoeda = formatarMoeda;
+  readonly rotuloPeriodoHistorico = rotuloPeriodoHistorico;
+  readonly nomePeriodoHistorico = nomePeriodoHistorico;
 
   totalAtendimentos = computed(() => {
     return this.porClinica().reduce((acc, curr) => acc + curr.total_atendimentos, 0);
@@ -76,6 +99,27 @@ export class Financeiro {
     this.composicao().legenda.map((f) => `${f.nome}, ${formatarMoeda(f.valor)} (${f.percentual.toFixed(0)}%)`).join('; ')
   );
 
+  readonly serieHistorico = computed(() => {
+    const dados = this.historico();
+    return dados ? montarSerieHistorico(dados, formatarDataISO()) : null;
+  });
+  readonly configHistorico = computed(() => {
+    const serie = this.serieHistorico();
+    return serie ? configuracaoHistorico(serie) : null;
+  });
+  readonly historicoPorAno = computed(() => this.historico()?.agrupar === 'ano');
+
+  readonly descricaoHistorico = computed(() => {
+    const dados = this.historico();
+    if (!dados) return '';
+    const porAno = dados.agrupar === 'ano';
+    const valores = dados.periodos
+      .map((p) => `${nomePeriodoHistorico(p.periodo)}: ${formatarMoeda(p.receita)}` +
+        (porAno ? '' : ` (ano anterior: ${formatarMoeda(p.receita_periodo_anterior)})`))
+      .join('; ');
+    return `Receita realizada ${porAno ? 'por ano' : 'por mês, nos últimos 12 meses'}. ${valores}.`;
+  });
+
   periodoLabel = computed(() => {
     const data = parseDataISO(this.dataReferencia());
     const meses = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
@@ -102,6 +146,44 @@ export class Financeiro {
       // untracked: o carregamento lê e grava outros signals (evolucao, carregando...); sem isso,
       // cada resposta re-dispararia o effect, num loop infinito de requisições
       untracked(() => this.carregarPeriodo(periodo, data));
+    });
+
+    // Histórico só é buscado quando a aba é aberta, uma vez por agrupamento
+    effect(() => {
+      if (this.aba() !== 'historico') return;
+      const agrupar = this.agrupar();
+      untracked(() => this.carregarHistorico(agrupar));
+    });
+  }
+
+  carregarHistorico(agrupar: AgrupamentoHistorico) {
+    const emCache = this.cacheHistorico.get(agrupar);
+    if (emCache) {
+      this.historico.set(emCache);
+      this.atualizandoHistorico.set(false);
+      return;
+    }
+    if (this.historico()) {
+      this.atualizandoHistorico.set(true);
+    } else {
+      this.carregandoHistorico.set(true);
+    }
+    this.erroHistorico.set('');
+
+    this.financeiroService.buscarHistorico(agrupar).subscribe({
+      next: (dados) => {
+        this.cacheHistorico.set(agrupar, dados);
+        if (this.agrupar() !== agrupar) return; // trocou de agrupamento antes da resposta chegar
+        this.historico.set(dados);
+        this.carregandoHistorico.set(false);
+        this.atualizandoHistorico.set(false);
+      },
+      error: () => {
+        if (this.agrupar() !== agrupar) return;
+        this.erroHistorico.set('Erro ao carregar o histórico. Tente novamente.');
+        this.carregandoHistorico.set(false);
+        this.atualizandoHistorico.set(false);
+      },
     });
   }
 

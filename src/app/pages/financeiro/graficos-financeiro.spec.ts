@@ -1,11 +1,15 @@
-import { EvolucaoReceita, ResumoClinica } from '../../services/financeiro.service';
+import { EvolucaoReceita, HistoricoReceita, ResumoClinica } from '../../services/financeiro.service';
 import { CORES_CLINICA_HEX } from '../../shared/utils/clinic-colors';
 import { CORES_GRAFICO } from '../../shared/utils/cores-grafico';
 import {
   compararComAnterior,
   configuracaoEvolucao,
+  configuracaoHistorico,
   montarComposicao,
   montarSerieEvolucao,
+  montarSerieHistorico,
+  nomePeriodoHistorico,
+  rotuloPeriodoHistorico,
 } from './graficos-financeiro';
 
 /** Mês de 5 dias (01 a 05/03) para os testes ficarem legíveis. */
@@ -146,5 +150,53 @@ describe('montarComposicao', () => {
 
   it('com exatamente 6 clínicas, todas aparecem', () => {
     expect(montarComposicao([1, 2, 3, 4, 5, 6].map((id) => clinica(id, 100))).fatias.length).toBe(6);
+  });
+});
+
+describe('histórico', () => {
+  const historico = (agrupar: 'mes' | 'ano', periodos: string[]): HistoricoReceita => ({
+    agrupar,
+    periodos: periodos.map((periodo, i) => ({
+      periodo, receita: (i + 1) * 100, atendimentos: i + 1, receita_periodo_anterior: i * 50,
+    })),
+    resumo: { total: 0, media: 0, melhor_periodo: null, total_periodo_anterior: 0, variacao_percentual: null },
+  });
+
+  it('rótulos curtos no eixo e nome completo no tooltip', () => {
+    expect(rotuloPeriodoHistorico('2025-11')).toBe('Nov/25');
+    expect(rotuloPeriodoHistorico('2026')).toBe('2026');
+    expect(nomePeriodoHistorico('2026-03')).toBe('Março de 2026');
+  });
+
+  it('marca o mês em andamento no título do tooltip', () => {
+    const serie = montarSerieHistorico(historico('mes', ['2026-09', '2026-10']), '2026-10-03');
+
+    expect(serie.emAndamento).toBe(1);
+    expect(serie.titulos).toEqual(['Setembro de 2026', 'Outubro de 2026 (em andamento)']);
+    expect(serie.receita).toEqual([100, 200]);
+    expect(serie.anterior).toEqual([0, 50]);
+  });
+
+  it('por mês: colunas do ano anterior em cinza ao lado da receita em azul', () => {
+    const config = configuracaoHistorico(montarSerieHistorico(historico('mes', ['2026-09', '2026-10']), '2026-10-03'));
+    const [anterior, receita] = config.data.datasets;
+
+    expect(anterior.backgroundColor).toBe(CORES_GRAFICO.contexto);
+    expect((receita.backgroundColor as string[])[0]).toBe(CORES_GRAFICO.destaque);
+    expect(receita.maxBarThickness).toBe(24);
+  });
+
+  it('mês em andamento fica mais claro (ainda vai crescer)', () => {
+    const config = configuracaoHistorico(montarSerieHistorico(historico('mes', ['2026-09', '2026-10']), '2026-10-03'));
+    const cores = config.data.datasets[1].backgroundColor as string[];
+
+    expect(cores[1]).not.toBe(cores[0]);
+  });
+
+  it('por ano: uma série só', () => {
+    const config = configuracaoHistorico(montarSerieHistorico(historico('ano', ['2025', '2026']), '2026-10-03'));
+
+    expect(config.data.datasets.map((d) => d.label)).toEqual(['Receita']);
+    expect(config.data.labels).toEqual(['2025', '2026']);
   });
 });

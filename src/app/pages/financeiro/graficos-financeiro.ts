@@ -3,12 +3,14 @@
  * Funções puras: nenhum valor financeiro é calculado aqui — só arrumação para exibição.
  */
 import type { ChartConfiguration, Plugin, TooltipItem } from 'chart.js';
-import { EvolucaoReceita, PeriodoFinanceiro, ResumoClinica } from '../../services/financeiro.service';
+import { EvolucaoReceita, HistoricoReceita, PeriodoFinanceiro, ResumoClinica } from '../../services/financeiro.service';
 import { CORES_CLINICA_HEX, indiceCorDaClinica } from '../../shared/utils/clinic-colors';
 import { CORES_GRAFICO } from '../../shared/utils/cores-grafico';
 import { parseDataISO } from '../../shared/utils/datas';
 
 const DIAS_ABREV = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+const MESES_ABREV = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+const MESES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 const FONTE = { family: "'Inter', system-ui, sans-serif", size: 11 };
 const MAX_FATIAS_CLINICAS = 5; // + "Outras" = no máximo 6 fatias na rosca
 
@@ -292,6 +294,124 @@ export function configuracaoComposicao(composicao: Composicao): ChartConfigurati
               return `${formatarMoeda(fatia.valor)} · ${fatia.percentual.toFixed(0)}%`;
             },
           },
+        },
+      },
+    },
+  };
+}
+
+// ─── Histórico mensal/anual ─────────────────────────────────────────────
+
+/** 'YYYY-MM' → 'Mar/26'; 'YYYY' → '2026'. */
+export function rotuloPeriodoHistorico(periodo: string): string {
+  const [ano, mes] = periodo.split('-');
+  return mes ? `${MESES_ABREV[Number(mes) - 1]}/${ano.slice(2)}` : ano;
+}
+
+/** 'YYYY-MM' → 'Março de 2026'; 'YYYY' → '2026'. */
+export function nomePeriodoHistorico(periodo: string): string {
+  const [ano, mes] = periodo.split('-');
+  return mes ? `${MESES[Number(mes) - 1]} de ${ano}` : ano;
+}
+
+export interface SerieHistorico {
+  porAno: boolean;
+  rotulos: string[];
+  titulos: string[];
+  receita: number[];
+  anterior: number[];
+  atendimentos: number[];
+  /** Posição do mês/ano em andamento (comparação com o anterior ainda parcial); -1 se nenhum. */
+  emAndamento: number;
+}
+
+export function montarSerieHistorico(dados: HistoricoReceita, hoje: string): SerieHistorico {
+  const porAno = dados.agrupar === 'ano';
+  const atual = porAno ? hoje.slice(0, 4) : hoje.slice(0, 7);
+  return {
+    porAno,
+    rotulos: dados.periodos.map((p) => rotuloPeriodoHistorico(p.periodo)),
+    titulos: dados.periodos.map((p) => nomePeriodoHistorico(p.periodo) + (p.periodo === atual ? ' (em andamento)' : '')),
+    receita: dados.periodos.map((p) => Number(p.receita)),
+    anterior: dados.periodos.map((p) => Number(p.receita_periodo_anterior)),
+    atendimentos: dados.periodos.map((p) => p.atendimentos),
+    emAndamento: dados.periodos.findIndex((p) => p.periodo === atual),
+  };
+}
+
+/**
+ * Colunas: por mês, cada mês (azul) ao lado do mesmo mês do ano anterior (cinza);
+ * por ano, uma série só (cada coluna já é o "ano anterior" da seguinte).
+ */
+export function configuracaoHistorico(serie: SerieHistorico): ChartConfiguration<'bar'> {
+  const coluna = {
+    maxBarThickness: 24,
+    borderRadius: 4,
+    borderSkipped: 'start' as const, // arredonda só a ponta do dado, a base fica reta no eixo
+    barPercentage: 0.9,
+    categoryPercentage: 0.7,
+  };
+
+  const datasets: ChartConfiguration<'bar'>['data']['datasets'] = [];
+  if (!serie.porAno) {
+    datasets.push({
+      label: 'Ano anterior',
+      data: serie.anterior,
+      backgroundColor: CORES_GRAFICO.contexto,
+      hoverBackgroundColor: CORES_GRAFICO.textoSecundario,
+      ...coluna,
+    });
+  }
+  // período em andamento mais claro: a coluna ainda vai crescer, não é uma queda
+  const corDaReceita = (cor: string, parcial: string) => serie.receita.map((_, i) => (i === serie.emAndamento ? parcial : cor));
+  datasets.push({
+    label: 'Receita',
+    data: serie.receita,
+    backgroundColor: corDaReceita(CORES_GRAFICO.destaque, 'rgba(59, 130, 246, 0.45)'),
+    hoverBackgroundColor: corDaReceita('#60a5fa', 'rgba(96, 165, 250, 0.6)'),
+    ...coluna,
+  });
+
+  return {
+    type: 'bar',
+    data: { labels: serie.rotulos, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          ...tooltipBase(),
+          usePointStyle: false,
+          boxWidth: 8,
+          boxHeight: 8,
+          itemSort: (a, b) => b.datasetIndex - a.datasetIndex,
+          callbacks: {
+            title: (itens: TooltipItem<'bar'>[]) => (itens.length ? serie.titulos[itens[0].dataIndex] : ''),
+            label: (item: TooltipItem<'bar'>) => `${formatarMoeda(item.parsed.y ?? 0)}  ${item.dataset.label}`,
+            footer: (itens: TooltipItem<'bar'>[]) => {
+              if (!itens.length) return '';
+              const n = serie.atendimentos[itens[0].dataIndex];
+              return `${n} atendimento${n === 1 ? '' : 's'}`;
+            },
+          },
+          footerColor: CORES_GRAFICO.textoSecundario,
+          footerFont: { ...FONTE, weight: 400 as const },
+        },
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          border: { color: CORES_GRAFICO.grade },
+          ticks: { color: CORES_GRAFICO.textoMudo, font: FONTE, maxRotation: 0, autoSkip: true },
+        },
+        y: {
+          beginAtZero: true,
+          grid: { color: CORES_GRAFICO.grade, lineWidth: 1 },
+          border: { display: false },
+          ticks: { color: CORES_GRAFICO.textoMudo, font: FONTE, maxTicksLimit: 5, callback: (v) => formatarMoedaCompacta(Number(v)) },
         },
       },
     },

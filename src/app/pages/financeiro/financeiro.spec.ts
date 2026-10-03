@@ -3,7 +3,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { Financeiro } from './financeiro';
-import { EvolucaoReceita, ResumoFinanceiro } from '../../services/financeiro.service';
+import { EvolucaoReceita, HistoricoReceita, ResumoFinanceiro } from '../../services/financeiro.service';
 
 describe('Financeiro', () => {
   let component: Financeiro;
@@ -158,5 +158,132 @@ describe('Financeiro — carregamento e gráficos', () => {
 
     expect(fixture.nativeElement.querySelector('.fin-graficos')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('.fin-sem-receita')).toBeTruthy();
+  });
+});
+
+describe('Financeiro — aba Histórico', () => {
+  let fixture: ComponentFixture<Financeiro>;
+  let component: Financeiro;
+  let http: HttpTestingController;
+
+  const historico = (agrupar: 'mes' | 'ano', variacao: number | null = 25): HistoricoReceita => ({
+    agrupar,
+    periodos: (agrupar === 'mes' ? ['2026-09', '2026-10'] : ['2025', '2026']).map((periodo) => ({
+      periodo, receita: 500, atendimentos: 5, receita_periodo_anterior: 400,
+    })),
+    resumo: {
+      total: 1000,
+      media: 500,
+      melhor_periodo: { periodo: agrupar === 'mes' ? '2026-09' : '2025', receita: 500, atendimentos: 5, receita_periodo_anterior: 400 },
+      total_periodo_anterior: 800,
+      variacao_percentual: variacao,
+    },
+  });
+
+  const pedidosHistorico = () => http.match((req) => req.url.endsWith('/resumo-financeiro/historico/'));
+
+  function abrirHistorico() {
+    component.aba.set('historico');
+    fixture.detectChanges();
+  }
+
+  beforeEach(() => {
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null);
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
+    http = TestBed.inject(HttpTestingController);
+    fixture = TestBed.createComponent(Financeiro);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+    // a aba Período carrega ao abrir a tela; aqui só interessa o histórico
+    http.expectOne((req) => req.url.endsWith('/resumo-financeiro/')).flush({ por_clinica: [], total_geral: 0 });
+    http.expectOne((req) => req.url.endsWith('/evolucao/')).flush(null);
+  });
+
+  afterEach(() => {
+    http.verify();
+    vi.restoreAllMocks();
+  });
+
+  it('só busca o histórico quando a aba é aberta', () => {
+    expect(pedidosHistorico().length).toBe(0);
+
+    abrirHistorico();
+    const [pedido] = pedidosHistorico();
+    expect(pedido.request.params.get('agrupar')).toBe('mes');
+    pedido.flush(historico('mes'));
+  });
+
+  it('uma resposta não dispara outra busca (sem loop de requisições)', () => {
+    abrirHistorico();
+    pedidosHistorico()[0].flush(historico('mes'));
+    fixture.detectChanges();
+
+    expect(pedidosHistorico().length).toBe(0);
+  });
+
+  it('voltar a um agrupamento já carregado usa o cache, sem nova requisição', () => {
+    abrirHistorico();
+    pedidosHistorico()[0].flush(historico('mes'));
+
+    component.agrupar.set('ano');
+    fixture.detectChanges();
+    pedidosHistorico()[0].flush(historico('ano'));
+
+    component.agrupar.set('mes');
+    fixture.detectChanges();
+    component.aba.set('periodo');
+    fixture.detectChanges();
+    abrirHistorico();
+
+    expect(pedidosHistorico().length).toBe(0);
+    expect(component.historico()?.agrupar).toBe('mes');
+  });
+
+  it('resposta atrasada de outro agrupamento não substitui o que está na tela', () => {
+    abrirHistorico();
+    pedidosHistorico()[0].flush(historico('mes'));
+
+    component.agrupar.set('ano');
+    fixture.detectChanges();
+    const [pedidoAno] = pedidosHistorico();
+    component.agrupar.set('mes');
+    fixture.detectChanges();
+    pedidoAno.flush(historico('ano'));
+
+    expect(component.historico()?.agrupar).toBe('mes');
+    expect(component.atualizandoHistorico()).toBe(false);
+  });
+
+  it('mostra os cartões, a variação e o gráfico', () => {
+    abrirHistorico();
+    pedidosHistorico()[0].flush(historico('mes'));
+    fixture.detectChanges();
+    const cartoes = fixture.nativeElement.querySelectorAll('.fin-kpi');
+
+    expect(cartoes.length).toBe(3);
+    expect(cartoes[0].textContent).toContain('+25%');
+    expect(cartoes[2].textContent).toContain('Setembro de 2026');
+    expect(fixture.nativeElement.querySelectorAll('app-grafico').length).toBe(1);
+  });
+
+  it('sem receita no período anterior, explica em vez de mostrar variação', () => {
+    abrirHistorico();
+    pedidosHistorico()[0].flush(historico('mes', null));
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.fin-kpi-delta')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.fin-kpis').textContent).toContain('Sem receita nos 12 meses anteriores');
+  });
+
+  it('por ano não mostra variação (o ano atual ainda está em andamento)', () => {
+    component.agrupar.set('ano');
+    abrirHistorico();
+    pedidosHistorico()[0].flush(historico('ano'));
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.fin-kpi-delta')).toBeNull();
+    expect(fixture.nativeElement.querySelector('.fin-kpis').textContent).toContain('Receita desde 2025');
   });
 });

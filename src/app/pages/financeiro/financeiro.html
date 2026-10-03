@@ -6,193 +6,348 @@
     </div>
   </div>
 
-  <!-- Controls (um filtro único, acima de tudo o que ele afeta) -->
-  <div class="fin-controls">
-    <!-- Period Toggle -->
-    <div class="fin-toggle-wrapper">
-      <button (click)="trocarPeriodo('mes')" [class.fin-toggle--active]="periodo() === 'mes'" class="fin-toggle-btn">
-        Mês
-      </button>
-      <button (click)="trocarPeriodo('semana')" [class.fin-toggle--active]="periodo() === 'semana'"
-        class="fin-toggle-btn">
-        Semana
-      </button>
-    </div>
-
-    <!-- Date Navigator -->
-    <div class="fin-date-nav">
-      <button class="fin-nav-btn" (click)="periodoAnterior()" aria-label="Período anterior">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-          class="fin-nav-icon">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-        </svg>
-      </button>
-      <span class="fin-date-label">{{ periodoLabel() }}</span>
-      <button class="fin-nav-btn" (click)="proximoPeriodo()" aria-label="Próximo período">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-          class="fin-nav-icon">
-          <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-        </svg>
-      </button>
-    </div>
-  </div>
-
-  <!-- Error -->
-  @if (erro() && !carregando()) {
-  <div class="error-container">
-    <p class="error-text">{{ erro() }}</p>
-    <button (click)="carregarPeriodo(periodo(), dataReferencia())" class="error-retry">
-      Tentar novamente
+  <div class="fin-abas" role="tablist" aria-label="Visão do financeiro">
+    <button role="tab" id="aba-periodo" aria-controls="painel-periodo" [attr.aria-selected]="aba() === 'periodo'"
+      [class.fin-aba--ativa]="aba() === 'periodo'" class="fin-aba" (click)="aba.set('periodo')">
+      Período
+    </button>
+    <button role="tab" id="aba-historico" aria-controls="painel-historico" [attr.aria-selected]="aba() === 'historico'"
+      [class.fin-aba--ativa]="aba() === 'historico'" class="fin-aba" (click)="aba.set('historico')">
+      Histórico
     </button>
   </div>
-  }
 
-  <!-- Loading (só na primeira carga; recargas mantêm o conteúdo esmaecido) -->
-  @if (carregando()) {
-  <div class="state-container">
-    <div class="spinner"></div>
-    <p class="state-text">Carregando resumo financeiro...</p>
-  </div>
-  }
+  @if (aba() === 'periodo') {
+  <div role="tabpanel" id="painel-periodo" aria-labelledby="aba-periodo">
+    <!-- Controls (um filtro único, acima de tudo o que ele afeta) -->
+    <div class="fin-controls">
+      <!-- Period Toggle -->
+      <div class="fin-toggle-wrapper">
+        <button (click)="trocarPeriodo('mes')" [class.fin-toggle--active]="periodo() === 'mes'" class="fin-toggle-btn">
+          Mês
+        </button>
+        <button (click)="trocarPeriodo('semana')" [class.fin-toggle--active]="periodo() === 'semana'"
+          class="fin-toggle-btn">
+          Semana
+        </button>
+      </div>
 
-  <!-- Content -->
-  @if (!carregando() && !erro()) {
-  <div class="fin-conteudo" [class.fin-conteudo--atualizando]="atualizando()" [attr.aria-busy]="atualizando()">
-
-    <!-- Totais do período -->
-    <div class="fin-total-card">
-      <div class="fin-total-label">Receita realizada</div>
-      <div class="fin-total-valor">{{ formatarMoeda(totalGeral()) }}</div>
-      @if (comparacao(); as comp) {
-        @if (comp.variacao !== null) {
-        <div class="fin-delta" [class.fin-delta--alta]="comp.variacao >= 0" [class.fin-delta--queda]="comp.variacao < 0">
-          <span aria-hidden="true">{{ comp.variacao >= 0 ? '▲' : '▼' }}</span>
-          {{ comp.variacao >= 0 ? '+' : '−' }}{{ (comp.variacao < 0 ? -comp.variacao : comp.variacao).toFixed(0) }}%
-          <span class="fin-delta-ref">
-            vs {{ comp.mesmoPonto ? 'mesmo dia ' + (periodo() === 'mes' ? 'do mês anterior' : 'da semana anterior') : nomePeriodoAnterior().toLowerCase() }}
-          </span>
-        </div>
-        }
-      }
-
-      <div class="fin-total-divider"></div>
-
-      <div class="fin-total-stats">
-        <div class="fin-stat-col">
-          <span class="fin-stat-label">Atendimentos</span>
-          <span class="fin-stat-value">{{ totalAtendimentos() }}</span>
-        </div>
-        <div class="fin-stat-col">
-          <span class="fin-stat-label">Ticket médio</span>
-          <span class="fin-stat-value">{{ formatarMoeda(ticketMedio()) }}</span>
-        </div>
-        <div class="fin-stat-col">
-          <span class="fin-stat-label">Previsto</span>
-          <span class="fin-stat-value">{{ formatarMoeda(totais()?.previsto ?? 0) }}</span>
-        </div>
+      <!-- Date Navigator -->
+      <div class="fin-date-nav">
+        <button class="fin-nav-btn" (click)="periodoAnterior()" aria-label="Período anterior">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+            class="fin-nav-icon">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+          </svg>
+        </button>
+        <span class="fin-date-label">{{ periodoLabel() }}</span>
+        <button class="fin-nav-btn" (click)="proximoPeriodo()" aria-label="Próximo período">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+            class="fin-nav-icon">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+          </svg>
+        </button>
       </div>
     </div>
 
-    @if (semDados()) {
-    <app-empty-state title="Nenhuma receita encontrada"
-      [subtitle]="'Não há atendimentos realizados nem agendados ' + getPeriodoLabel()">
-      <svg icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-        stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round"
-          d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
-      </svg>
-    </app-empty-state>
-    } @else {
-    <div class="fin-graficos">
+    <!-- Error -->
+    @if (erro() && !carregando()) {
+    <div class="error-container">
+      <p class="error-text">{{ erro() }}</p>
+      <button (click)="carregarPeriodo(periodo(), dataReferencia())" class="error-retry">
+        Tentar novamente
+      </button>
+    </div>
+    }
 
-      <!-- Evolução da receita -->
-      <section class="fin-grafico-card" aria-labelledby="titulo-evolucao">
-        <div class="fin-grafico-header">
-          <div>
-            <h2 id="titulo-evolucao" class="fin-grafico-titulo">Evolução da receita</h2>
-            <p class="fin-grafico-subtitulo">Valor acumulado {{ periodo() === 'mes' ? 'no mês' : 'na semana' }}</p>
+    <!-- Loading (só na primeira carga; recargas mantêm o conteúdo esmaecido) -->
+    @if (carregando()) {
+    <div class="state-container">
+      <div class="spinner"></div>
+      <p class="state-text">Carregando resumo financeiro...</p>
+    </div>
+    }
+
+    <!-- Content -->
+    @if (!carregando() && !erro()) {
+    <div class="fin-conteudo" [class.fin-conteudo--atualizando]="atualizando()" [attr.aria-busy]="atualizando()">
+
+      <!-- Totais do período -->
+      <div class="fin-total-card">
+        <div class="fin-total-label">Receita realizada</div>
+        <div class="fin-total-valor">{{ formatarMoeda(totalGeral()) }}</div>
+        @if (comparacao(); as comp) {
+          @if (comp.variacao !== null) {
+          <div class="fin-delta" [class.fin-delta--alta]="comp.variacao >= 0" [class.fin-delta--queda]="comp.variacao < 0">
+            <span aria-hidden="true">{{ comp.variacao >= 0 ? '▲' : '▼' }}</span>
+            {{ comp.variacao >= 0 ? '+' : '−' }}{{ (comp.variacao < 0 ? -comp.variacao : comp.variacao).toFixed(0) }}%
+            <span class="fin-delta-ref">
+              vs {{ comp.mesmoPonto ? 'mesmo dia ' + (periodo() === 'mes' ? 'do mês anterior' : 'da semana anterior') : nomePeriodoAnterior().toLowerCase() }}
+            </span>
           </div>
-          <ul class="fin-legenda-linhas">
-            <li><span class="fin-chave-linha fin-chave-linha--destaque"></span>Realizado</li>
-            @if (serieEvolucao()?.temPrevisto) {
-            <li><span class="fin-chave-linha fin-chave-linha--tracejada"></span>Previsto</li>
-            }
-            <li><span class="fin-chave-linha fin-chave-linha--contexto"></span>{{ nomePeriodoAnterior() }}</li>
-          </ul>
-        </div>
-
-        @if (configEvolucao(); as config) {
-        <app-grafico [config]="config" [descricao]="descricaoEvolucao()" [altura]="240" />
+          }
         }
 
-        @if (evolucao(); as dados) {
+        <div class="fin-total-divider"></div>
+
+        <div class="fin-total-stats">
+          <div class="fin-stat-col">
+            <span class="fin-stat-label">Atendimentos</span>
+            <span class="fin-stat-value">{{ totalAtendimentos() }}</span>
+          </div>
+          <div class="fin-stat-col">
+            <span class="fin-stat-label">Ticket médio</span>
+            <span class="fin-stat-value">{{ formatarMoeda(ticketMedio()) }}</span>
+          </div>
+          <div class="fin-stat-col">
+            <span class="fin-stat-label">Previsto</span>
+            <span class="fin-stat-value">{{ formatarMoeda(totais()?.previsto ?? 0) }}</span>
+          </div>
+        </div>
+      </div>
+
+      @if (semDados()) {
+      <app-empty-state title="Nenhuma receita encontrada"
+        [subtitle]="'Não há atendimentos realizados nem agendados ' + getPeriodoLabel()">
+        <svg icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+          stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z" />
+        </svg>
+      </app-empty-state>
+      } @else {
+      <div class="fin-graficos">
+
+        <!-- Evolução da receita -->
+        <section class="fin-grafico-card" aria-labelledby="titulo-evolucao">
+          <div class="fin-grafico-header">
+            <div>
+              <h2 id="titulo-evolucao" class="fin-grafico-titulo">Evolução da receita</h2>
+              <p class="fin-grafico-subtitulo">Valor acumulado {{ periodo() === 'mes' ? 'no mês' : 'na semana' }}</p>
+            </div>
+            <ul class="fin-legenda-linhas">
+              <li><span class="fin-chave-linha fin-chave-linha--destaque"></span>Realizado</li>
+              @if (serieEvolucao()?.temPrevisto) {
+              <li><span class="fin-chave-linha fin-chave-linha--tracejada"></span>Previsto</li>
+              }
+              <li><span class="fin-chave-linha fin-chave-linha--contexto"></span>{{ nomePeriodoAnterior() }}</li>
+            </ul>
+          </div>
+
+          @if (configEvolucao(); as config) {
+          <app-grafico [config]="config" [descricao]="descricaoEvolucao()" [altura]="240" />
+          }
+
+          @if (evolucao(); as dados) {
+          <details class="fin-tabela-dados">
+            <summary>Ver dados em tabela</summary>
+            <div class="fin-tabela-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Dia</th>
+                    <th scope="col">Realizado no dia</th>
+                    <th scope="col">Acumulado</th>
+                    <th scope="col">Com previsto</th>
+                    <th scope="col">{{ nomePeriodoAnterior() }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (dia of dados.dias; track dia.data; let i = $index) {
+                  <tr>
+                    <th scope="row">{{ serieEvolucao()?.rotulos?.[i] }}</th>
+                    <td>{{ formatarMoeda(dia.realizado) }}</td>
+                    <td>{{ formatarMoeda(dia.acumulado) }}</td>
+                    <td>{{ formatarMoeda(dia.acumulado_com_previsto) }}</td>
+                    <td>{{ dados.anterior.dias[i] ? formatarMoeda(dados.anterior.dias[i].acumulado) : '—' }}</td>
+                  </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </details>
+          }
+        </section>
+
+        <!-- Composição por clínica -->
+        <section class="fin-grafico-card" aria-labelledby="titulo-composicao">
+          <div class="fin-grafico-header">
+            <div>
+              <h2 id="titulo-composicao" class="fin-grafico-titulo">Composição da receita</h2>
+              <p class="fin-grafico-subtitulo">Por clínica, no período</p>
+            </div>
+          </div>
+
+          @if (porClinica().length) {
+          <div class="fin-rosca">
+            <app-grafico [config]="configComposicao()" [descricao]="descricaoComposicao()" [altura]="200" />
+            <div class="fin-rosca-centro" aria-hidden="true">
+              <span class="fin-rosca-valor">{{ formatarMoeda(composicao().total) }}</span>
+              <span class="fin-rosca-rotulo">no período</span>
+            </div>
+          </div>
+
+          <!-- Legenda = tabela de dados: identidade nunca depende só da cor -->
+          <ul class="fin-legenda-clinicas">
+            @for (fatia of composicao().legenda; track fatia.nome) {
+            <li class="fin-legenda-clinica">
+              <span class="fin-chave-fatia" [style.background-color]="fatia.cor"></span>
+              <span class="fin-legenda-nome">
+                {{ fatia.nome }}
+                <span class="fin-legenda-sub">{{ fatia.atendimentos }} atendimento{{ fatia.atendimentos === 1 ? '' : 's' }}</span>
+              </span>
+              <span class="fin-legenda-valor">{{ formatarMoeda(fatia.valor) }}</span>
+              <span class="fin-legenda-pct">{{ fatia.percentual.toFixed(0) }}%</span>
+            </li>
+            }
+          </ul>
+          } @else {
+          <p class="fin-sem-receita">Nenhum atendimento realizado ainda neste período. A receita prevista aparece na evolução.</p>
+          }
+        </section>
+      </div>
+      }
+    </div>
+    }
+  </div>
+  } @else {
+  <div role="tabpanel" id="painel-historico" aria-labelledby="aba-historico">
+    <div class="fin-controls">
+      <div class="fin-toggle-wrapper">
+        <button (click)="agrupar.set('mes')" [class.fin-toggle--active]="agrupar() === 'mes'" class="fin-toggle-btn">
+          12 meses
+        </button>
+        <button (click)="agrupar.set('ano')" [class.fin-toggle--active]="agrupar() === 'ano'" class="fin-toggle-btn">
+          Por ano
+        </button>
+      </div>
+    </div>
+
+    @if (erroHistorico() && !carregandoHistorico()) {
+    <div class="error-container">
+      <p class="error-text">{{ erroHistorico() }}</p>
+      <button (click)="carregarHistorico(agrupar())" class="error-retry">Tentar novamente</button>
+    </div>
+    }
+
+    @if (carregandoHistorico()) {
+    <div class="state-container">
+      <div class="spinner"></div>
+      <p class="state-text">Carregando histórico...</p>
+    </div>
+    }
+
+    @if (historico(); as dados) {
+    @if (!carregandoHistorico() && !erroHistorico()) {
+    <div class="fin-conteudo" [class.fin-conteudo--atualizando]="atualizandoHistorico()"
+      [attr.aria-busy]="atualizandoHistorico()">
+
+      @if (!dados.resumo.total) {
+      <app-empty-state title="Nenhuma receita realizada"
+        [subtitle]="historicoPorAno() ? 'Ainda não há atendimentos realizados' : 'Não há atendimentos realizados nos últimos 12 meses'">
+        <svg icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+        </svg>
+      </app-empty-state>
+      } @else {
+      <div class="fin-kpis">
+        <div class="fin-kpi">
+          <span class="fin-stat-label">{{ historicoPorAno() ? 'Receita desde ' + dados.periodos[0].periodo : 'Receita em 12 meses' }}</span>
+          <span class="fin-kpi-valor fin-kpi-valor--dinheiro">{{ formatarMoeda(dados.resumo.total) }}</span>
+          @if (!historicoPorAno()) {
+            @if (dados.resumo.variacao_percentual; as variacao) {
+            <span class="fin-kpi-delta" [class.fin-delta--alta]="variacao >= 0" [class.fin-delta--queda]="variacao < 0">
+              <span aria-hidden="true">{{ variacao >= 0 ? '▲' : '▼' }}</span>
+              {{ variacao >= 0 ? '+' : '−' }}{{ (variacao < 0 ? -variacao : +variacao).toFixed(0) }}%
+              <span class="fin-delta-ref">vs 12 meses anteriores</span>
+            </span>
+            } @else if (dados.resumo.variacao_percentual === null) {
+            <span class="fin-kpi-sub">Sem receita nos 12 meses anteriores para comparar</span>
+            } @else {
+            <span class="fin-kpi-sub">Igual aos 12 meses anteriores</span>
+            }
+          } @else {
+          <span class="fin-kpi-sub">em {{ dados.periodos.length }} ano{{ dados.periodos.length === 1 ? '' : 's' }}</span>
+          }
+        </div>
+        <div class="fin-kpi">
+          <span class="fin-stat-label">{{ historicoPorAno() ? 'Média anual' : 'Média mensal' }}</span>
+          <span class="fin-kpi-valor">{{ formatarMoeda(dados.resumo.media) }}</span>
+          <span class="fin-kpi-sub">{{ historicoPorAno() ? 'desde o primeiro ano com receita' : 'nos últimos 12 meses' }}</span>
+        </div>
+        <div class="fin-kpi">
+          <span class="fin-stat-label">{{ historicoPorAno() ? 'Melhor ano' : 'Melhor mês' }}</span>
+          @if (dados.resumo.melhor_periodo; as melhor) {
+          <span class="fin-kpi-valor">{{ nomePeriodoHistorico(melhor.periodo) }}</span>
+          <span class="fin-kpi-sub">{{ formatarMoeda(melhor.receita) }} · {{ melhor.atendimentos }} atendimento{{ melhor.atendimentos === 1 ? '' : 's' }}</span>
+          } @else {
+          <span class="fin-kpi-valor">—</span>
+          }
+        </div>
+      </div>
+
+      <section class="fin-grafico-card" aria-labelledby="titulo-historico">
+        <div class="fin-grafico-header">
+          <div>
+            <h2 id="titulo-historico" class="fin-grafico-titulo">Receita {{ historicoPorAno() ? 'por ano' : 'por mês' }}</h2>
+            <p class="fin-grafico-subtitulo">
+              {{ historicoPorAno() ? 'Atendimentos realizados em cada ano' : 'Cada mês ao lado do mesmo mês do ano anterior' }}
+            </p>
+          </div>
+          @if (!historicoPorAno()) {
+          <ul class="fin-legenda-linhas">
+            <li><span class="fin-chave-coluna fin-chave-coluna--destaque"></span>Receita do mês</li>
+            <li><span class="fin-chave-coluna fin-chave-coluna--contexto"></span>Ano anterior</li>
+          </ul>
+          }
+        </div>
+
+        @if (configHistorico(); as config) {
+        <app-grafico [config]="config" [descricao]="descricaoHistorico()" [altura]="260" />
+        }
+        @if (serieHistorico(); as serie) {
+          @if (serie.emAndamento >= 0) {
+          <p class="fin-nota">
+            <span class="fin-chave-coluna fin-chave-coluna--parcial"></span>
+            {{ serie.rotulos[serie.emAndamento] }} em andamento: a coluna ainda vai crescer
+          </p>
+          }
+        }
+
         <details class="fin-tabela-dados">
           <summary>Ver dados em tabela</summary>
           <div class="fin-tabela-scroll">
             <table>
               <thead>
                 <tr>
-                  <th scope="col">Dia</th>
-                  <th scope="col">Realizado no dia</th>
-                  <th scope="col">Acumulado</th>
-                  <th scope="col">Com previsto</th>
-                  <th scope="col">{{ nomePeriodoAnterior() }}</th>
+                  <th scope="col">{{ historicoPorAno() ? 'Ano' : 'Mês' }}</th>
+                  <th scope="col">Receita</th>
+                  <th scope="col">Atendimentos</th>
+                  @if (!historicoPorAno()) {
+                  <th scope="col">Ano anterior</th>
+                  }
                 </tr>
               </thead>
               <tbody>
-                @for (dia of dados.dias; track dia.data; let i = $index) {
+                @for (p of dados.periodos; track p.periodo; let i = $index) {
                 <tr>
-                  <th scope="row">{{ serieEvolucao()?.rotulos?.[i] }}</th>
-                  <td>{{ formatarMoeda(dia.realizado) }}</td>
-                  <td>{{ formatarMoeda(dia.acumulado) }}</td>
-                  <td>{{ formatarMoeda(dia.acumulado_com_previsto) }}</td>
-                  <td>{{ dados.anterior.dias[i] ? formatarMoeda(dados.anterior.dias[i].acumulado) : '—' }}</td>
+                  <th scope="row">{{ serieHistorico()?.titulos?.[i] }}</th>
+                  <td>{{ formatarMoeda(p.receita) }}</td>
+                  <td>{{ p.atendimentos }}</td>
+                  @if (!historicoPorAno()) {
+                  <td>{{ formatarMoeda(p.receita_periodo_anterior) }}</td>
+                  }
                 </tr>
                 }
               </tbody>
             </table>
           </div>
         </details>
-        }
       </section>
-
-      <!-- Composição por clínica -->
-      <section class="fin-grafico-card" aria-labelledby="titulo-composicao">
-        <div class="fin-grafico-header">
-          <div>
-            <h2 id="titulo-composicao" class="fin-grafico-titulo">Composição da receita</h2>
-            <p class="fin-grafico-subtitulo">Por clínica, no período</p>
-          </div>
-        </div>
-
-        @if (porClinica().length) {
-        <div class="fin-rosca">
-          <app-grafico [config]="configComposicao()" [descricao]="descricaoComposicao()" [altura]="200" />
-          <div class="fin-rosca-centro" aria-hidden="true">
-            <span class="fin-rosca-valor">{{ formatarMoeda(composicao().total) }}</span>
-            <span class="fin-rosca-rotulo">no período</span>
-          </div>
-        </div>
-
-        <!-- Legenda = tabela de dados: identidade nunca depende só da cor -->
-        <ul class="fin-legenda-clinicas">
-          @for (fatia of composicao().legenda; track fatia.nome) {
-          <li class="fin-legenda-clinica">
-            <span class="fin-chave-fatia" [style.background-color]="fatia.cor"></span>
-            <span class="fin-legenda-nome">
-              {{ fatia.nome }}
-              <span class="fin-legenda-sub">{{ fatia.atendimentos }} atendimento{{ fatia.atendimentos === 1 ? '' : 's' }}</span>
-            </span>
-            <span class="fin-legenda-valor">{{ formatarMoeda(fatia.valor) }}</span>
-            <span class="fin-legenda-pct">{{ fatia.percentual.toFixed(0) }}%</span>
-          </li>
-          }
-        </ul>
-        } @else {
-        <p class="fin-sem-receita">Nenhum atendimento realizado ainda neste período. A receita prevista aparece na evolução.</p>
-        }
-      </section>
+      }
     </div>
+    }
     }
   </div>
   }
