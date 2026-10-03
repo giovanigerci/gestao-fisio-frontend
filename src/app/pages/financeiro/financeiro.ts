@@ -1,34 +1,40 @@
-import { Component, inject, signal, effect, computed } from '@angular/core';
-import { FinanceiroService, ResumoClinica } from '../../services/financeiro.service';
+import { Component, inject, signal, effect, computed, untracked } from '@angular/core';
+import { forkJoin } from 'rxjs';
+import { FinanceiroService, ResumoClinica, EvolucaoReceita, PeriodoFinanceiro } from '../../services/financeiro.service';
 import { EmptyState } from '../../shared/components/empty-state/empty-state';
-import { ProgressBar } from '../../shared/components/progress-bar/progress-bar';
-import { corDaClinica } from '../../shared/utils/clinic-colors';
+import { Grafico } from '../../shared/components/grafico/grafico';
 import { formatarDataISO, parseDataISO } from '../../shared/utils/datas';
+import {
+  compararComAnterior,
+  configuracaoComposicao,
+  configuracaoEvolucao,
+  formatarMoeda,
+  montarComposicao,
+  montarSerieEvolucao,
+} from './graficos-financeiro';
 
 @Component({
   selector: 'app-financeiro',
-  imports: [EmptyState, ProgressBar],
+  imports: [EmptyState, Grafico],
   templateUrl: './financeiro.html',
   styleUrls: ['../../../styles/list-page.css', './financeiro.css'],
 })
 export class Financeiro {
   private financeiroService = inject(FinanceiroService);
 
-  periodo = signal<'mes' | 'semana'>('mes');
+  periodo = signal<PeriodoFinanceiro>('mes');
   dataReferencia = signal<string>(formatarDataISO());
   porClinica = signal<ResumoClinica[]>([]);
   totalGeral = signal(0);
-  carregando = signal(true);
+  evolucao = signal<EvolucaoReceita | null>(null);
+  carregando = signal(true); // primeira carga: ainda não há nada para mostrar
+  atualizando = signal(false); // recargas: mantém o conteúdo anterior esmaecido, sem piscar
   erro = signal('');
 
-  corDaClinica = corDaClinica;
+  readonly formatarMoeda = formatarMoeda;
 
   totalAtendimentos = computed(() => {
     return this.porClinica().reduce((acc, curr) => acc + curr.total_atendimentos, 0);
-  });
-
-  totalClinicas = computed(() => {
-    return this.porClinica().length;
   });
 
   ticketMedio = computed(() => {
@@ -36,6 +42,39 @@ export class Financeiro {
     if (atendimentos === 0) return 0;
     return this.totalGeral() / atendimentos;
   });
+
+  readonly totais = computed(() => this.evolucao()?.totais ?? null);
+
+  readonly semDados = computed(() => this.porClinica().length === 0 && !Number(this.totais()?.previsto));
+
+  readonly serieEvolucao = computed(() => {
+    const dados = this.evolucao();
+    return dados ? montarSerieEvolucao(dados, this.periodo(), formatarDataISO()) : null;
+  });
+  readonly comparacao = computed(() => {
+    const serie = this.serieEvolucao();
+    return serie ? compararComAnterior(serie) : null;
+  });
+  readonly configEvolucao = computed(() => {
+    const serie = this.serieEvolucao();
+    return serie ? configuracaoEvolucao(serie) : null;
+  });
+
+  readonly composicao = computed(() => montarComposicao(this.porClinica()));
+  readonly configComposicao = computed(() => configuracaoComposicao(this.composicao()));
+
+  readonly descricaoEvolucao = computed(() => {
+    const totais = this.totais();
+    if (!totais) return '';
+    return `Receita acumulada no período: ${formatarMoeda(totais.realizado)} realizados` +
+      (Number(totais.previsto) ? `, mais ${formatarMoeda(totais.previsto)} previstos` : '') +
+      `. ${this.nomePeriodoAnterior()}: ${formatarMoeda(totais.anterior)}.`;
+  });
+
+  readonly descricaoComposicao = computed(() =>
+    'Receita por clínica: ' +
+    this.composicao().legenda.map((f) => `${f.nome}, ${formatarMoeda(f.valor)} (${f.percentual.toFixed(0)}%)`).join('; ')
+  );
 
   periodoLabel = computed(() => {
     const data = parseDataISO(this.dataReferencia());
@@ -58,48 +97,47 @@ export class Financeiro {
 
   constructor() {
     effect(() => {
-      this.carregarResumo(this.periodo(), this.dataReferencia());
+      const periodo = this.periodo();
+      const data = this.dataReferencia();
+      // untracked: o carregamento lê e grava outros signals (evolucao, carregando...); sem isso,
+      // cada resposta re-dispararia o effect, num loop infinito de requisições
+      untracked(() => this.carregarPeriodo(periodo, data));
     });
   }
 
-  carregarResumo(periodo: 'mes' | 'semana', data: string) {
-    this.carregando.set(true);
+  /** Resumo (por clínica) e evolução diária em paralelo: duas requisições, uma consulta agregada cada no backend. */
+  carregarPeriodo(periodo: PeriodoFinanceiro, data: string) {
+    if (this.evolucao()) {
+      this.atualizando.set(true);
+    } else {
+      this.carregando.set(true);
+    }
     this.erro.set('');
 
-    this.financeiroService.buscarResumo(periodo, data).subscribe({
-      next: (resposta) => {
-        this.porClinica.set(resposta.por_clinica);
-        this.totalGeral.set(resposta.total_geral);
+    forkJoin({
+      resumo: this.financeiroService.buscarResumo(periodo, data),
+      evolucao: this.financeiroService.buscarEvolucao(periodo, data),
+    }).subscribe({
+      next: ({ resumo, evolucao }) => {
+        this.porClinica.set(resumo.por_clinica);
+        this.totalGeral.set(Number(resumo.total_geral));
+        this.evolucao.set(evolucao);
         this.carregando.set(false);
+        this.atualizando.set(false);
       },
       error: () => {
         this.erro.set('Erro ao carregar resumo financeiro. Tente novamente.');
         this.carregando.set(false);
+        this.atualizando.set(false);
       },
     });
   }
 
-  porcentagem(receita: number): string {
-    const total = this.totalGeral();
-    if (total === 0) return '0%';
-    const pct = (receita / total) * 100;
-    return `${Math.round(pct)}%`;
+  nomePeriodoAnterior(): string {
+    return this.periodo() === 'mes' ? 'Mês anterior' : 'Semana anterior';
   }
 
-  progressSegments = computed(() => {
-    const total = this.totalGeral();
-    if (total === 0) return [];
-
-    // Sort by value descending for the progress bar
-    const sorted = [...this.porClinica()].sort((a, b) => b.receita_total - a.receita_total);
-
-    return sorted.map(c => ({
-      value: c.receita_total,
-      color: corDaClinica(c.clinica)
-    }));
-  });
-
-  trocarPeriodo(periodo: 'mes' | 'semana') {
+  trocarPeriodo(periodo: PeriodoFinanceiro) {
     this.periodo.set(periodo);
     this.dataReferencia.set(formatarDataISO());
   }
@@ -122,10 +160,6 @@ export class Financeiro {
       d.setDate(d.getDate() + 7);
     }
     this.dataReferencia.set(formatarDataISO(d));
-  }
-
-  formatarValor(valor: number): string {
-    return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   }
 
   getPeriodoLabel(): string {

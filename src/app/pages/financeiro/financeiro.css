@@ -158,112 +158,242 @@
   color: var(--color-text-primary);
 }
 
-/* ─── Distribuição ─── */
-.fin-section-title {
-  font-size: 0.75rem;
+.fin-delta {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: -1rem 0 1.25rem;
+  font-size: 0.8125rem;
   font-weight: 600;
+}
+
+.fin-delta--alta {
+  color: var(--color-money);
+}
+
+.fin-delta--queda {
+  color: var(--color-danger);
+}
+
+.fin-delta-ref {
+  font-weight: 400;
   color: var(--color-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+}
+
+/* ─── Recarga: mantém o conteúdo anterior esmaecido (sem spinner nem salto de layout) ─── */
+.fin-conteudo {
+  transition: opacity 0.15s ease;
+}
+
+.fin-conteudo--atualizando {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* ─── Gráficos ─── */
+.fin-graficos {
+  display: grid;
+  gap: 1rem;
+  animation: fadeInUp 0.5s ease-out 0.1s both;
+}
+
+@media (min-width: 1024px) {
+  .fin-graficos {
+    grid-template-columns: 2fr 1fr;
+    align-items: start;
+  }
+}
+
+.fin-grafico-card {
+  min-width: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  padding: 1.25rem;
+}
+
+.fin-grafico-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
   margin-bottom: 1rem;
 }
 
-.fin-legend {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-top: 1rem;
-  flex-wrap: wrap;
+.fin-grafico-titulo {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
 }
 
-.fin-legend-item {
+.fin-grafico-subtitulo {
+  margin-top: 2px;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+/* Legenda do gráfico de linhas: chave em forma de linha (espelha a marca) */
+.fin-legenda-linhas {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.fin-legenda-linhas li {
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.fin-legend-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+.fin-chave-linha {
+  width: 16px;
+  height: 0;
+  border-top: 2px solid;
 }
 
-.fin-legend-label {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--color-text-secondary);
+.fin-chave-linha--destaque {
+  border-color: var(--color-clinic-1);
 }
 
-/* ─── Clinic Cards ─── */
-.fin-cards {
+.fin-chave-linha--tracejada {
+  border-top-style: dashed;
+  border-color: var(--color-clinic-1);
+}
+
+.fin-chave-linha--contexto {
+  border-color: var(--color-text-muted);
+}
+
+/* Rosca com o total no centro */
+.fin-rosca {
+  position: relative;
+}
+
+.fin-rosca-centro {
+  position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  animation: fadeInUp 0.5s ease-out 0.1s both;
-}
-
-.fin-clinic-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 14px;
-  padding: 1.25rem;
-  transition: border-color 0.2s ease, transform 0.15s ease;
-}
-
-.fin-clinic-card:hover {
-  border-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
-}
-
-.fin-clinic-card-header {
-  display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.25rem;
+  justify-content: center;
+  pointer-events: none;
 }
 
-.fin-clinic-info {
+.fin-rosca-valor {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.fin-rosca-rotulo {
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+}
+
+/* Legenda das clínicas: também é a leitura dos valores (R$ e %) */
+.fin-legenda-clinicas {
   display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 1rem;
+}
+
+.fin-legenda-clinica {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
   align-items: center;
   gap: 8px;
+  font-size: 0.8125rem;
 }
 
-.fin-clinic-name {
-  font-size: 0.9375rem;
+.fin-chave-fatia {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.fin-legenda-nome {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  color: var(--color-text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.fin-legenda-sub {
+  font-size: 0.6875rem;
+  color: var(--color-text-muted);
+}
+
+.fin-legenda-valor {
   font-weight: 600;
   color: var(--color-text-primary);
 }
 
-.fin-clinic-money {
-  font-size: 0.9375rem;
-  font-weight: 700;
-  color: var(--color-money);
+.fin-legenda-pct {
+  min-width: 2.5rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
 }
 
-.fin-clinic-card-sub {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-}
-
-.fin-clinic-atendimentos,
-.fin-clinic-pct {
+.fin-sem-receita {
   font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+/* Versão em tabela de cada gráfico */
+.fin-tabela-dados {
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+}
+
+.fin-tabela-dados summary {
+  cursor: pointer;
+  color: var(--color-text-muted);
+  width: fit-content;
+}
+
+.fin-tabela-dados summary:hover {
   color: var(--color-text-secondary);
 }
 
-.fin-clinic-bar-bg {
-  width: 100%;
-  height: 4px;
-  background: color-mix(in srgb, var(--color-border) 60%, transparent);
-  border-radius: 2px;
-  overflow: hidden;
+.fin-tabela-scroll {
+  max-height: 260px;
+  margin-top: 0.5rem;
+  overflow: auto;
 }
 
-.fin-clinic-bar-fill {
-  height: 100%;
-  border-radius: 2px;
-  transition: width 0.5s ease-out;
+.fin-tabela-dados table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.fin-tabela-dados th,
+.fin-tabela-dados td {
+  padding: 6px 8px;
+  text-align: right;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+.fin-tabela-dados thead th {
+  position: sticky;
+  top: 0;
+  background: var(--color-surface);
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.fin-tabela-dados th[scope='row'] {
+  text-align: left;
+  font-weight: 500;
 }
 
 /* Animation fadeInUp is defined globally in styles.css */
