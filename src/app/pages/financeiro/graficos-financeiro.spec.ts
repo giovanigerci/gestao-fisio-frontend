@@ -3,6 +3,7 @@ import { CORES_CLINICA_HEX } from '../../shared/utils/clinic-colors';
 import { CORES_GRAFICO } from '../../shared/utils/cores-grafico';
 import {
   compararComAnterior,
+  configuracaoComposicao,
   configuracaoEvolucao,
   configuracaoHistorico,
   montarComposicao,
@@ -146,6 +147,16 @@ describe('montarComposicao', () => {
     expect(outras.nome).toBe('Outras (2)');
     expect(outras.valor).toBe(300); // clínicas 1 e 2
     expect(outras.cor).toBe(CORES_GRAFICO.contexto);
+  });
+
+  it('uma clínica só: anel fechado e parado no hover, tooltip acompanhando o ponteiro', () => {
+    const umaSo = configuracaoComposicao(montarComposicao([clinica(1, 100)]));
+    const duas = configuracaoComposicao(montarComposicao([clinica(1, 100), clinica(2, 50)]));
+
+    expect(umaSo.data.datasets[0]).toMatchObject({ borderWidth: 0, hoverOffset: 0 });
+    expect(umaSo.options?.plugins?.tooltip?.position).toBe('cursor');
+    expect(duas.data.datasets[0]).toMatchObject({ borderWidth: 2, hoverOffset: 4 });
+    expect(duas.options?.plugins?.tooltip?.position).toBeUndefined();
   });
 
   it('com exatamente 6 clínicas, todas aparecem', () => {

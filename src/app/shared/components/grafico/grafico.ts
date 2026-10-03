@@ -6,6 +6,7 @@ import {
   CategoryScale,
   Chart,
   ChartConfiguration,
+  ChartType,
   DoughnutController,
   Filler,
   LinearScale,
@@ -13,6 +14,7 @@ import {
   LineElement,
   PointElement,
   Tooltip,
+  TooltipPositionerFunction,
 } from 'chart.js';
 
 // Só o que os gráficos do projeto usam (tree-shaking: o Chart.js completo é bem maior)
@@ -22,6 +24,15 @@ Chart.register(
   DoughnutController, ArcElement,
   CategoryScale, LinearScale, Tooltip,
 );
+
+/** Tooltip na posição do ponteiro (`tooltip.position: 'cursor'`). */
+Tooltip.positioners.cursor = (_elementos, posicaoDoEvento) => posicaoDoEvento;
+
+declare module 'chart.js' {
+  interface TooltipPositionerMap {
+    cursor: TooltipPositionerFunction<ChartType>;
+  }
+}
 
 /**
  * Wrapper fino do Chart.js. Recebe a configuração pronta (montada fora, em funções testáveis)

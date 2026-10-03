@@ -262,6 +262,9 @@ export function montarComposicao(porClinica: ResumoClinica[]): Composicao {
 }
 
 export function configuracaoComposicao(composicao: Composicao): ChartConfiguration<'doughnut'> {
+  // Uma fatia só é o anel inteiro: o deslocamento do hover moveria o anel todo (corte embaixo, risco em cima)
+  // e o tooltip ficaria preso no meio do arco, na base da rosca; então ele acompanha o ponteiro, acima dele.
+  const umaFatia = composicao.fatias.length === 1;
   return {
     type: 'doughnut',
     data: {
@@ -271,8 +274,8 @@ export function configuracaoComposicao(composicao: Composicao): ChartConfigurati
           data: composicao.fatias.map((f) => f.valor),
           backgroundColor: composicao.fatias.map((f) => f.cor),
           borderColor: CORES_GRAFICO.superficie, // espaço de 2px na cor da superfície entre as fatias
-          borderWidth: 2,
-          hoverOffset: 4,
+          borderWidth: umaFatia ? 0 : 2,
+          hoverOffset: umaFatia ? 0 : 4,
         },
       ],
     },
@@ -288,6 +291,7 @@ export function configuracaoComposicao(composicao: Composicao): ChartConfigurati
           usePointStyle: false,
           boxWidth: 8,
           boxHeight: 8,
+          ...(umaFatia && { position: 'cursor' as const, yAlign: 'bottom' as const }),
           callbacks: {
             label: (item: TooltipItem<'doughnut'>) => {
               const fatia = composicao.fatias[item.dataIndex];
