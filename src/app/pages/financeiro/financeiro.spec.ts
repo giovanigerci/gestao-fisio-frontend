@@ -68,8 +68,8 @@ describe('Financeiro — carregamento e gráficos', () => {
 
   const resumoComClinicas: ResumoFinanceiro = {
     por_clinica: [
-      { clinica: 1, clinica__nome: 'Studio', total_atendimentos: 3, receita_total: 120 },
-      { clinica: 2, clinica__nome: 'Centro', total_atendimentos: 1, receita_total: 80 },
+      { clinica: 1, clinica__nome: 'Studio', clinica__cor: 1, total_atendimentos: 3, receita_total: 120 },
+      { clinica: 2, clinica__nome: 'Centro', clinica__cor: 2, total_atendimentos: 1, receita_total: 80 },
     ],
     total_geral: 200,
   };

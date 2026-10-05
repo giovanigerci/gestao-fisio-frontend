@@ -8,7 +8,7 @@ import { Card } from '../../shared/components/card/card';
 import { EmptyState } from '../../shared/components/empty-state/empty-state';
 import { Badge, BadgeVariant } from '../../shared/components/badge/badge';
 import { ConfirmModal } from '../../shared/components/confirm-modal/confirm-modal';
-import { corDoPaciente } from '../../shared/utils/clinic-colors';
+import { corDaClinica } from '../../shared/utils/clinic-colors';
 
 @Component({
   selector: 'app-clinicas',
@@ -30,7 +30,7 @@ export class Clinicas implements AfterViewInit, OnDestroy {
   confirmandoExclusao = signal<Clinica | null>(null);
   nextUrl = signal<string | null>(null);
 
-  corDoPaciente = corDoPaciente;
+  corDaClinica = corDaClinica;
 
   totalCadastradas = signal(0);
 

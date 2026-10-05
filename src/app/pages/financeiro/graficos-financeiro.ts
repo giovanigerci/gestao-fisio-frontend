@@ -4,7 +4,7 @@
  */
 import type { ChartConfiguration, Plugin, TooltipItem } from 'chart.js';
 import { EvolucaoReceita, HistoricoReceita, PeriodoFinanceiro, ResumoClinica } from '../../services/financeiro.service';
-import { CORES_CLINICA_HEX, indiceCorDaClinica } from '../../shared/utils/clinic-colors';
+import { corDaClinicaHex } from '../../shared/utils/clinic-colors';
 import { CORES_GRAFICO } from '../../shared/utils/cores-grafico';
 import { parseDataISO } from '../../shared/utils/datas';
 
@@ -212,6 +212,8 @@ export function configuracaoEvolucao(serie: SerieEvolucao): ChartConfiguration<'
 
 export interface FatiaComposicao {
   id: number | null; // null = "Outras"
+  /** Posição na paleta (1–5); null em "Outras". */
+  posicaoCor: number | null;
   nome: string;
   valor: number;
   atendimentos: number;
@@ -238,18 +240,20 @@ export function montarComposicao(porClinica: ResumoClinica[]): Composicao {
   const fatias: FatiaComposicao[] = principais
     .map((c) => ({
       id: c.clinica,
+      posicaoCor: c.clinica__cor,
       nome: c.clinica__nome,
       valor: Number(c.receita_total),
       atendimentos: c.total_atendimentos,
       percentual: pct(Number(c.receita_total)),
-      cor: CORES_CLINICA_HEX[indiceCorDaClinica(c.clinica)],
+      cor: corDaClinicaHex(c.clinica__cor),
     }))
-    .sort((a, b) => indiceCorDaClinica(a.id) - indiceCorDaClinica(b.id) || a.id - b.id) as FatiaComposicao[];
+    .sort((a, b) => a.posicaoCor - b.posicaoCor || a.id - b.id);
 
   if (resto.length) {
     const valor = resto.reduce((soma, c) => soma + Number(c.receita_total), 0);
     fatias.push({
       id: null,
+      posicaoCor: null,
       nome: `Outras (${resto.length})`,
       valor,
       atendimentos: resto.reduce((soma, c) => soma + c.total_atendimentos, 0),

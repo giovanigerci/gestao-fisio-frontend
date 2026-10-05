@@ -11,6 +11,8 @@ export interface Clinica {
   telefone: string;
   valor_por_atendimento: string;
   ativo: boolean;
+  /** Posição na paleta (1 a 5), escolhida pelo backend na criação. */
+  cor?: number;
   total_atendimentos?: number;
   receita_total?: string;
 }
@@ -33,7 +35,7 @@ export class ClinicaService {
   }
 
   buscarOpcoes() {
-    return this.http.get<{ id: number, nome: string }[]>(`${this.url}opcoes/`);
+    return this.http.get<{ id: number, nome: string, cor: number }[]>(`${this.url}opcoes/`);
   }
 
   buscarPorId(id: number) {

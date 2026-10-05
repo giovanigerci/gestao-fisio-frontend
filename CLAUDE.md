@@ -24,7 +24,7 @@ Telas autenticadas precisam do backend rodando localmente.
 - Templates com control flow nativo (`@if`, `@for` com `track`), não `*ngIf`/`*ngFor`.
 - Nomes: componentes no estilo do CLI atual (`login.ts`, classes `Login`, `Agenda`, sem sufixo `Component`; `PerfilPage`, `TermosPage` e `PrivacidadePage` são exceções legadas — não replique). Services com sufixo e decorator `@Service()` do Angular 22, não `@Injectable` (`paciente.service.ts` → `PacienteService`). O `ng generate service` atual cria `paciente.ts`/`Paciente` — renomeie para o padrão.
 - HTTP só dentro de `services/`, um service por recurso da API. Exceção: o `auth-interceptor`.
-- Antes de criar componente, diretiva, pipe ou util, procure em `shared/`: já existem badge, card, confirm-modal (título, mensagem, botões e `variant` configuráveis por input — use `variant="danger"`, padrão dos modais do projeto), empty-state, progress-bar, grafico (`<app-grafico [config] [descricao]>`: wrapper do Chart.js; a configuração é montada fora, em funções puras testáveis — ver `pages/financeiro/graficos-financeiro.ts`), requisitos-senha (`<app-requisitos-senha [senha]="...">`: checklist da senha, espelha os validadores do backend), diretivas de máscara de CPF, telefone e moeda (`appMoedaMask`: digitação estilo caixa registradora — `4000` vira `40,00` —, exibe com vírgula e emite com ponto para a API), `telefone.pipe.ts`, `clinic-colors.ts` (cor fixa por clínica), `form-errors.ts` (mensagens de validação da API) e `datas.ts` (`formatarDataISO`/`parseDataISO`, datas da API no fuso local).
+- Antes de criar componente, diretiva, pipe ou util, procure em `shared/`: já existem badge, card, confirm-modal (título, mensagem, botões e `variant` configuráveis por input — use `variant="danger"`, padrão dos modais do projeto), empty-state, progress-bar, grafico (`<app-grafico [config] [descricao]>`: wrapper do Chart.js; a configuração é montada fora, em funções puras testáveis — ver `pages/financeiro/graficos-financeiro.ts`), requisitos-senha (`<app-requisitos-senha [senha]="...">`: checklist da senha, espelha os validadores do backend), diretivas de máscara de CPF, telefone e moeda (`appMoedaMask`: digitação estilo caixa registradora — `4000` vira `40,00` —, exibe com vírgula e emite com ponto para a API), `telefone.pipe.ts`, `clinic-colors.ts` (`corDaClinica(cor)`: token da paleta a partir da cor guardada pelo backend), `form-errors.ts` (mensagens de validação da API) e `datas.ts` (`formatarDataISO`/`parseDataISO`, datas da API no fuso local).
 - Todo campo de texto tem `maxlength` igual ao limite do backend (`max_length` do model/serializer); senhas 128, e-mails 254, buscas 100. Textos longos (ex: histórico médico, 10.000) mostram contador perto do limite. Campos com máscara (CPF, telefone, moeda) já são limitados pela diretiva.
 - Domínio e todo texto de interface em português (pt-BR); convenções do Angular/TypeScript em inglês.
 
@@ -82,7 +82,7 @@ Telas autenticadas precisam do backend rodando localmente.
 - Forma pelo trabalho do dado: evolução no tempo = linha (receita acumulada); parte do todo = rosca com no máximo 6 fatias (o excedente vira "Outras"); totais por período = colunas. Nunca dois eixos Y no mesmo gráfico.
 - Marcas finas: linhas de 2px, sem curva suavizada (inventa valores entre os dias); área com ~10% de opacidade; grade e eixos em linha fina e sólida (`--color-border`). Tracejado só para projeção (previsto).
 - Ênfase: período atual em azul (`destaque`), período anterior em cinza (`contexto`) — não duas cores fortes competindo.
-- Cor segue a entidade (cada clínica tem a mesma cor em todas as telas). Em marcas que se tocam (fatias), mantenha a ordem da paleta: azul (1) e violeta (4) se confundem lado a lado para quem tem daltonismo.
+- Cor segue a entidade (cada clínica tem a mesma cor em todas as telas). A cor é guardada no backend (campo `cor`, 1 a 5, escolhida na criação entre as menos usadas pelo profissional) e vem da API: `cor` na clínica, `cor_clinica` no agendamento, `clinica__cor` no resumo financeiro. Nunca derive a cor do `id` da clínica (ids são globais e repetiriam cores entre clínicas do mesmo profissional). Em marcas que se tocam (fatias), mantenha a ordem da paleta: azul (1) e violeta (4) se confundem lado a lado para quem tem daltonismo.
 - Paleta nova ou alterada: valide com o validador de paleta categórica (luminosidade, croma, contraste >= 3:1 e separação para daltonismo) contra a superfície escura `#131b2e`.
 - Todo gráfico tem legenda em HTML (para 2+ séries), tooltip com todas as séries do ponto e uma versão em tabela ("Ver dados em tabela"); texto nunca usa a cor da série.
 - Recarga mantém o gráfico anterior esmaecido (sem spinner nem salto de layout).
@@ -92,8 +92,7 @@ Telas autenticadas precisam do backend rodando localmente.
 
 ## Dívidas conhecidas (apague ao resolver)
 
-1. Cores de clínica repetem: `corDaClinica` usa `id % 5` com ids globais, então duas clínicas do mesmo profissional podem ter a mesma cor (na agenda e na rosca). Solução: o backend guardar a cor da clínica, escolhida na criação entre as ainda não usadas pelo profissional.
-2. Cobertura baixa: só `perfil`, `financeiro`, `guestGuard` e `shared/utils/datas` têm testes de comportamento; os demais specs são apenas "should create".
+1. Cobertura baixa: só `perfil`, `financeiro`, `guestGuard`, `shared/utils/datas` e `shared/utils/clinic-colors` têm testes de comportamento; os demais specs são apenas "should create".
 
 ## Fluxo de trabalho
 

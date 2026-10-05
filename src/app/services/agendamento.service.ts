@@ -16,6 +16,7 @@ export interface Agendamento {
   valor_calculado: number;
   nome_paciente?: string;
   nome_clinica?: string;
+  cor_clinica?: number;
   idade_paciente?: string;
 }
 

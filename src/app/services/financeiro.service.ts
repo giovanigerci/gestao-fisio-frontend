@@ -8,6 +8,7 @@ export type AgrupamentoHistorico = 'mes' | 'ano';
 export interface ResumoClinica {
   clinica: number;
   clinica__nome: string;
+  clinica__cor: number;
   total_atendimentos: number;
   receita_total: number;
 }

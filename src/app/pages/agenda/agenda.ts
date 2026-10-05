@@ -138,17 +138,13 @@ export class Agenda {
   clinicasDoDia = computed(() => {
     const dia = this.diaSelecionado();
     if (!dia) return [];
-    const clinicasMap = new Map<number, string>();
+    const clinicasMap = new Map<number, { nome: string; cor: string }>();
     dia.agendamentos.forEach(a => {
       if (!clinicasMap.has(a.clinica)) {
-        clinicasMap.set(a.clinica, a.nome_clinica || '—');
+        clinicasMap.set(a.clinica, { nome: a.nome_clinica || '—', cor: corDaClinica(a.cor_clinica) });
       }
     });
-    return Array.from(clinicasMap.entries()).map(([id, nome]) => ({
-      id,
-      nome,
-      cor: corDaClinica(id),
-    }));
+    return Array.from(clinicasMap.entries()).map(([id, { nome, cor }]) => ({ id, nome, cor }));
   });
 
   expedienteEncerrado = computed(() => {
@@ -387,7 +383,7 @@ export class Agenda {
   }
 
   getDotsDoDia(dia: DiaAgenda): string[] {
-    return dia.agendamentos.slice(0, 4).map(a => corDaClinica(a.clinica));
+    return dia.agendamentos.slice(0, 4).map(a => corDaClinica(a.cor_clinica));
   }
 
   getStatusVariant(status: string): BadgeVariant {

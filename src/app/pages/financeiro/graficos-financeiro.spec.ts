@@ -118,8 +118,8 @@ describe('configuracaoEvolucao', () => {
 });
 
 describe('montarComposicao', () => {
-  const clinica = (id: number, receita: number): ResumoClinica => ({
-    clinica: id, clinica__nome: `Clínica ${id}`, total_atendimentos: 1, receita_total: receita,
+  const clinica = (id: number, receita: number, cor = ((id - 1) % 5) + 1): ResumoClinica => ({
+    clinica: id, clinica__nome: `Clínica ${id}`, clinica__cor: cor, total_atendimentos: 1, receita_total: receita,
   });
 
   it('rosca na ordem fixa da paleta; legenda da maior para a menor receita', () => {
@@ -131,10 +131,16 @@ describe('montarComposicao', () => {
     expect(composicao.legenda[0].percentual).toBeCloseTo(60);
   });
 
-  it('cada clínica mantém a cor dela em qualquer tela', () => {
-    const [fatia] = montarComposicao([clinica(7, 100)]).fatias;
+  it('usa a cor que o backend guardou para a clínica, não uma derivada do id', () => {
+    const [fatia] = montarComposicao([clinica(7, 100, 4)]).fatias;
 
-    expect(fatia.cor).toBe(CORES_CLINICA_HEX[7 % CORES_CLINICA_HEX.length]);
+    expect(fatia.cor).toBe(CORES_CLINICA_HEX[3]);
+  });
+
+  it('rosca na ordem da paleta pela cor guardada, mesmo com ids fora de ordem', () => {
+    const composicao = montarComposicao([clinica(10, 100, 3), clinica(42, 100, 1), clinica(7, 100, 2)]);
+
+    expect(composicao.fatias.map((f) => f.id)).toEqual([42, 7, 10]);
   });
 
   it('acima de 6 clínicas, as menores viram "Outras" (no máximo 6 fatias)', () => {

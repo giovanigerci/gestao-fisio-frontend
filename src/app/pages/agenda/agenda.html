@@ -162,7 +162,7 @@
   <div class="agenda-items">
     @for (ag of dia.agendamentos; track ag.id) {
     <div [class.agenda-item--cancelado]="ag.status === 'CA'">
-      <app-card [clinicColor]="corDaClinica(ag.clinica)">
+      <app-card [clinicColor]="corDaClinica(ag.cor_clinica)">
         <div class="agenda-item-layout" (click)="abrirDetalhes(ag)">
           <!-- Time -->
           <div class="agenda-item-time">
@@ -341,7 +341,7 @@
       <div class="agenda-confirm-list">
         @for (ag of dadosConfirmacaoDia().pendentes; track ag.id) {
         <div class="agenda-confirm-item">
-          <span class="agenda-clinic-dot" [style.background-color]="corDaClinica(ag.clinica)"></span>
+          <span class="agenda-clinic-dot" [style.background-color]="corDaClinica(ag.cor_clinica)"></span>
           <span class="agenda-confirm-hora">{{ formatarHora(ag.hora_inicio) }}</span>
           <span class="agenda-confirm-paciente">{{ ag.nome_paciente || 'Desconhecido' }}</span>
           <span class="agenda-confirm-valor" [class.agenda-item-valor--zero]="ag.eh_experimental">

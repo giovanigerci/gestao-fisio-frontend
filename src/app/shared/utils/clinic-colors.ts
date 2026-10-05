@@ -1,5 +1,10 @@
 /**
- * Paleta rotativa para identificação visual de clínicas.
+ * Paleta de identificação visual de clínicas.
+ *
+ * A cor de cada clínica é escolhida pelo backend na criação (campo `cor`, de 1 a 5:
+ * a menos usada entre as clínicas do profissional) e vem da API — `cor` na clínica,
+ * `cor_clinica` no agendamento, `clinica__cor` no resumo financeiro. Assim duas clínicas
+ * do mesmo profissional não repetem cor (até 5 clínicas) e a cor é a mesma em todas as telas.
  *
  * Cada cor é uma referência ao token CSS correspondente, garantindo que a
  * alteração de uma cor na paleta se propague automaticamente para todo o
@@ -32,32 +37,29 @@ export const CORES_CLINICA_HEX = [
   '#e8475f',
 ] as const;
 
-/** Posição da clínica na paleta (0–4): use para ordenar marcas que se tocam (ex: fatias da rosca). */
-export function indiceCorDaClinica(clinicaId: number): number {
-  return clinicaId % CORES_CLINICA_HEX.length;
+const COR_SEM_CLINICA = 'var(--color-text-muted)';
+const COR_SEM_CLINICA_HEX = '#64748b';
+
+/** Posição na paleta (0–4) da `cor` vinda da API (1–5); -1 se ausente. */
+function indiceDaCor(cor: number | null | undefined): number {
+  return cor ? (cor - 1) % CORES_CLINICA.length : -1;
 }
 
-/**
- * Retorna a cor CSS (como `var(--color-clinic-N)`) atribuída deterministicamente
- * a uma clínica com base no seu `id`.
- *
- * Garante que a mesma clínica sempre receba a mesma cor em qualquer tela
- * (Agenda, Financeiro, listagem de Clínicas), sem armazenar nada no banco.
- */
-export function corDaClinica(clinicaId: number): string {
-  return CORES_CLINICA[clinicaId % CORES_CLINICA.length];
+/** Cor CSS (`var(--color-clinic-N)`) a partir do campo `cor` da clínica. */
+export function corDaClinica(cor: number | null | undefined): string {
+  const indice = indiceDaCor(cor);
+  return indice < 0 ? COR_SEM_CLINICA : CORES_CLINICA[indice];
 }
 
-/**
- * Versão hex de `corDaClinica`, para contextos que não suportam `var()`.
- */
-export function corDaClinicaHex(clinicaId: number): string {
-  return CORES_CLINICA_HEX[clinicaId % CORES_CLINICA_HEX.length];
+/** Versão hex de `corDaClinica`, para contextos que não suportam `var()` (canvas). */
+export function corDaClinicaHex(cor: number | null | undefined): string {
+  const indice = indiceDaCor(cor);
+  return indice < 0 ? COR_SEM_CLINICA_HEX : CORES_CLINICA_HEX[indice];
 }
 
 /**
  * Retorna a cor CSS atribuída deterministicamente a um paciente com base no
- * seu `id`, reutilizando a mesma paleta `--color-clinic-*`.
+ * seu `id`, reutilizando a mesma paleta `--color-clinic-*` (só decorativa: repetir não confunde).
  */
 export function corDoPaciente(pacienteId: number): string {
   return CORES_CLINICA[pacienteId % CORES_CLINICA.length];

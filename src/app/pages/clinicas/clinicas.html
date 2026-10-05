@@ -89,8 +89,8 @@
           <td class="td-clinica">
             <div class="cell-clinica">
               <div class="avatar"
-                [style.background]="'color-mix(in srgb, ' + corDoPaciente(clinica.id) + ' 15%, transparent)'"
-                [style.color]="corDoPaciente(clinica.id)">
+                [style.background]="'color-mix(in srgb, ' + corDaClinica(clinica.cor) + ' 15%, transparent)'"
+                [style.color]="corDaClinica(clinica.cor)">
                 {{ getIniciais(clinica.nome) }}
               </div>
               <div class="clinica-info">
@@ -142,8 +142,8 @@
 
         <!-- Avatar -->
         <div class="avatar"
-          [style.background]="'color-mix(in srgb, ' + corDoPaciente(clinica.id) + ' 15%, transparent)'"
-          [style.color]="corDoPaciente(clinica.id)">
+          [style.background]="'color-mix(in srgb, ' + corDaClinica(clinica.cor) + ' 15%, transparent)'"
+          [style.color]="corDaClinica(clinica.cor)">
           {{ getIniciais(clinica.nome) }}
         </div>
 

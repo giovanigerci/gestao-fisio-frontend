@@ -17,6 +17,6 @@ import { Component, input } from '@angular/core';
   styleUrl: './card.css',
 })
 export class Card {
-  /** Cor da borda lateral esquerda (e.g. `corDaClinica(id)` retorna `var(--color-clinic-N)`). */
+  /** Cor da borda lateral esquerda (e.g. `corDaClinica(clinica.cor)` retorna `var(--color-clinic-N)`). */
   clinicColor = input<string>();
 }
