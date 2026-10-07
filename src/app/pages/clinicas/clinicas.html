@@ -4,7 +4,7 @@
     <div class="header-left">
       <h1 class="page-title">Clínicas</h1>
       @if (!carregando() && !erro()) {
-      <span class="page-counter">{{ totalCadastradas() }} cadastradas</span>
+      <span class="page-counter">{{ totalCadastradas() }} cadastrada{{ totalCadastradas() === 1 ? '' : 's' }}</span>
       }
     </div>
     <a routerLink="/clinicas/novo" class="btn-novo">
@@ -14,17 +14,6 @@
       </svg>
       Clínica
     </a>
-  </div>
-
-  <!-- Search bar -->
-  <div class="search-container">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-      class="search-icon">
-      <path stroke-linecap="round" stroke-linejoin="round"
-        d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-    </svg>
-    <input maxlength="100" type="text" [value]="termoBusca()" (input)="termoBusca.set($any($event.target).value)"
-      placeholder="Buscar por nome..." class="search-input" />
   </div>
 
   <!-- Loading state -->
@@ -39,131 +28,28 @@
   @if (erro() && !carregando()) {
   <div class="error-container">
     <p class="error-text">{{ erro() }}</p>
-    <button (click)="recarregar()" class="error-retry">
+    <button (click)="carregar()" class="error-retry">
       Tentar novamente
     </button>
   </div>
   }
 
-  <!-- Empty state (no clinics at all) -->
-  @if (!carregando() && !erro() && clinicas().length === 0 && !termoBusca()) {
-  <app-empty-state title="Nenhuma clínica cadastrada" subtitle="Toque no botão + para adicionar">
-    <svg icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-      stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round"
-        d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Zm0 3h.008v.008h-.008v-.008Z" />
-    </svg>
-  </app-empty-state>
-  }
-
-  <!-- Search empty state -->
-  @if (!carregando() && !erro() && clinicas().length === 0 && termoBusca()) {
-  <app-empty-state title="Nenhuma clínica encontrada"
-    [subtitle]="'Não achamos resultados para \'' + termoBusca() + '\''">
-    <svg icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-      stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round"
-        d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-    </svg>
-  </app-empty-state>
-  }
-
-  <!-- ═══════════ DESKTOP TABLE (≥ 1024px) ═══════════ -->
-  @if (!carregando() && !erro() && clinicas().length > 0) {
-  <div class="table-wrapper desktop-only">
-    <table class="clinicas-table">
-      <thead>
-        <tr>
-          <th class="th-clinica">Clínica</th>
-          <th class="th-status">Status</th>
-          <th class="th-valor">Valor/Atendimento</th>
-          <th class="th-atendimentos">Atendimentos</th>
-          <th class="th-receita">Receita Total</th>
-          <th class="th-acoes"></th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (clinica of clinicas(); track clinica.id) {
-        <tr class="table-row" (click)="editarClinica(clinica)">
-          <!-- Clínica (avatar + nome + endereço) -->
-          <td class="td-clinica">
-            <div class="cell-clinica">
-              <div class="avatar"
-                [style.background]="'color-mix(in srgb, ' + corDaClinica(clinica.cor) + ' 15%, transparent)'"
-                [style.color]="corDaClinica(clinica.cor)">
-                {{ getIniciais(clinica.nome) }}
-              </div>
-              <div class="clinica-info">
-                <span class="nome-clinica">{{ clinica.nome }}</span>
-                <span class="endereco-clinica">{{ clinica.endereco }}</span>
-              </div>
-            </div>
-          </td>
-
-          <!-- Status -->
-          <td class="td-status">
-            <app-badge [variant]="getStatusVariant(clinica.ativo)"></app-badge>
-          </td>
-
-          <!-- Valor/Atendimento -->
-          <td class="td-valor">{{ formatarValor(clinica.valor_por_atendimento) }}</td>
-
-          <!-- Atendimentos -->
-          <td class="td-atendimentos">{{ clinica.total_atendimentos || 0 }}</td>
-
-          <!-- Receita Total -->
-          <td class="td-receita">
-            <span class="receita-total">{{ formatarValor(clinica.receita_total) }}</span>
-          </td>
-
-          <!-- Ações -->
-          <td class="td-acoes">
-            <button (click)="confirmarExclusao(clinica, $event)" class="btn-delete" title="Excluir clínica" aria-label="Excluir clínica">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                stroke="currentColor" class="icon-delete">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                  d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-              </svg>
-            </button>
-          </td>
-        </tr>
-        }
-      </tbody>
-    </table>
-  </div>
-  }
-
-  <!-- ═══════════ MOBILE CARDS (< 1024px) ═══════════ -->
-  @if (!carregando() && !erro() && clinicas().length > 0) {
-  <div class="cards-wrapper mobile-only">
+  @if (!carregando() && !erro()) {
+  <ul class="clinicas-grid">
     @for (clinica of clinicas(); track clinica.id) {
-    <app-card>
-      <div (click)="editarClinica(clinica)" class="card-content">
-
-        <!-- Avatar -->
-        <div class="avatar"
-          [style.background]="'color-mix(in srgb, ' + corDaClinica(clinica.cor) + ' 15%, transparent)'"
-          [style.color]="corDaClinica(clinica.cor)">
-          {{ getIniciais(clinica.nome) }}
+    <li class="clinica-card" [class.clinica-card--inativa]="!clinica.ativo"
+      [style.--cor-clinica]="corDaClinica(clinica.cor)">
+      <div class="clinica-topo">
+        <div class="avatar clinica-avatar" aria-hidden="true">{{ getIniciais(clinica.nome) }}</div>
+        <div class="clinica-identidade">
+          <h2 class="clinica-nome">
+            <!-- O link cobre o card inteiro (::after): clicar em qualquer parte abre a edição -->
+            <a [routerLink]="['/clinicas', clinica.id, 'editar']" class="clinica-link">{{ clinica.nome }}</a>
+          </h2>
+          <p class="clinica-endereco">{{ clinica.endereco }}</p>
         </div>
-
-        <!-- Info -->
-        <div class="card-info">
-          <div class="card-top-row">
-            <p class="card-nome">{{ clinica.nome }}</p>
-            <app-badge [variant]="getStatusVariant(clinica.ativo)"></app-badge>
-          </div>
-          <p class="card-endereco">{{ clinica.endereco }}</p>
-          <p class="card-valor">{{ formatarValor(clinica.valor_por_atendimento) }} / atendimento</p>
-          <div class="card-stats">
-            <span><span class="card-atendimentos">{{ clinica.total_atendimentos || 0 }}</span> atend.</span>
-            <span>•</span>
-            <span class="card-receita">{{ formatarValor(clinica.receita_total) }}</span>
-          </div>
-        </div>
-
-        <!-- Delete button -->
-        <button (click)="confirmarExclusao(clinica, $event)" class="btn-delete-card" title="Excluir clínica" aria-label="Excluir clínica">
+        <button (click)="confirmarExclusao(clinica, $event)" class="clinica-excluir" title="Excluir clínica"
+          [attr.aria-label]="'Excluir ' + clinica.nome">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
             stroke="currentColor" class="icon-delete">
             <path stroke-linecap="round" stroke-linejoin="round"
@@ -171,20 +57,50 @@
           </svg>
         </button>
       </div>
-    </app-card>
+
+      <div class="clinica-valor">
+        <span><strong>{{ formatarValor(clinica.valor_por_atendimento) }}</strong> por atendimento</span>
+        @if (!clinica.ativo) {
+        <app-badge variant="inativo" />
+        }
+      </div>
+
+      <div class="clinica-mes">
+        <span class="clinica-mes-rotulo">Este mês</span>
+        <div class="clinica-mes-numeros">
+          <span class="clinica-mes-atendimentos">
+            {{ clinica.atendimentos_mes ?? 0 }} atendimento{{ clinica.atendimentos_mes === 1 ? '' : 's' }}
+          </span>
+          <span class="clinica-mes-receita">{{ formatarValor(clinica.receita_mes) }}</span>
+        </div>
+      </div>
+    </li>
     }
-  </div>
-  }
+
+    <!-- Card de cadastro: no fim da lista ou, sem clínicas, como estado vazio -->
+    <li class="clinica-nova-item" [class.clinica-nova-item--vazio]="!clinicas().length">
+      <a routerLink="/clinicas/novo" class="clinica-nova">
+        <span class="clinica-nova-icone" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+        </span>
+        <span class="clinica-nova-titulo">{{ clinicas().length ? 'Nova clínica' : 'Cadastre sua primeira clínica' }}</span>
+        @if (!clinicas().length) {
+        <span class="clinica-nova-sub">Ela aparece na agenda e no financeiro com uma cor própria</span>
+        }
+      </a>
+    </li>
+  </ul>
 
   <!-- ═══════════ INFINITE SCROLL ═══════════ -->
-  @if (!carregando() && !erro() && clinicas().length > 0) {
-    @if (carregandoMais()) {
-      <div class="load-more-container">
-        <div class="spinner-small"></div>
-        <span class="load-more-text">Carregando mais...</span>
-      </div>
-    }
-    <div class="scroll-sentinel" #scrollSentinel></div>
+  @if (carregandoMais()) {
+  <div class="load-more-container">
+    <div class="spinner-small"></div>
+    <span class="load-more-text">Carregando mais...</span>
+  </div>
+  }
+  <div class="scroll-sentinel" #scrollSentinel></div>
   }
 
   <!-- Confirm Delete Modal -->

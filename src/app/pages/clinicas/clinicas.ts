@@ -1,59 +1,52 @@
 import { Component, inject, signal, DestroyRef, ElementRef, viewChild, AfterViewInit, OnDestroy } from '@angular/core';
-import { toObservable } from '@angular/core/rxjs-interop';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { ClinicaService, Clinica } from '../../services/clinica.service';
-import { Card } from '../../shared/components/card/card';
-import { EmptyState } from '../../shared/components/empty-state/empty-state';
-import { Badge, BadgeVariant } from '../../shared/components/badge/badge';
+import { Badge } from '../../shared/components/badge/badge';
 import { ConfirmModal } from '../../shared/components/confirm-modal/confirm-modal';
 import { corDaClinica } from '../../shared/utils/clinic-colors';
 
 @Component({
   selector: 'app-clinicas',
-  imports: [RouterLink, Card, EmptyState, Badge, ConfirmModal],
+  imports: [RouterLink, Badge, ConfirmModal],
   templateUrl: './clinicas.html',
   styleUrls: ['../../../styles/list-page.css', './clinicas.css'],
 })
 export class Clinicas implements AfterViewInit, OnDestroy {
   private clinicaService = inject(ClinicaService);
   private destroyRef = inject(DestroyRef);
-  private router = inject(Router);
 
   clinicas = signal<Clinica[]>([]);
-  termoBusca = signal('');
   carregando = signal(true);
   carregandoMais = signal(false);
   erro = signal('');
   processandoAcao = signal(false);
   confirmandoExclusao = signal<Clinica | null>(null);
   nextUrl = signal<string | null>(null);
+  totalCadastradas = signal(0);
 
   corDaClinica = corDaClinica;
-
-  totalCadastradas = signal(0);
 
   /** Referência ao elemento sentinela para IntersectionObserver */
   scrollSentinel = viewChild<ElementRef>('scrollSentinel');
   private observer: IntersectionObserver | null = null;
 
   constructor() {
-    // ── Busca reativa com debounce ──
-    toObservable(this.termoBusca).pipe(
-      debounceTime(350),
-      distinctUntilChanged(),
-      tap(() => {
-        // RESET: limpa lista e nextUrl ANTES de disparar a requisição
-        this.clinicas.set([]);
-        this.nextUrl.set(null);
-        this.carregando.set(true);
-        this.erro.set('');
-      }),
-      // switchMap cancela a requisição anterior automaticamente
-      switchMap(termo => this.clinicaService.listar(1, termo)),
-      takeUntilDestroyed(this.destroyRef),
-    ).subscribe({
+    this.carregar();
+  }
+
+  ngAfterViewInit() {
+    this.setupIntersectionObserver();
+  }
+
+  ngOnDestroy() {
+    this.observer?.disconnect();
+  }
+
+  carregar() {
+    this.carregando.set(true);
+    this.erro.set('');
+    this.clinicaService.listar(1).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (resposta) => {
         this.clinicas.set(resposta.results);
         this.nextUrl.set(resposta.next);
@@ -65,14 +58,6 @@ export class Clinicas implements AfterViewInit, OnDestroy {
         this.carregando.set(false);
       },
     });
-  }
-
-  ngAfterViewInit() {
-    this.setupIntersectionObserver();
-  }
-
-  ngOnDestroy() {
-    this.observer?.disconnect();
   }
 
   private setupIntersectionObserver() {
@@ -115,14 +100,6 @@ export class Clinicas implements AfterViewInit, OnDestroy {
     });
   }
 
-  recarregar() {
-    this.termoBusca.set('');
-  }
-
-  editarClinica(clinica: Clinica) {
-    this.router.navigate(['/clinicas', clinica.id, 'editar']);
-  }
-
   confirmarExclusao(clinica: Clinica, event: Event) {
     event.stopPropagation();
     this.confirmandoExclusao.set(clinica);
@@ -155,18 +132,15 @@ export class Clinicas implements AfterViewInit, OnDestroy {
   getIniciais(nome: string): string {
     return nome
       .split(' ')
+      .filter(Boolean)
       .slice(0, 2)
       .map(n => n[0])
       .join('')
       .toUpperCase();
   }
 
-  formatarValor(valor: string | undefined): string {
+  formatarValor(valor: string | number | undefined): string {
     if (!valor) return 'R$ 0,00';
     return (+valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  }
-
-  getStatusVariant(ativo: boolean): BadgeVariant {
-    return ativo ? 'ativo' : 'inativo';
   }
 }

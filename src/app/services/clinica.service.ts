@@ -15,6 +15,9 @@ export interface Clinica {
   cor?: number;
   total_atendimentos?: number;
   receita_total?: string;
+  /** Realizados não experimentais no mês atual (mesma regra do resumo financeiro). */
+  atendimentos_mes?: number;
+  receita_mes?: string;
 }
 
 @Service()

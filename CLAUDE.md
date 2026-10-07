@@ -43,7 +43,7 @@ Telas autenticadas precisam do backend rodando localmente.
 - Cadastro em 2 etapas: `POST /api/auth/registrar/enviar-codigo/` (valida os dados e envia um código de 6 dígitos ao e-mail; 429 com `aguardar_segundos` se pedir de novo antes de 60s) e `POST /api/auth/registrar/` (mesmos dados + `codigo`). A senha não é guardada no servidor entre as etapas: a tela reenvia o formulário com o código. E-mail é obrigatório e único (sem diferenciar maiúsculas).
 - Auth: `POST /api/auth/token/` (login) e `GET /api/auth/me/` (sessão, via `PerfilService`); o refresh é responsabilidade do interceptor. Telas de visitante checam a sessão com `PerfilService.verificarSessao()`, que usa `SKIP_AUTH_RETRY` (`interceptors/auth-context.ts`) para um 401 não disparar refresh nem redirecionar para `/login` — sem isso, o guard do `/login` entraria em loop.
 - Foto de perfil: `POST /api/auth/me/foto/` (multipart, campo `foto`; JPEG/PNG/WEBP até 5 MB) e `DELETE` no mesmo endpoint. Na tela de perfil a foto só é enviada/removida ao clicar em "Salvar".
-- Clínicas e pacientes: listagem paginada (`?page=`, `?search=`, total em `count`) e `/opcoes/` (`[{id, nome}]`) para dropdowns.
+- Clínicas e pacientes: listagem paginada (`?page=`, `?search=`, total em `count`) e `/opcoes/` (`[{id, nome}]`; nas clínicas também `cor`) para dropdowns. A listagem de clínicas traz `atendimentos_mes` e `receita_mes` (mês atual, mesma regra do resumo financeiro) e vem com as inativas no fim.
 - Agendamentos: `?data_inicio=&data_fim=`; status individual via `PATCH /api/agendamentos/{id}/`; `POST /api/agendamentos/recorrente/`; `PATCH /api/agendamentos/confirmar-dia/?data=YYYY-MM-DD`.
 - Receita: `GET /api/resumo-financeiro/?periodo=mes|semana&data=YYYY-MM-DD`; série diária (realizado, acumulado, previsto e período anterior) em `/resumo-financeiro/evolucao/`; histórico mensal/anual em `/resumo-financeiro/historico/?agrupar=mes|ano`. A semana vai de domingo a sábado, igual na agenda, no rótulo do financeiro e no backend — mantenha os três alinhados.
 - Não existem `/vinculos/`, `/agendamentos/blocos/`, `/financeiro/*` nem `/pacientes/count/`.
@@ -92,7 +92,7 @@ Telas autenticadas precisam do backend rodando localmente.
 
 ## Dívidas conhecidas (apague ao resolver)
 
-1. Cobertura baixa: só `perfil`, `financeiro`, `guestGuard`, `shared/utils/datas` e `shared/utils/clinic-colors` têm testes de comportamento; os demais specs são apenas "should create".
+1. Cobertura baixa: só `perfil`, `financeiro`, `clinicas` (listagem), `guestGuard`, `shared/utils/datas` e `shared/utils/clinic-colors` têm testes de comportamento; os demais specs são apenas "should create".
 
 ## Fluxo de trabalho
 
