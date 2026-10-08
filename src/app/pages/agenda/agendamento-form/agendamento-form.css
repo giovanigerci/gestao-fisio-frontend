@@ -1,1 +1,232 @@
-/* Estilos globais movidos para src/styles/forms.css */
+/* ─── Clínica: chips na cor de cada clínica ─── */
+.sf-clinicas {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.sf-clinicas legend {
+  padding: 0;
+}
+
+.sf-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sf-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.sf-chip:hover {
+  color: var(--color-text-primary);
+  border-color: color-mix(in srgb, var(--cor-chip) 50%, var(--color-border));
+}
+
+.sf-chip--escolhida {
+  border-color: var(--cor-chip);
+  background: color-mix(in srgb, var(--cor-chip) 14%, transparent);
+  color: var(--color-text-primary);
+}
+
+/* O rádio nativo fica invisível, mas continua recebendo foco e as setas do teclado */
+.sf-chip-radio {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.sf-chip:has(.sf-chip-radio:focus-visible) {
+  outline: 2px solid var(--cor-chip);
+  outline-offset: 2px;
+}
+
+.sf-chip-ponto {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cor-chip);
+}
+
+.sf-sem-clinicas {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+/* ─── Data, início e fim ─── */
+.sf-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+@media (max-width: 639px) {
+  .sf-grid-3 {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+
+  .sf-grid-3 > :first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ─── Opções (experimental e repetir) ─── */
+.sf-opcoes {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+}
+
+.sf-opcao,
+.sf-opcao-linha {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sf-opcao {
+  padding: 12px 14px;
+}
+
+.sf-opcao + .sf-opcao {
+  border-top: 1px solid var(--color-border);
+}
+
+.sf-opcao--repetir {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+}
+
+.sf-icone {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface-hover);
+  color: var(--color-text-secondary);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.sf-icone--ligado {
+  background: color-mix(in srgb, var(--color-primary) 20%, transparent);
+  color: #7fa7c4;
+}
+
+.sf-icone svg {
+  width: 22px;
+  height: 22px;
+}
+
+.sf-contador {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.sf-contador span {
+  min-width: 72px;
+  text-align: center;
+}
+
+.sf-contador button {
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font: inherit;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.sf-contador button:hover:not(:disabled) {
+  color: var(--color-text-primary);
+  background: var(--color-surface-hover);
+}
+
+.sf-contador button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+@media (max-width: 639px) {
+  .sf-opcao-linha {
+    flex-wrap: wrap;
+  }
+
+  /* No celular o contador desce para a linha de baixo, alinhado ao texto */
+  .sf-contador {
+    order: 3;
+    margin-left: 52px;
+  }
+}
+
+/* ─── Datas que serão criadas ─── */
+.sf-datas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sf-data {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--color-bg) 45%, var(--color-surface));
+  font-size: 13px;
+}
+
+.sf-data-detalhe {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.sf-data--ocupada {
+  border-color: color-mix(in srgb, var(--color-warning) 30%, transparent);
+  background: color-mix(in srgb, var(--color-warning) 8%, transparent);
+  color: var(--color-warning);
+}
+
+.sf-data--ocupada .sf-data-detalhe {
+  color: var(--color-warning);
+}
+
+.sf-aviso {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}

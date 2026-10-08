@@ -1,5 +1,6 @@
 import { Component, inject, signal, computed, effect, DestroyRef, untracked } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router, ActivatedRoute, RouterOutlet } from '@angular/router';
 import { AgendamentoService, Agendamento } from '../../services/agendamento.service';
 import { Badge, BadgeVariant } from '../../shared/components/badge/badge';
 import { Card } from '../../shared/components/card/card';
@@ -7,7 +8,7 @@ import { EmptyState } from '../../shared/components/empty-state/empty-state';
 import { ProgressBar } from '../../shared/components/progress-bar/progress-bar';
 import { ConfirmModal } from '../../shared/components/confirm-modal/confirm-modal';
 import { corDaClinica } from '../../shared/utils/clinic-colors';
-import { formatarDataISO } from '../../shared/utils/datas';
+import { formatarDataISO, parseDataISO } from '../../shared/utils/datas';
 
 interface DiaAgenda {
   data: string;
@@ -21,7 +22,7 @@ interface DiaAgenda {
 
 @Component({
   selector: 'app-agenda',
-  imports: [Badge, Card, EmptyState, ProgressBar, ConfirmModal],
+  imports: [RouterOutlet, Badge, Card, EmptyState, ProgressBar, ConfirmModal],
   templateUrl: './agenda.html',
   styleUrl: './agenda.css',
 })
@@ -253,9 +254,24 @@ export class Agenda {
       const dataInicio = this.inicioSemanaISO();
       untracked(() => this.carregarAgendamentos(dataInicio, formatarDataISO(this.fimSemana())));
     });
+
+    // Sessão salva no modal: mostra o dia dela; na mesma semana, recarrega sem tirar a agenda da tela
+    this.agendamentoService.salvos$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((data) => this.mostrarDiaSalvo(data));
   }
 
-  carregarAgendamentos(dataInicio?: string, dataFim?: string) {
+  private mostrarDiaSalvo(data: string) {
+    this.dataSelecionada.set(data);
+    const mesmaSemana = data >= this.inicioSemanaISO() && data <= formatarDataISO(this.fimSemana());
+    if (mesmaSemana) {
+      this.carregarAgendamentos(undefined, undefined, { silencioso: true });
+    } else {
+      this.dataReferencia.set(parseDataISO(data)); // o effect busca a nova semana
+    }
+  }
+
+  carregarAgendamentos(dataInicio?: string, dataFim?: string, { silencioso = false } = {}) {
     if (!dataInicio || !dataFim) {
       const inicio = this.inicioSemana();
       const fim = this.fimSemana();
@@ -263,7 +279,7 @@ export class Agenda {
       dataFim = formatarDataISO(fim);
     }
 
-    this.carregando.set(true);
+    if (!silencioso) this.carregando.set(true);
     this.erro.set('');
 
     this.agendamentoService.listar(dataInicio, dataFim).subscribe({

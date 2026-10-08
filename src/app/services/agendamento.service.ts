@@ -1,5 +1,6 @@
 import { Service, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Subject, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { RespostaPaginada } from './paciente.service';
 
@@ -20,6 +21,11 @@ export interface Agendamento {
   idade_paciente?: string;
 }
 
+/** Prévia da criação recorrente: as datas semanais e quais o paciente já tem sessão no mesmo horário. */
+export interface PreviaRecorrencia {
+  datas: { data: string; conflito: boolean }[];
+}
+
 export interface RespostaRecorrente {
   agendamentos_criados: Agendamento[];
   agendamentos_conflitantes: string[];
@@ -29,6 +35,10 @@ export interface RespostaRecorrente {
 export class AgendamentoService {
   private http = inject(HttpClient);
   private readonly url = `${environment.apiUrl}/agendamentos/`;
+  private readonly salvos = new Subject<string>();
+
+  /** Emite a data da sessão criada ou editada: a agenda vai para essa semana e recarrega. */
+  readonly salvos$ = this.salvos.asObservable();
 
   listar(dataInicio?: string, dataFim?: string) {
     let params: { [key: string]: string } = {};
@@ -42,15 +52,21 @@ export class AgendamentoService {
   }
 
   criar(dados: Partial<Agendamento>) {
-    return this.http.post<Agendamento>(this.url, dados);
+    return this.http.post<Agendamento>(this.url, dados).pipe(tap((ag) => this.salvos.next(ag.data)));
   }
 
   criarRecorrente(dados: Partial<Agendamento> & { repeticoes: number }) {
-    return this.http.post<RespostaRecorrente>(`${this.url}recorrente/`, dados);
+    return this.http
+      .post<RespostaRecorrente>(`${this.url}recorrente/`, dados)
+      .pipe(tap(() => this.salvos.next(dados.data!)));
+  }
+
+  verificarRecorrencia(params: { paciente: number; data: string; hora_inicio: string; repeticoes: number }) {
+    return this.http.get<PreviaRecorrencia>(`${this.url}verificar-recorrencia/`, { params });
   }
 
   atualizar(id: number, dados: Partial<Agendamento>) {
-    return this.http.put<Agendamento>(`${this.url}${id}/`, dados);
+    return this.http.put<Agendamento>(`${this.url}${id}/`, dados).pipe(tap((ag) => this.salvos.next(ag.data)));
   }
 
   atualizarParcial(id: number, dados: Partial<Agendamento>) {

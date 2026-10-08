@@ -18,3 +18,19 @@ export function idadeEmAnos(nascimentoISO: string, hojeISO: string = formatarDat
   const aindaNaoFezAniversario = mesH < mesN || (mesH === mesN && diaH < diaN);
   return anoH - anoN - (aindaNaoFezAniversario ? 1 : 0);
 }
+
+const DIAS_SEMANA = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+
+/** "2026-10-05" → "Segunda, 5 de outubro". */
+export function formatarDataPorExtenso(dataISO: string): string {
+  const data = parseDataISO(dataISO);
+  return `${DIAS_SEMANA[data.getDay()]}, ${data.getDate()} de ${MESES[data.getMonth()]}`;
+}
+
+/** "2026-10-05" → "Seg, 05/10". */
+export function formatarDataCurta(dataISO: string): string {
+  const data = parseDataISO(dataISO);
+  const [, mes, dia] = dataISO.split('-');
+  return `${DIAS_SEMANA[data.getDay()].slice(0, 3)}, ${dia}/${mes}`;
+}

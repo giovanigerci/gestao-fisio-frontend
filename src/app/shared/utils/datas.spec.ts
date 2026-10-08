@@ -1,4 +1,4 @@
-import { idadeEmAnos, formatarDataISO, parseDataISO } from './datas';
+import { idadeEmAnos, formatarDataCurta, formatarDataISO, formatarDataPorExtenso, parseDataISO } from './datas';
 
 describe('datas', () => {
   it('formata no fuso local, mesmo à noite (sem virar o dia como no toISOString)', () => {
@@ -31,5 +31,17 @@ describe('idadeEmAnos', () => {
     expect(idadeEmAnos('', '2026-10-07')).toBeNull();
     expect(idadeEmAnos('2026-1', '2026-10-07')).toBeNull();
     expect(idadeEmAnos('2027-01-01', '2026-10-07')).toBeNull();
+  });
+});
+
+describe('datas por extenso', () => {
+  it('dia da semana, dia e mês', () => {
+    expect(formatarDataPorExtenso('2026-10-05')).toBe('Segunda, 5 de outubro');
+    expect(formatarDataPorExtenso('2026-03-01')).toBe('Domingo, 1 de março');
+  });
+
+  it('versão curta para listas', () => {
+    expect(formatarDataCurta('2026-10-05')).toBe('Seg, 05/10');
+    expect(formatarDataCurta('2026-10-10')).toBe('Sáb, 10/10');
   });
 });

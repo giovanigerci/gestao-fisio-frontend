@@ -14,9 +14,13 @@ export const routes: Routes = [
     { path: '', redirectTo: 'agenda', pathMatch: 'full' },
     // Formulários de criar/editar são rotas filhas da listagem e abrem em modal sobre ela: a URL própria
     // mantém o botão voltar (fecha o modal), o F5 e os links diretos funcionando
-    { path: 'agenda', loadComponent: () => import('./pages/agenda/agenda').then(m => m.Agenda), canActivate: [authGuard] },
-    { path: 'agenda/novo', loadComponent: () => import('./pages/agenda/agendamento-form/agendamento-form').then(m => m.AgendamentoForm), canActivate: [authGuard] },
-    { path: 'agenda/:id/editar', loadComponent: () => import('./pages/agenda/agendamento-form/agendamento-form').then(m => m.AgendamentoForm), canActivate: [authGuard] },
+    {
+        path: 'agenda', loadComponent: () => import('./pages/agenda/agenda').then(m => m.Agenda), canActivate: [authGuard],
+        children: [
+            { path: 'novo', loadComponent: () => import('./pages/agenda/agendamento-form/agendamento-form').then(m => m.AgendamentoForm), canDeactivate: [alteracoesPendentesGuard] },
+            { path: ':id/editar', loadComponent: () => import('./pages/agenda/agendamento-form/agendamento-form').then(m => m.AgendamentoForm), canDeactivate: [alteracoesPendentesGuard] },
+        ],
+    },
     {
         path: 'pacientes', loadComponent: () => import('./pages/pacientes/pacientes').then(m => m.Pacientes), canActivate: [authGuard],
         children: [
