@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { Agenda } from './agenda';
 import { formatarDataISO } from '../../shared/utils/datas';
@@ -39,5 +39,25 @@ describe('Agenda — semana de domingo a sábado', () => {
 
   it('no sábado, a semana ainda é a que começou no domingo anterior', () => {
     expect(semanaDe(new Date(2026, 9, 10)).inicio).toBe('2026-10-04');
+  });
+});
+
+describe('Agenda — busca da semana', () => {
+  it('"Hoje" estando na semana atual não busca de novo', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(2026, 9, 7, 10, 0));
+    TestBed.configureTestingModule({ providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()] });
+    const http = TestBed.inject(HttpTestingController);
+    const fixture = TestBed.createComponent(Agenda);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    http.match(() => true).forEach((req) => req.flush([]));
+
+    fixture.componentInstance.irParaHoje();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(http.match(() => true).length).toBe(0);
+    vi.useRealTimers();
   });
 });

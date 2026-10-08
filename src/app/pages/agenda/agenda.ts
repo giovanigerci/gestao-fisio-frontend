@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, effect, DestroyRef } from '@angular/core';
+import { Component, inject, signal, computed, effect, DestroyRef, untracked } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AgendamentoService, Agendamento } from '../../services/agendamento.service';
 import { Badge, BadgeVariant } from '../../shared/components/badge/badge';
@@ -56,6 +56,8 @@ export class Agenda {
     d.setHours(0, 0, 0, 0);
     return d;
   });
+
+  private readonly inicioSemanaISO = computed(() => formatarDataISO(this.inicioSemana()));
 
   fimSemana = computed(() => {
     const d = new Date(this.inicioSemana());
@@ -245,11 +247,11 @@ export class Agenda {
       }
     }
 
-    // Sempre que a semana mudar, buscar agendamentos do intervalo correto
+    // Sempre que a semana mudar, buscar agendamentos do intervalo correto. Depende do início como
+    // texto: um Date novo da mesma semana (ex: "Hoje" já estando nela) não dispara outra busca
     effect(() => {
-      const dataInicio = formatarDataISO(this.inicioSemana());
-      const dataFim = formatarDataISO(this.fimSemana());
-      this.carregarAgendamentos(dataInicio, dataFim);
+      const dataInicio = this.inicioSemanaISO();
+      untracked(() => this.carregarAgendamentos(dataInicio, formatarDataISO(this.fimSemana())));
     });
   }
 
