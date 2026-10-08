@@ -47,6 +47,11 @@ body {
   min-height: 100dvh;
 }
 
+/* Modal aberto (<app-modal>): a página de trás não rola */
+html:has(dialog[open]) {
+  overflow: hidden;
+}
+
 
 /* ─── Scrollbar ─── */
 ::-webkit-scrollbar {

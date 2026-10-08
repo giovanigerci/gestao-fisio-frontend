@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { WritableSignal } from '@angular/core';
+import { Injector, WritableSignal, afterNextRender } from '@angular/core';
 
 /**
  * Trata erros da API (padrão Django REST Framework) e atualiza os signals de estado.
@@ -76,4 +76,12 @@ export function mensagensErro(erros: Record<string, string[]>, campo: string): s
 export function limparErro(errosSignal: WritableSignal<Record<string, string[]>>, campo: string): void {
   if (!(campo in errosSignal())) return;
   errosSignal.update(({ [campo]: _removido, ...resto }) => resto);
+}
+
+/**
+ * Depois de renderizar os erros, leva o foco (e a rolagem) ao primeiro campo com `aria-invalid="true"`:
+ * no celular o campo com problema pode estar fora da tela, e o leitor de tela já anuncia o erro dele.
+ */
+export function focarPrimeiroCampoComErro(host: HTMLElement, injector: Injector): void {
+  afterNextRender(() => host.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus(), { injector });
 }

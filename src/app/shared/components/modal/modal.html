@@ -1,0 +1,30 @@
+<dialog #dialogo class="modal" [attr.aria-labelledby]="idTitulo" (cancel)="aoCancelar($event)"
+  (mousedown)="aoPressionar($event)" (click)="aoClicar($event)">
+  <div class="modal-caixa">
+    <header class="modal-cabecalho">
+      <button type="button" class="modal-fechar" aria-label="Fechar" (click)="fechar.emit()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+          aria-hidden="true">
+          <path stroke-linecap="round" d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      </button>
+      <div class="modal-titulos">
+        <h2 class="modal-titulo" [id]="idTitulo">{{ titulo() }}</h2>
+        @if (subtitulo()) {
+        <p class="modal-subtitulo">{{ subtitulo() }}</p>
+        }
+      </div>
+      <div class="modal-acao-topo">
+        <ng-content select="[modal-acao-topo]" />
+      </div>
+    </header>
+
+    <div class="modal-corpo">
+      <ng-content />
+    </div>
+
+    <footer class="modal-rodape">
+      <ng-content select="[modal-rodape]" />
+    </footer>
+  </div>
+</dialog>

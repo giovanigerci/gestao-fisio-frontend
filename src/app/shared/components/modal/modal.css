@@ -1,0 +1,197 @@
+/* ─── Desktop: janela centralizada ─── */
+.modal {
+  width: min(600px, calc(100vw - 2rem));
+  max-height: min(860px, calc(100dvh - 3rem));
+  margin: auto; /* o reset do Tailwind zera a margem, e é ela que centraliza o <dialog> */
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.modal[open] {
+  animation: modal-entrar 0.18s ease-out;
+}
+
+.modal::backdrop {
+  background: rgba(5, 8, 16, 0.72);
+  backdrop-filter: blur(2px);
+}
+
+.modal-caixa {
+  display: flex;
+  flex-direction: column;
+  max-height: inherit;
+}
+
+.modal-cabecalho {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.modal-titulos {
+  flex: 1;
+  min-width: 0;
+}
+
+.modal-titulo {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.modal-subtitulo {
+  margin: 4px 0 0;
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+}
+
+.modal-fechar {
+  order: 2; /* no desktop o ✕ fica à direita */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin: -6px -8px 0 0;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.modal-fechar:hover {
+  color: var(--color-text-primary);
+  background: var(--color-surface-hover);
+}
+
+.modal-fechar svg {
+  width: 18px;
+  height: 18px;
+}
+
+.modal-acao-topo {
+  display: none; /* só no celular */
+}
+
+.modal-corpo {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 1.25rem 1.5rem 1.5rem;
+}
+
+.modal-rodape {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.modal-rodape:empty {
+  display: none;
+}
+
+/* ─── Celular: tela cheia, ação principal no cabeçalho fixo ─── */
+@media (max-width: 639px) {
+  .modal {
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+  }
+
+  .modal[open] {
+    animation-name: modal-subir;
+  }
+
+  .modal-caixa {
+    height: 100%;
+  }
+
+  .modal-cabecalho {
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr) 72px;
+    align-items: center;
+    gap: 0;
+    min-height: 56px;
+    padding: 4px 8px;
+    padding-top: calc(4px + env(safe-area-inset-top));
+  }
+
+  .modal-fechar {
+    order: 0;
+    width: 44px;
+    height: 44px;
+    margin: 0;
+    border-radius: 12px;
+  }
+
+  .modal-fechar svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .modal-titulos {
+    text-align: center;
+  }
+
+  .modal-titulo {
+    font-size: 1rem;
+  }
+
+  .modal-subtitulo {
+    margin-top: 0;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .modal-acao-topo {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .modal-corpo {
+    padding: 1.25rem 1rem calc(1.5rem + env(safe-area-inset-bottom));
+  }
+
+  .modal-rodape {
+    display: none;
+  }
+}
+
+@keyframes modal-entrar {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+
+@keyframes modal-subir {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal[open] {
+    animation: none;
+  }
+}

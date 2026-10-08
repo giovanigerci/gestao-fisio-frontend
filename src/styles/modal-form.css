@@ -1,0 +1,236 @@
+/* ═══════════════════════════════════════════════════════
+   Modal Form — estilos dos formulários abertos em <app-modal>
+   (ClinicaForm; PacienteForm e AgendamentoForm em seguida).
+   Inclua via styleUrls junto com form-page.css.
+   ═══════════════════════════════════════════════════════ */
+
+.mf-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.125rem;
+}
+
+/* Campos dentro do modal: fundo mais escuro que a superfície do modal */
+.mf-form .input-field {
+  height: 44px;
+  background-color: var(--color-bg);
+}
+
+.mf-form textarea.input-field {
+  height: auto;
+  min-height: 112px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+/* Duas colunas para campos curtos; uma no celular */
+.mf-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+@media (max-width: 639px) {
+  .mf-grid-2 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* 48px de toque e 16px de fonte: abaixo de 16px o iOS dá zoom ao focar */
+  .mf-form .input-field {
+    height: 48px;
+    font-size: 16px;
+  }
+}
+
+.mf-secao {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.mf-secao-titulo {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+/* Campo com prefixo (ex: "R$") */
+.mf-com-prefixo {
+  position: relative;
+}
+
+.mf-prefixo {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.mf-com-prefixo .input-field {
+  padding-left: 40px;
+}
+
+/* Prévia do item enquanto o formulário é preenchido */
+.mf-previa {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--color-bg) 45%, var(--color-surface));
+}
+
+.mf-previa-avatar {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.mf-previa-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.mf-previa-nome {
+  font-size: 15px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.mf-previa-vazio {
+  color: var(--color-text-muted);
+}
+
+.mf-previa-detalhe {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.mf-previa-rotulo {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* Linha de opção liga/desliga (com explicação) */
+.mf-opcao {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+}
+
+.mf-opcao-texto {
+  flex: 1;
+  min-width: 0;
+}
+
+.mf-opcao-titulo {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.mf-opcao-sub {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.mf-switch {
+  flex-shrink: 0;
+  border: none;
+  padding: 0;
+}
+
+/* ─── Botões do rodapé (desktop) e do cabeçalho (celular) ─── */
+.mf-btn {
+  height: 44px;
+  padding: 0 1.25rem;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, filter 0.15s ease, color 0.15s ease;
+}
+
+.mf-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.mf-btn--secundario {
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-primary);
+}
+
+.mf-btn--secundario:hover:not(:disabled) {
+  background: var(--color-surface-hover);
+}
+
+.mf-btn--primario {
+  padding: 0 1.5rem;
+  border: none;
+  background: var(--color-primary);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.mf-btn--primario:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.mf-btn--perigo {
+  width: 100%;
+  height: 48px;
+  border: 1px solid color-mix(in srgb, var(--color-danger) 30%, transparent);
+  background: transparent;
+  color: var(--color-danger);
+}
+
+.mf-btn--perigo:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
+}
+
+/* "Salvar" no cabeçalho do celular */
+.mf-acao-topo {
+  height: 44px;
+  padding: 0 8px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: #7fa7c4;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mf-acao-topo:disabled {
+  opacity: 0.6;
+}
+
+.mf-carregando {
+  display: flex;
+  justify-content: center;
+  padding: 3rem 0;
+}
