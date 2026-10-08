@@ -58,6 +58,21 @@ export function corDaClinicaHex(cor: number | null | undefined): string {
 }
 
 /**
+ * Cor que o backend vai dar a uma clínica nova: a menos usada entre as do profissional; no empate,
+ * a primeira da paleta (espelha `escolher_cor` em clinicas/models.py). Só para a prévia no
+ * formulário: quem decide é o backend, que devolve a cor salva.
+ */
+export function proximaCorDeClinica(coresEmUso: number[]): number {
+  const contagem = new Map<number, number>();
+  coresEmUso.forEach((cor) => contagem.set(cor, (contagem.get(cor) ?? 0) + 1));
+  let escolhida = 1;
+  for (let cor = 2; cor <= CORES_CLINICA.length; cor++) {
+    if ((contagem.get(cor) ?? 0) < (contagem.get(escolhida) ?? 0)) escolhida = cor;
+  }
+  return escolhida;
+}
+
+/**
  * Retorna a cor CSS atribuída deterministicamente a um paciente com base no
  * seu `id`, reutilizando a mesma paleta `--color-clinic-*` (só decorativa: repetir não confunde).
  */

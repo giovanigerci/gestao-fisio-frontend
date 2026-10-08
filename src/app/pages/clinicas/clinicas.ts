@@ -1,14 +1,15 @@
 import { Component, inject, signal, DestroyRef, ElementRef, viewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { RouterLink } from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
 import { ClinicaService, Clinica } from '../../services/clinica.service';
 import { Badge } from '../../shared/components/badge/badge';
 import { ConfirmModal } from '../../shared/components/confirm-modal/confirm-modal';
 import { corDaClinica } from '../../shared/utils/clinic-colors';
+import { iniciais } from '../../shared/utils/iniciais';
 
 @Component({
   selector: 'app-clinicas',
-  imports: [RouterLink, Badge, ConfirmModal],
+  imports: [RouterLink, RouterOutlet, Badge, ConfirmModal],
   templateUrl: './clinicas.html',
   styleUrls: ['../../../styles/list-page.css', './clinicas.css'],
 })
@@ -26,6 +27,7 @@ export class Clinicas implements AfterViewInit, OnDestroy {
   totalCadastradas = signal(0);
 
   corDaClinica = corDaClinica;
+  getIniciais = iniciais;
 
   /** Referência ao elemento sentinela para IntersectionObserver */
   scrollSentinel = viewChild<ElementRef>('scrollSentinel');
@@ -33,6 +35,10 @@ export class Clinicas implements AfterViewInit, OnDestroy {
 
   constructor() {
     this.carregar();
+    // Clínica criada, editada ou excluída (no modal ou aqui): recarrega sem tirar a lista da tela
+    this.clinicaService.alteradas$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.carregar({ silencioso: true }));
   }
 
   ngAfterViewInit() {
@@ -43,8 +49,8 @@ export class Clinicas implements AfterViewInit, OnDestroy {
     this.observer?.disconnect();
   }
 
-  carregar() {
-    this.carregando.set(true);
+  carregar({ silencioso = false } = {}) {
+    if (!silencioso) this.carregando.set(true);
     this.erro.set('');
     this.clinicaService.listar(1).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (resposta) => {
@@ -127,16 +133,6 @@ export class Clinicas implements AfterViewInit, OnDestroy {
 
   cancelarExclusao() {
     this.confirmandoExclusao.set(null);
-  }
-
-  getIniciais(nome: string): string {
-    return nome
-      .split(' ')
-      .filter(Boolean)
-      .slice(0, 2)
-      .map(n => n[0])
-      .join('')
-      .toUpperCase();
   }
 
   formatarValor(valor: string | number | undefined): string {

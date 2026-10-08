@@ -1,5 +1,6 @@
 import { Service, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { Subject, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { RespostaPaginada } from './paciente.service';
 
@@ -24,6 +25,10 @@ export interface Clinica {
 export class ClinicaService {
   private http = inject(HttpClient);
   private readonly url = `${environment.apiUrl}/clinicas/`;
+  private readonly alteradas = new Subject<void>();
+
+  /** Emite depois de criar, editar ou excluir: a listagem recarrega sem depender de quem alterou. */
+  readonly alteradas$ = this.alteradas.asObservable();
 
   listar(page = 1, search = '') {
     let params = new HttpParams().set('page', page);
@@ -46,14 +51,14 @@ export class ClinicaService {
   }
 
   criar(dados: Partial<Clinica>) {
-    return this.http.post<Clinica>(this.url, dados);
+    return this.http.post<Clinica>(this.url, dados).pipe(tap(() => this.alteradas.next()));
   }
 
   atualizar(id: number, dados: Partial<Clinica>) {
-    return this.http.put<Clinica>(`${this.url}${id}/`, dados);
+    return this.http.put<Clinica>(`${this.url}${id}/`, dados).pipe(tap(() => this.alteradas.next()));
   }
 
   excluir(id: number) {
-    return this.http.delete(`${this.url}${id}/`);
+    return this.http.delete(`${this.url}${id}/`).pipe(tap(() => this.alteradas.next()));
   }
 }

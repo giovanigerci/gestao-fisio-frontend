@@ -91,6 +91,8 @@ describe('Clinicas', () => {
     fixture.componentInstance.confirmarExclusaoModal();
     http.expectOne((req) => req.method === 'DELETE' && req.url.endsWith('/clinicas/1/')).flush(null);
     fixture.detectChanges();
+    expect(el().querySelectorAll('.clinica-card').length).toBe(1); // sai da tela na hora
+    responder([clinica({ id: 2, nome: 'Movi' })]); // e a lista recarrega em segundo plano
 
     expect(el().querySelectorAll('.clinica-card').length).toBe(1);
     expect(el().querySelector('.page-counter')!.textContent).toContain('1 cadastrada');

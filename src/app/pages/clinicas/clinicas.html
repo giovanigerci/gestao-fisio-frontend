@@ -103,6 +103,9 @@
   <div class="scroll-sentinel" #scrollSentinel></div>
   }
 
+  <!-- Nova/editar clínica: modal aberto pelas rotas filhas -->
+  <router-outlet />
+
   <!-- Confirm Delete Modal -->
   @if (confirmandoExclusao()) {
   <app-confirm-modal title="Excluir clínica" [message]="'Deseja realmente excluir ' + confirmandoExclusao()!.nome + '?'"
