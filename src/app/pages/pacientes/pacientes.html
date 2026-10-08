@@ -182,6 +182,9 @@
     <div class="scroll-sentinel" #scrollSentinel></div>
   }
 
+  <!-- Novo/editar paciente: modal aberto pelas rotas filhas -->
+  <router-outlet />
+
   <!-- Confirm Delete Modal -->
   @if (confirmandoExclusao()) {
     <app-confirm-modal

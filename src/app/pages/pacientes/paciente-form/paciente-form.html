@@ -1,133 +1,154 @@
-<div class="form-page">
-  <!-- Header -->
-  <div class="form-header">
-    <button (click)="cancelar()" aria-label="Voltar" class="form-back-btn">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-        class="form-back-icon">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
-      </svg>
-    </button>
-    <h1 class="form-title">
-      {{ modoEdicao() ? 'Editar Paciente' : 'Novo Paciente' }}
-    </h1>
-  </div>
+<app-modal [titulo]="modoEdicao() ? 'Editar paciente' : 'Novo paciente'" [subtitulo]="nomeSalvo()" (fechar)="fechar()">
 
-  <!-- Loading -->
+  <!-- Celular: Salvar no cabeçalho (o rodapé fica atrás do teclado) -->
+  <button modal-acao-topo type="submit" form="form-paciente" class="mf-acao-topo"
+    [disabled]="salvando() || carregando()">
+    {{ salvando() ? 'Salvando…' : 'Salvar' }}
+  </button>
+
   @if (carregando()) {
-  <div class="form-loading">
+  <div class="mf-carregando">
     <div class="form-spinner"></div>
   </div>
-  }
+  } @else {
+  <form id="form-paciente" class="mf-form pf-form" (submit)="$event.preventDefault(); salvar()" novalidate>
 
-  <!-- Form -->
-  @if (!carregando()) {
-  <form (submit)="$event.preventDefault(); salvar()" class="form-container">
-
-    <!-- Error -->
     @if (erroGeral()) {
-    <div class="form-alert form-alert--error">
+    <div class="form-alert form-alert--error" role="alert">
       <p>{{ erroGeral() }}</p>
     </div>
     }
 
-    <!-- Nome -->
-    <div>
-      <label class="form-label">Nome <span class="form-required">*</span></label>
-      <input maxlength="100" [value]="nome()" (input)="nome.set($any($event.target).value)" class="input-field"
-        [class.input-field--error]="temErro('nome')" placeholder="Nome completo" />
-      @if (temErro('nome')) {
-        <p class="form-field-error">{{ mensagensErro('nome').join(' ') }}</p>
-      }
-    </div>
+    <!-- ─── Dados pessoais ─── -->
+    <fieldset class="mf-secao">
+      <legend class="mf-secao-titulo">Dados pessoais</legend>
 
-    <!-- CPF -->
-    <div>
-      <label class="form-label">CPF <span class="form-required">*</span></label>
-      <input [appCpfMask]="cpf()" (valorLimpo)="cpf.set($event)" class="input-field"
-        [class.input-field--error]="temErro('cpf')" placeholder="000.000.000-00" />
-      @if (temErro('cpf')) {
-        <p class="form-field-error">{{ mensagensErro('cpf').join(' ') }}</p>
-      }
-    </div>
-
-    <!-- Telefone -->
-    <div>
-      <label class="form-label">Telefone <span class="form-required">*</span></label>
-      <input type="tel" [appTelefoneMask]="telefone()" (valorLimpo)="telefone.set($event)" class="input-field"
-        [class.input-field--error]="temErro('telefone')" placeholder="(00) 00000-0000" />
-      @if (temErro('telefone')) {
-        <p class="form-field-error">{{ mensagensErro('telefone').join(' ') }}</p>
-      }
-    </div>
-
-    <!-- Email -->
-    <div>
-      <label class="form-label">E-mail</label>
-      <input maxlength="254" type="email" [value]="email()" (input)="email.set($any($event.target).value)" class="input-field"
-        [class.input-field--error]="temErro('email')" placeholder="email@exemplo.com" />
-      @if (temErro('email')) {
-        <p class="form-field-error">{{ mensagensErro('email').join(' ') }}</p>
-      }
-    </div>
-
-    <!-- Data de nascimento -->
-    <div>
-      <label class="form-label">Data de nascimento</label>
-      <input type="date"
-        [value]="dataNascimento()"
-        (input)="dataNascimento.set($any($event.target).value)"
-        (blur)="validarDataNascimento()"
-        [attr.max]="hoje"
-        [attr.min]="dataMinima"
-        class="input-field"
-        [class.input-field--error]="erroDataNascimento() || temErro('data_nascimento')" />
-      @if (erroDataNascimento()) {
-        <p class="form-field-error">{{ erroDataNascimento() }}</p>
-      } @else if (temErro('data_nascimento')) {
-        <p class="form-field-error">{{ mensagensErro('data_nascimento').join(' ') }}</p>
-      }
-    </div>
-
-    <!-- Endereço -->
-    <div>
-      <label class="form-label">Endereço</label>
-      <input maxlength="255" [value]="endereco()" (input)="endereco.set($any($event.target).value)" class="input-field"
-        [class.input-field--error]="temErro('endereco')" placeholder="Rua, número, bairro..." />
-      @if (temErro('endereco')) {
-        <p class="form-field-error">{{ mensagensErro('endereco').join(' ') }}</p>
-      }
-    </div>
-
-    <!-- Histórico médico -->
-    <div>
-      <label class="form-label">Histórico médico</label>
-      <textarea [maxLength]="LIMITE_HISTORICO" [value]="historicoMedico()" (input)="historicoMedico.set($any($event.target).value)" rows="3"
-        class="input-field resize-none" [class.input-field--error]="temErro('historico_medico')" placeholder="Observações médicas relevantes..."></textarea>
-      @if (mostrarContadorHistorico()) {
-        <p class="form-hint contador-historico" [class.contador-historico--limite]="historicoMedico().length >= LIMITE_HISTORICO"
-          aria-live="polite">{{ contadorHistorico() }} caracteres</p>
-      }
-      @if (temErro('historico_medico')) {
-        <p class="form-field-error">{{ mensagensErro('historico_medico').join(' ') }}</p>
-      }
-    </div>
-
-    <!-- Actions -->
-    <div class="form-actions">
-      <button type="button" (click)="cancelar()" class="form-btn form-btn--cancel">
-        Cancelar
-      </button>
-      <button type="submit" [disabled]="salvando() || !dataValida()" class="form-btn form-btn--submit">
-        @if (salvando()) {
-        <span class="form-btn-loading">
-          <span class="form-btn-spinner"></span>
-          Salvando...
-        </span>
-        } @else {
-        Salvar
+      <div>
+        <label class="form-label" for="paciente-nome">Nome <span class="form-required">*</span></label>
+        <input id="paciente-nome" maxlength="100" [value]="nome()" (input)="nome.set($any($event.target).value)"
+          class="input-field" [class.input-field--error]="temErro('nome')" placeholder="Nome completo"
+          autocomplete="off" [attr.autofocus]="modoEdicao() ? null : ''" [attr.aria-invalid]="temErro('nome')"
+          [attr.aria-describedby]="temErro('nome') ? 'paciente-nome-erro' : null" />
+        @if (temErro('nome')) {
+        <p class="form-field-error" id="paciente-nome-erro">{{ mensagensErro('nome').join(' ') }}</p>
         }
-      </button>
-    </div>
+      </div>
+
+      <div class="mf-grid-2">
+        <div>
+          <label class="form-label" for="paciente-cpf">CPF <span class="form-required">*</span></label>
+          <input id="paciente-cpf" inputmode="numeric" [appCpfMask]="cpf()" (valorLimpo)="cpf.set($event)"
+            class="input-field" [class.input-field--error]="temErro('cpf')" placeholder="000.000.000-00"
+            [attr.aria-invalid]="temErro('cpf')" [attr.aria-describedby]="temErro('cpf') ? 'paciente-cpf-erro' : null" />
+          @if (temErro('cpf')) {
+          <p class="form-field-error" id="paciente-cpf-erro">{{ mensagensErro('cpf').join(' ') }}</p>
+          }
+        </div>
+
+        <div>
+          <div class="pf-rotulo-linha">
+            <label class="form-label" for="paciente-nascimento">Data de nascimento</label>
+            @if (idade() !== null) {
+            <span class="pf-idade" aria-live="polite">{{ idade() }} {{ idade() === 1 ? 'ano' : 'anos' }}</span>
+            }
+          </div>
+          <input id="paciente-nascimento" type="date" [value]="dataNascimento()"
+            (input)="digitarDataNascimento($any($event.target).value)" (blur)="validarDataNascimento()"
+            [attr.max]="hoje" [attr.min]="dataMinima" class="input-field"
+            [class.input-field--error]="temErro('data_nascimento')" [attr.aria-invalid]="temErro('data_nascimento')"
+            [attr.aria-describedby]="temErro('data_nascimento') ? 'paciente-nascimento-erro' : null" />
+          @if (temErro('data_nascimento')) {
+          <p class="form-field-error" id="paciente-nascimento-erro">{{ mensagensErro('data_nascimento').join(' ') }}</p>
+          }
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- ─── Contato ─── -->
+    <fieldset class="mf-secao">
+      <legend class="mf-secao-titulo">Contato</legend>
+
+      <div class="mf-grid-2">
+        <div>
+          <label class="form-label" for="paciente-telefone">Telefone <span class="form-required">*</span></label>
+          <input id="paciente-telefone" type="tel" [appTelefoneMask]="telefone()" (valorLimpo)="telefone.set($event)"
+            class="input-field" [class.input-field--error]="temErro('telefone')" placeholder="(00) 00000-0000"
+            [attr.aria-invalid]="temErro('telefone')"
+            [attr.aria-describedby]="temErro('telefone') ? 'paciente-telefone-erro' : null" />
+          @if (temErro('telefone')) {
+          <p class="form-field-error" id="paciente-telefone-erro">{{ mensagensErro('telefone').join(' ') }}</p>
+          }
+        </div>
+
+        <div>
+          <label class="form-label" for="paciente-email">E-mail</label>
+          <input id="paciente-email" maxlength="254" type="email" [value]="email()"
+            (input)="email.set($any($event.target).value)" class="input-field" [class.input-field--error]="temErro('email')"
+            placeholder="email@exemplo.com" autocomplete="off" [attr.aria-invalid]="temErro('email')"
+            [attr.aria-describedby]="temErro('email') ? 'paciente-email-erro' : null" />
+          @if (temErro('email')) {
+          <p class="form-field-error" id="paciente-email-erro">{{ mensagensErro('email').join(' ') }}</p>
+          }
+        </div>
+      </div>
+
+      <div>
+        <label class="form-label" for="paciente-endereco">Endereço</label>
+        <input id="paciente-endereco" maxlength="255" [value]="endereco()" (input)="endereco.set($any($event.target).value)"
+          class="input-field" [class.input-field--error]="temErro('endereco')" placeholder="Rua, número, bairro..."
+          autocomplete="off" [attr.aria-invalid]="temErro('endereco')"
+          [attr.aria-describedby]="temErro('endereco') ? 'paciente-endereco-erro' : null" />
+        @if (temErro('endereco')) {
+        <p class="form-field-error" id="paciente-endereco-erro">{{ mensagensErro('endereco').join(' ') }}</p>
+        }
+      </div>
+    </fieldset>
+
+    <!-- ─── Saúde ─── -->
+    <fieldset class="mf-secao">
+      <legend class="mf-secao-titulo">Saúde</legend>
+
+      <div>
+        <label class="form-label" for="paciente-historico">Histórico médico</label>
+        <textarea id="paciente-historico" [maxLength]="LIMITE_HISTORICO" [value]="historicoMedico()"
+          (input)="historicoMedico.set($any($event.target).value)" rows="4" class="input-field"
+          [class.input-field--error]="temErro('historico_medico')" placeholder="Observações médicas relevantes..."
+          [attr.aria-invalid]="temErro('historico_medico')"
+          [attr.aria-describedby]="temErro('historico_medico') ? 'paciente-historico-erro' : null"></textarea>
+        @if (mostrarContadorHistorico()) {
+        <p class="form-hint contador-historico"
+          [class.contador-historico--limite]="historicoMedico().length >= LIMITE_HISTORICO" aria-live="polite">
+          {{ contadorHistorico() }} caracteres</p>
+        }
+        @if (temErro('historico_medico')) {
+        <p class="form-field-error" id="paciente-historico-erro">{{ mensagensErro('historico_medico').join(' ') }}</p>
+        }
+      </div>
+    </fieldset>
+
+    @if (modoEdicao()) {
+    <button type="button" class="mf-btn mf-btn--perigo" (click)="pedirExclusao()" [disabled]="salvando()">
+      Excluir paciente
+    </button>
+    }
   </form>
   }
-</div>
+
+  <button modal-rodape type="button" class="mf-btn mf-btn--secundario" (click)="fechar()">Cancelar</button>
+  <button modal-rodape type="submit" form="form-paciente" class="mf-btn mf-btn--primario"
+    [disabled]="salvando() || carregando()">
+    {{ salvando() ? 'Salvando…' : (modoEdicao() ? 'Salvar alterações' : 'Salvar paciente') }}
+  </button>
+
+  @if (saida.perguntando()) {
+  <app-confirm-modal variant="danger" title="Descartar alterações?"
+    message="Você tem alterações não salvas neste paciente. Deseja sair e descartá-las?" confirmLabel="Descartar"
+    cancelLabel="Continuar editando" (confirmed)="responderDescarte(true)" (cancelled)="responderDescarte(false)" />
+  }
+
+  @if (confirmandoExclusao()) {
+  <app-confirm-modal variant="danger" title="Excluir paciente"
+    [message]="'Deseja realmente excluir o paciente ' + nomeSalvo() + '?'" confirmLabel="Excluir" cancelLabel="Voltar"
+    [loading]="excluindo()" (confirmed)="confirmarExclusao()" (cancelled)="cancelarExclusao()" />
+  }
+</app-modal>

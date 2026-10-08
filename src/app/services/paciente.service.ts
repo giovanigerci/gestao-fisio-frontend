@@ -1,5 +1,6 @@
 import { Service, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { Subject, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface Paciente {
@@ -28,6 +29,10 @@ export interface RespostaPaginada<T> {
 export class PacienteService {
   private http = inject(HttpClient);
   private readonly url = `${environment.apiUrl}/pacientes/`;
+  private readonly alterados = new Subject<void>();
+
+  /** Emite depois de criar, editar ou excluir: a listagem recarrega sem depender de quem alterou. */
+  readonly alterados$ = this.alterados.asObservable();
 
   listar(page = 1, search = '') {
     let params = new HttpParams().set('page', page);
@@ -50,14 +55,14 @@ export class PacienteService {
   }
 
   criar(dados: Partial<Paciente>) {
-    return this.http.post<Paciente>(this.url, dados);
+    return this.http.post<Paciente>(this.url, dados).pipe(tap(() => this.alterados.next()));
   }
 
   atualizar(id: number, dados: Partial<Paciente>) {
-    return this.http.put<Paciente>(`${this.url}${id}/`, dados);
+    return this.http.put<Paciente>(`${this.url}${id}/`, dados).pipe(tap(() => this.alterados.next()));
   }
 
   excluir(id: number) {
-    return this.http.delete(`${this.url}${id}/`);
+    return this.http.delete(`${this.url}${id}/`).pipe(tap(() => this.alterados.next()));
   }
 }

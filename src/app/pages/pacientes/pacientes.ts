@@ -1,8 +1,8 @@
 import { Component, inject, signal, DestroyRef, ElementRef, viewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs';
-import { Router, RouterLink } from '@angular/router';
+import { EMPTY, catchError, debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { PacienteService, Paciente } from '../../services/paciente.service';
 import { Card } from '../../shared/components/card/card';
 import { EmptyState } from '../../shared/components/empty-state/empty-state';
@@ -10,10 +10,11 @@ import { Badge, BadgeVariant } from '../../shared/components/badge/badge';
 import { ConfirmModal } from '../../shared/components/confirm-modal/confirm-modal';
 import { corDoPaciente } from '../../shared/utils/clinic-colors';
 import { TelefonePipe } from '../../shared/pipes/telefone.pipe';
+import { iniciais } from '../../shared/utils/iniciais';
 
 @Component({
   selector: 'app-pacientes',
-  imports: [RouterLink, Card, EmptyState, Badge, ConfirmModal, TelefonePipe],
+  imports: [RouterLink, RouterOutlet, Card, EmptyState, Badge, ConfirmModal, TelefonePipe],
   templateUrl: './pacientes.html',
   styleUrls: ['../../../styles/list-page.css', './pacientes.css'],
 })
@@ -32,6 +33,7 @@ export class Pacientes implements AfterViewInit, OnDestroy {
   nextUrl = signal<string | null>(null);
 
   corDoPaciente = corDoPaciente;
+  getIniciais = iniciais;
 
   totalCadastrados = signal(0);
 
@@ -66,6 +68,21 @@ export class Pacientes implements AfterViewInit, OnDestroy {
         this.carregando.set(false);
       },
     });
+
+    // Paciente criado, editado ou excluído (no modal ou aqui): recarrega mantendo a busca e a lista na tela
+    this.pacienteService.alterados$
+      .pipe(
+        // falha na recarga silenciosa: mantém a lista atual (e o stream vivo para as próximas)
+        switchMap(() => this.pacienteService.listar(1, this.termoBusca()).pipe(catchError(() => EMPTY))),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (resposta) => {
+          this.pacientes.set(resposta.results);
+          this.nextUrl.set(resposta.next);
+          this.totalCadastrados.set(resposta.count);
+        },
+      });
   }
 
   ngAfterViewInit() {
@@ -151,15 +168,6 @@ export class Pacientes implements AfterViewInit, OnDestroy {
 
   cancelarExclusao() {
     this.confirmandoExclusao.set(null);
-  }
-
-  getIniciais(nome: string): string {
-    return nome
-      .split(' ')
-      .slice(0, 2)
-      .map(n => n[0])
-      .join('')
-      .toUpperCase();
   }
 
   getStatusVariant(status: string): BadgeVariant {

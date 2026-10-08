@@ -17,9 +17,13 @@ export const routes: Routes = [
     { path: 'agenda', loadComponent: () => import('./pages/agenda/agenda').then(m => m.Agenda), canActivate: [authGuard] },
     { path: 'agenda/novo', loadComponent: () => import('./pages/agenda/agendamento-form/agendamento-form').then(m => m.AgendamentoForm), canActivate: [authGuard] },
     { path: 'agenda/:id/editar', loadComponent: () => import('./pages/agenda/agendamento-form/agendamento-form').then(m => m.AgendamentoForm), canActivate: [authGuard] },
-    { path: 'pacientes', loadComponent: () => import('./pages/pacientes/pacientes').then(m => m.Pacientes), canActivate: [authGuard] },
-    { path: 'pacientes/novo', loadComponent: () => import('./pages/pacientes/paciente-form/paciente-form').then(m => m.PacienteForm), canActivate: [authGuard] },
-    { path: 'pacientes/:id/editar', loadComponent: () => import('./pages/pacientes/paciente-form/paciente-form').then(m => m.PacienteForm), canActivate: [authGuard] },
+    {
+        path: 'pacientes', loadComponent: () => import('./pages/pacientes/pacientes').then(m => m.Pacientes), canActivate: [authGuard],
+        children: [
+            { path: 'novo', loadComponent: () => import('./pages/pacientes/paciente-form/paciente-form').then(m => m.PacienteForm), canDeactivate: [alteracoesPendentesGuard] },
+            { path: ':id/editar', loadComponent: () => import('./pages/pacientes/paciente-form/paciente-form').then(m => m.PacienteForm), canDeactivate: [alteracoesPendentesGuard] },
+        ],
+    },
     {
         path: 'clinicas', loadComponent: () => import('./pages/clinicas/clinicas').then(m => m.Clinicas), canActivate: [authGuard],
         children: [
