@@ -1,0 +1,45 @@
+<div class="combobox">
+  @if (selecionadaAtual(); as escolhida) {
+  <span class="combobox-avatar" aria-hidden="true" [style.color]="corDe(escolhida.id)"
+    [style.background]="'color-mix(in srgb, ' + corDe(escolhida.id) + ' 15%, transparent)'">
+    {{ iniciaisDe(escolhida.nome) }}
+  </span>
+  } @else {
+  <svg class="combobox-lupa" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+    stroke="currentColor" aria-hidden="true">
+    <circle cx="11" cy="11" r="7" />
+    <path stroke-linecap="round" d="M20 20l-3.5-3.5" />
+  </svg>
+  }
+
+  <input [id]="idCampo()" class="input-field combobox-campo" [class.input-field--error]="invalido()" type="text"
+    role="combobox" autocomplete="off" aria-autocomplete="list" [attr.aria-expanded]="aberto()"
+    [attr.aria-controls]="idLista()" [attr.aria-activedescendant]="idAtivo()" [attr.aria-invalid]="invalido()"
+    [attr.aria-describedby]="descritoPor()" [placeholder]="placeholder()" [value]="texto()"
+    (input)="digitar($any($event.target).value)" (focus)="abrir()" (click)="abrir()" (blur)="sair()"
+    (keydown)="teclar($event)" />
+
+  <svg class="combobox-seta" [class.combobox-seta--aberta]="aberto()" xmlns="http://www.w3.org/2000/svg" fill="none"
+    viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6" />
+  </svg>
+
+  @if (aberto()) {
+  <ul class="combobox-lista" role="listbox" [id]="idLista()">
+    @for (opcao of filtradas(); track opcao.id; let i = $index) {
+    <!-- mousedown com preventDefault: o campo não perde o foco antes do clique escolher -->
+    <li role="option" class="combobox-opcao" [id]="idCampo() + '-opcao-' + opcao.id"
+      [attr.aria-selected]="opcao.id === valor()" [class.combobox-opcao--ativa]="i === indiceAtivo()"
+      (mousedown)="$event.preventDefault()" (click)="escolher(opcao)" (mouseenter)="indiceAtivo.set(i)">
+      <span class="combobox-avatar combobox-avatar--lista" aria-hidden="true" [style.color]="corDe(opcao.id)"
+        [style.background]="'color-mix(in srgb, ' + corDe(opcao.id) + ' 15%, transparent)'">
+        {{ iniciaisDe(opcao.nome) }}
+      </span>
+      {{ opcao.nome }}
+    </li>
+    } @empty {
+    <li class="combobox-vazio" role="presentation">{{ textoSemResultado() }}</li>
+    }
+  </ul>
+  }
+</div>

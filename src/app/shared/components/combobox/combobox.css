@@ -1,0 +1,110 @@
+.combobox {
+  position: relative;
+}
+
+/* Mesmo visual dos campos em modal (modal-form.css não alcança o input deste componente) */
+.combobox-campo {
+  height: 44px;
+  padding-left: 46px;
+  padding-right: 40px;
+  background-color: var(--color-bg);
+}
+
+@media (max-width: 639px) {
+  .combobox-campo {
+    height: 48px;
+    font-size: 16px;
+  }
+}
+
+.combobox-lupa,
+.combobox-avatar {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.combobox-lupa {
+  left: 14px;
+  width: 18px;
+  height: 18px;
+  color: var(--color-text-muted);
+}
+
+.combobox-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.combobox-avatar--lista {
+  position: static;
+  transform: none;
+  flex-shrink: 0;
+}
+
+.combobox-seta {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  pointer-events: none;
+  transition: transform 0.15s ease;
+}
+
+.combobox-seta--aberta {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.combobox-lista {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  max-height: 280px;
+  margin: 0;
+  padding: 6px;
+  overflow-y: auto;
+  list-style: none;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface-hover);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+.combobox-opcao {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.combobox-opcao--ativa {
+  background: color-mix(in srgb, var(--color-primary) 18%, transparent);
+}
+
+.combobox-opcao[aria-selected='true'] {
+  font-weight: 600;
+}
+
+.combobox-vazio {
+  padding: 12px 10px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
