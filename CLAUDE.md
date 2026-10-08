@@ -59,13 +59,15 @@ Telas autenticadas precisam do backend rodando localmente.
 ## Autenticação
 
 - Tokens vivem em cookies HttpOnly: o JavaScript nunca lê, grava ou guarda token — nada de `localStorage`/`sessionStorage` para auth.
-- Todo request passa pelo `auth-interceptor` (`withCredentials: true`, refresh no 401 e retry). Ao mexer nele, evite loop de refresh (401 vindo do próprio `/token/refresh/`) e vários refresh disparados por requisições simultâneas.
+- Todo request passa pelo `auth-interceptor` (`withCredentials: true`, refresh no 401 e retry). O refresh é único: `RenovacaoDeSessao` (`interceptors/renovacao-de-sessao.ts`) compartilha o refresh em andamento entre todas as requisições que recebem 401 juntas — o backend rotaciona o refresh token e invalida o anterior a cada uso (access de 5 min), então dois refresh em paralelo deslogariam o usuário. Ao mexer nele, evite também loop de refresh (401 vindo do próprio `/token/refresh/`).
 - Em produção a API fica em `https://api.gestao-fisio.com/api` (domínio próprio apontando para o Render). Por ser subdomínio de `gestao-fisio.com`, é *same-site* com o front e os cookies continuam first-party. Não aponte o build de produção para `*.onrender.com` nem outro domínio: viraria cross-site e os navegadores bloqueiam cookies de terceiros. A origem do front precisa estar em `CORS_ALLOWED_ORIGINS` no backend.
 - Não cacheie respostas de `/api/**` no `ngsw-config.json`: são dados de saúde e financeiros, autenticados.
 
 ## Produção e PWA
 
 - Domínio principal: `gestao-fisio.com` (Vercel, conectado a Production). `www.gestao-fisio.com` redireciona com 308 para ele; DNS na Cloudflare com proxy desligado (nuvem cinza) nos registros da Vercel.
+- Versões do PWA (`atualizacao/`): `AtualizacaoDoApp` troca para a versão nova na próxima mudança de página depois do `VERSION_READY` (momento seguro: o guard de alterações pendentes já passou), recarrega na hora no `UNRECOVERABLE_STATE` e procura versão nova quando o app volta para a tela. Se o código de uma página não baixa (deploy apagou o `chunk-*.js` que a versão aberta pede), `withNavigationErrorHandler` abre a URL de destino do zero, uma vez por URL a cada 10s para não entrar em ciclo. Sintoma sem isso: barra lateral e perfil aparecem, mas nenhuma página abre até o F5.
+- Recargas de página passam pelo token `RECARGA_DA_PAGINA` (nada de `location.reload()` direto): os testes substituem.
 - O service worker serve o app do cache para quem já visitou, então um site fora do ar pode parecer normal no seu navegador (assets `lazy`, como `/logo.png`, quebram primeiro). Depois de deploy ou mudança de domínio/DNS, valide numa aba anônima.
 
 ## Testes
