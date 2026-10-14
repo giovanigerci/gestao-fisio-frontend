@@ -1,0 +1,103 @@
+<section class="dc-secao" aria-labelledby="dc-titulo">
+  <h2 id="dc-titulo" class="dc-titulo">Seus dados</h2>
+  <p class="dc-descricao">Você pode levar uma cópia dos seus dados ou excluir a conta a qualquer momento.</p>
+
+  <div class="dc-linha">
+    <div class="dc-linha-texto">
+      <span class="dc-linha-titulo">Exportar meus dados</span>
+      <span class="dc-linha-sub">Planilhas com clínicas, pacientes (com histórico) e sessões, em um arquivo ZIP.</span>
+    </div>
+    <button type="button" class="mf-btn mf-btn--secundario dc-botao" (click)="exportar()" [disabled]="exportando()">
+      {{ exportando() ? 'Gerando…' : 'Exportar' }}
+    </button>
+  </div>
+  @if (erroExportacao()) {
+  <p class="form-field-error" role="alert">{{ erroExportacao() }}</p>
+  }
+
+  <div class="dc-linha">
+    <div class="dc-linha-texto">
+      <span class="dc-linha-titulo">Excluir minha conta</span>
+      <span class="dc-linha-sub">Apaga a conta e todos os dados de forma definitiva.</span>
+    </div>
+    <button type="button" class="mf-btn dc-botao dc-botao--perigo" (click)="abrirExclusao()">Excluir conta</button>
+  </div>
+</section>
+
+@if (modalAberto()) {
+<app-modal titulo="Excluir conta" subtitulo="Ação definitiva" (fechar)="fecharExclusao()">
+
+  <!-- Celular: a ação fica no cabeçalho (o rodapé some atrás do teclado) -->
+  <button modal-acao-topo type="submit" form="form-excluir-conta" class="mf-acao-topo dc-acao-topo"
+    [disabled]="!podeExcluir()">
+    {{ excluindo() ? 'Excluindo…' : 'Excluir' }}
+  </button>
+
+  <form id="form-excluir-conta" class="mf-form" (submit)="$event.preventDefault(); excluir()" novalidate>
+
+    @if (erroGeral()) {
+    <div class="form-alert form-alert--error" role="alert">
+      <p>{{ erroGeral() }}</p>
+    </div>
+    }
+
+    <div class="dc-aviso">
+      <p class="dc-aviso-titulo">Isto será apagado para sempre e não pode ser desfeito:</p>
+      <ul class="dc-lista">
+        @if (resumo(); as r) {
+        <li>{{ plural(r.pacientes, 'paciente', 'pacientes') }}, com o histórico médico</li>
+        <li>{{ plural(r.agendamentos, 'sessão', 'sessões') }} e toda a receita registrada</li>
+        <li>{{ plural(r.clinicas, 'clínica', 'clínicas') }}</li>
+        } @else {
+        <li>Todos os seus pacientes, com o histórico médico</li>
+        <li>Todas as sessões e a receita registrada</li>
+        <li>Todas as clínicas</li>
+        }
+        <li>Seu cadastro e sua foto de perfil</li>
+      </ul>
+    </div>
+
+    <div class="dc-exportar">
+      <p>
+        A guarda do prontuário pelo prazo exigido pelo seu conselho profissional continua sendo sua
+        responsabilidade. Baixe uma cópia dos dados antes de excluir.
+      </p>
+      <button type="button" class="mf-btn mf-btn--secundario" (click)="exportar()" [disabled]="exportando()">
+        {{ exportando() ? 'Gerando…' : (exportou() ? 'Exportar de novo' : 'Exportar meus dados') }}
+      </button>
+      @if (exportou()) {
+      <p class="dc-exportou" role="status">Arquivo baixado. Confira se ele abriu antes de continuar.</p>
+      }
+      @if (erroExportacao()) {
+      <p class="form-field-error" role="alert">{{ erroExportacao() }}</p>
+      }
+    </div>
+
+    <div>
+      <label class="form-label" for="conta-senha">Sua senha <span class="form-required">*</span></label>
+      <input id="conta-senha" type="password" maxlength="128" autocomplete="current-password" [value]="senha()"
+        (input)="senha.set($any($event.target).value)" class="input-field" [class.input-field--error]="temErro('senha')"
+        placeholder="Digite a senha para confirmar" [attr.aria-invalid]="temErro('senha')"
+        [attr.aria-describedby]="temErro('senha') ? 'conta-senha-erro' : null" />
+      @if (temErro('senha')) {
+      <p class="form-field-error" id="conta-senha-erro">{{ mensagensErro('senha').join(' ') }}</p>
+      }
+    </div>
+
+    <label class="checkbox-field">
+      <input type="checkbox" class="checkbox-input" [checked]="ciente()" (change)="ciente.set($any($event.target).checked)" />
+      <span class="checkbox-content">
+        <span class="checkbox-label">Entendo que a exclusão é definitiva</span>
+        <span class="checkbox-hint">Os dados não poderão ser recuperados.</span>
+      </span>
+    </label>
+  </form>
+
+  <button modal-rodape type="button" class="mf-btn mf-btn--secundario" (click)="fecharExclusao()" [disabled]="excluindo()">
+    Cancelar
+  </button>
+  <button modal-rodape type="submit" form="form-excluir-conta" class="mf-btn dc-confirmar" [disabled]="!podeExcluir()">
+    {{ excluindo() ? 'Excluindo…' : 'Excluir conta definitivamente' }}
+  </button>
+</app-modal>
+}

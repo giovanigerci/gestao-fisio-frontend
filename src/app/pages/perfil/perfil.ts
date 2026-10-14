@@ -8,6 +8,7 @@ import { ConfirmModal } from '../../shared/components/confirm-modal/confirm-moda
 import { RequisitosSenha } from '../../shared/components/requisitos-senha/requisitos-senha';
 import { ComAlteracoesPendentes } from '../../guards/alteracoes-pendentes-guard';
 import { tratarErrosApi, temErro, mensagensErro, limparErro } from '../../shared/utils/form-errors';
+import { DadosDaConta } from './dados-da-conta/dados-da-conta';
 
 const TIPOS_FOTO_PERMITIDOS = ['image/jpeg', 'image/png', 'image/webp'];
 const TAMANHO_MAXIMO_FOTO = 5 * 1024 * 1024;
@@ -20,7 +21,7 @@ interface Confirmacao {
 
 @Component({
   selector: 'app-perfil',
-  imports: [TelefoneMaskDirective, ConfirmModal, RequisitosSenha],
+  imports: [TelefoneMaskDirective, ConfirmModal, RequisitosSenha, DadosDaConta],
   templateUrl: './perfil.html',
   styleUrls: ['../../../styles/form-page.css', './perfil.css'],
   host: {
@@ -387,5 +388,12 @@ export class PerfilPage implements ComAlteracoesPendentes {
       next: () => this.router.navigate(['/login']),
       error: () => this.router.navigate(['/login']),
     });
+  }
+
+  /** Conta excluída no backend (cookies já apagados): limpa a sessão local e vai para o login. */
+  aoExcluirConta() {
+    this.descartarAlteracoes(); // nada a salvar: o guard de alterações pendentes não deve perguntar
+    this.perfilService.limpar();
+    this.router.navigate(['/login'], { queryParams: { mensagem: 'conta-excluida' } });
   }
 }

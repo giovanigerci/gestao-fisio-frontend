@@ -324,6 +324,11 @@
       </button>
     </div>
   </form>
+
+  <!-- Fora do <form> do perfil: o modal de exclusão tem o próprio formulário -->
+  <div class="form-container">
+    <app-dados-da-conta (contaExcluida)="aoExcluirConta()" />
+  </div>
   }
 
   <!-- Unsaved changes confirmation (Cancelar / leaving the route / logout) -->

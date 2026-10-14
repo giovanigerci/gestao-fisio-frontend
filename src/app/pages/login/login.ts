@@ -30,6 +30,8 @@ export class Login implements OnInit {
       this.mensagemSucesso.set('Conta criada com sucesso! Faça login para continuar.');
     } else if (params.get('mensagem') === 'senha-redefinida') {
       this.mensagemSucesso.set('Senha redefinida com sucesso! Faça login com a nova senha.');
+    } else if (params.get('mensagem') === 'conta-excluida') {
+      this.mensagemSucesso.set('Sua conta foi excluída e todos os dados foram apagados.');
     }
 
     const usernameParam = params.get('username');

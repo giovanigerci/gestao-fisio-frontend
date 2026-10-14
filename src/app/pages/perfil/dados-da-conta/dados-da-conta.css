@@ -1,0 +1,128 @@
+/* ─── Seção "Seus dados" no Perfil ─── */
+.dc-secao {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  border-top: 1px solid var(--color-border);
+  margin-top: 1rem;
+  padding-top: 1.25rem;
+}
+
+.dc-titulo {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.dc-descricao {
+  margin-top: -0.5rem;
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+}
+
+.dc-linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+}
+
+.dc-linha-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.dc-linha-titulo {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.dc-linha-sub {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.dc-botao {
+  flex-shrink: 0;
+}
+
+.dc-botao--perigo {
+  border: 1px solid color-mix(in srgb, var(--color-danger) 30%, transparent);
+  background: transparent;
+  color: var(--color-danger);
+}
+
+.dc-botao--perigo:hover {
+  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
+}
+
+@media (max-width: 479px) {
+  .dc-linha {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* ─── Modal de exclusão ─── */
+.dc-aviso {
+  padding: 0.875rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--color-danger) 30%, transparent);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--color-danger) 8%, transparent);
+}
+
+.dc-aviso-titulo {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.dc-lista {
+  margin: 0.5rem 0 0;
+  padding-left: 1.125rem;
+  list-style: disc;
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+}
+
+.dc-lista li + li {
+  margin-top: 2px;
+}
+
+.dc-exportar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.625rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+}
+
+.dc-exportou {
+  color: var(--color-money);
+}
+
+.dc-confirmar {
+  padding: 0 1.5rem;
+  border: none;
+  background: var(--color-danger);
+  color: #1a0606;
+  font-weight: 600;
+}
+
+.dc-confirmar:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.dc-acao-topo {
+  color: var(--color-danger);
+}
