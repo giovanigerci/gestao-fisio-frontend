@@ -1,0 +1,92 @@
+<app-modal titulo="Alterar senha" (fechar)="aoFechar()">
+
+  <!-- Celular: a ação fica no cabeçalho (o rodapé some atrás do teclado) -->
+  <button modal-acao-topo type="submit" form="form-alterar-senha" class="mf-acao-topo" [disabled]="salvando()">
+    {{ salvando() ? 'Salvando…' : 'Salvar' }}
+  </button>
+
+  <form id="form-alterar-senha" class="mf-form" (submit)="$event.preventDefault(); salvar()" novalidate>
+    @if (erroGeral()) {
+    <div class="form-alert form-alert--error" role="alert">
+      <p>{{ erroGeral() }}</p>
+    </div>
+    }
+
+    <div>
+      <label class="form-label" for="senha-atual">Senha atual</label>
+      <div class="as-campo">
+        <input id="senha-atual" maxlength="128" [type]="visivel().senha_atual ? 'text' : 'password'"
+          autocomplete="current-password" autofocus [value]="senhaAtual()"
+          (input)="digitar('senha_atual', $any($event.target).value)" class="input-field"
+          [class.input-field--error]="temErro('senha_atual')" [attr.aria-invalid]="temErro('senha_atual')"
+          [attr.aria-describedby]="temErro('senha_atual') ? 'senha-atual-erro' : null" />
+        <button type="button" class="as-olho" (click)="alternarVisibilidade('senha_atual')"
+          [attr.aria-pressed]="visivel().senha_atual" aria-label="Mostrar senha atual">
+          <ng-container *ngTemplateOutlet="olho; context: { aberto: visivel().senha_atual }" />
+        </button>
+      </div>
+      @if (temErro('senha_atual')) {
+      <p class="form-field-error" id="senha-atual-erro">{{ mensagensErro('senha_atual').join(' ') }}</p>
+      }
+    </div>
+
+    <div>
+      <label class="form-label" for="senha-nova">Nova senha</label>
+      <div class="as-campo">
+        <input id="senha-nova" maxlength="128" [type]="visivel().nova_senha ? 'text' : 'password'"
+          autocomplete="new-password" [value]="novaSenha()" (input)="digitar('nova_senha', $any($event.target).value)"
+          class="input-field" [class.input-field--error]="temErro('nova_senha')" [attr.aria-invalid]="temErro('nova_senha')"
+          [attr.aria-describedby]="temErro('nova_senha') ? 'senha-nova-erro' : null" />
+        <button type="button" class="as-olho" (click)="alternarVisibilidade('nova_senha')"
+          [attr.aria-pressed]="visivel().nova_senha" aria-label="Mostrar nova senha">
+          <ng-container *ngTemplateOutlet="olho; context: { aberto: visivel().nova_senha }" />
+        </button>
+      </div>
+      <app-requisitos-senha [senha]="novaSenha()" [erro]="temErro('nova_senha')" />
+      @if (temErro('nova_senha')) {
+      <p class="form-field-error" id="senha-nova-erro">{{ mensagensErro('nova_senha').join(' ') }}</p>
+      }
+    </div>
+
+    <div>
+      <label class="form-label" for="senha-confirmar">Confirmar nova senha</label>
+      <div class="as-campo">
+        <input id="senha-confirmar" maxlength="128" [type]="visivel().confirmar_senha ? 'text' : 'password'"
+          autocomplete="new-password" placeholder="Repita a nova senha" [value]="confirmarSenha()"
+          (input)="digitar('confirmar_senha', $any($event.target).value)" class="input-field"
+          [class.input-field--error]="temErro('confirmar_senha')" [attr.aria-invalid]="temErro('confirmar_senha')"
+          [attr.aria-describedby]="temErro('confirmar_senha') ? 'senha-confirmar-erro' : null" />
+        <button type="button" class="as-olho" (click)="alternarVisibilidade('confirmar_senha')"
+          [attr.aria-pressed]="visivel().confirmar_senha" aria-label="Mostrar confirmação da senha">
+          <ng-container *ngTemplateOutlet="olho; context: { aberto: visivel().confirmar_senha }" />
+        </button>
+      </div>
+      @if (temErro('confirmar_senha')) {
+      <p class="form-field-error" id="senha-confirmar-erro">{{ mensagensErro('confirmar_senha').join(' ') }}</p>
+      }
+    </div>
+  </form>
+
+  <button modal-rodape type="button" class="mf-btn mf-btn--secundario" (click)="aoFechar()" [disabled]="salvando()">
+    Cancelar
+  </button>
+  <button modal-rodape type="submit" form="form-alterar-senha" class="mf-btn mf-btn--primario" [disabled]="salvando()">
+    {{ salvando() ? 'Salvando…' : 'Alterar senha' }}
+  </button>
+</app-modal>
+
+<ng-template #olho let-aberto="aberto">
+  @if (aberto) {
+  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+    stroke-linejoin="round">
+    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+    <line x1="1" y1="1" x2="23" y2="23" />
+  </svg>
+  } @else {
+  <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+    stroke-linejoin="round">
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+    <circle cx="12" cy="12" r="3" />
+  </svg>
+  }
+</ng-template>

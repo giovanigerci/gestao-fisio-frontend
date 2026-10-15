@@ -1,0 +1,36 @@
+/* Campo de senha com o botão "mostrar" dentro */
+.as-campo {
+  position: relative;
+}
+
+.as-campo .input-field {
+  padding-right: 48px;
+}
+
+.as-olho {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.as-olho:hover,
+.as-olho:focus-visible {
+  color: var(--color-text-primary);
+  background: var(--color-surface-hover);
+}
+
+.as-olho svg {
+  width: 18px;
+  height: 18px;
+}

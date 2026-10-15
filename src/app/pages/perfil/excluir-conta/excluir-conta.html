@@ -1,35 +1,20 @@
-<section class="dc-secao" aria-labelledby="dc-titulo">
-  <h2 id="dc-titulo" class="dc-titulo">Seus dados</h2>
-  <p class="dc-descricao">Você pode levar uma cópia dos seus dados ou excluir a conta a qualquer momento.</p>
-
-  <div class="dc-linha">
-    <div class="dc-linha-texto">
-      <span class="dc-linha-titulo">Exportar meus dados</span>
-      <span class="dc-linha-sub">Planilhas com clínicas, pacientes (com histórico) e sessões, em um arquivo ZIP.</span>
-    </div>
-    <button type="button" class="mf-btn mf-btn--secundario dc-botao" (click)="exportar()" [disabled]="exportando()">
-      {{ exportando() ? 'Gerando…' : 'Exportar' }}
-    </button>
+<!-- Ação destrutiva isolada, no fim da página, longe do botão de exportar -->
+<section class="ec-card" aria-labelledby="ec-titulo">
+  <div class="ec-texto">
+    <h2 id="ec-titulo" class="ec-titulo">Excluir conta</h2>
+    <p class="ec-descricao">
+      Apaga a conta, as clínicas, os pacientes e as sessões de forma definitiva. Exporte seus dados antes.
+    </p>
   </div>
-  @if (erroExportacao()) {
-  <p class="form-field-error" role="alert">{{ erroExportacao() }}</p>
-  }
-
-  <div class="dc-linha">
-    <div class="dc-linha-texto">
-      <span class="dc-linha-titulo">Excluir minha conta</span>
-      <span class="dc-linha-sub">Apaga a conta e todos os dados de forma definitiva.</span>
-    </div>
-    <button type="button" class="mf-btn dc-botao dc-botao--perigo" (click)="abrirExclusao()">Excluir conta</button>
-  </div>
+  <button type="button" class="mf-btn ec-botao" (click)="abrir()">Excluir conta</button>
 </section>
 
 @if (modalAberto()) {
-<app-modal titulo="Excluir conta" subtitulo="Ação definitiva" (fechar)="fecharExclusao()">
+<app-modal titulo="Excluir conta" subtitulo="Ação definitiva" (fechar)="fechar()">
 
   <!-- Celular: a ação fica no cabeçalho (o rodapé some atrás do teclado) -->
-  <button modal-acao-topo type="submit" form="form-excluir-conta" class="mf-acao-topo dc-acao-topo"
-    [disabled]="!podeExcluir()">
+  <button modal-acao-topo type="submit" form="form-excluir-conta" class="mf-acao-topo ec-acao-topo"
+    [class.ec-bloqueado]="!liberado()" [disabled]="!podeExcluir()">
     {{ excluindo() ? 'Excluindo…' : 'Excluir' }}
   </button>
 
@@ -41,9 +26,9 @@
     </div>
     }
 
-    <div class="dc-aviso">
-      <p class="dc-aviso-titulo">Isto será apagado para sempre e não pode ser desfeito:</p>
-      <ul class="dc-lista">
+    <div class="ec-aviso">
+      <p class="ec-aviso-titulo">Isto será apagado para sempre e não pode ser desfeito:</p>
+      <ul class="ec-lista">
         @if (resumo(); as r) {
         <li>{{ plural(r.pacientes, 'paciente', 'pacientes') }}, com o histórico médico</li>
         <li>{{ plural(r.agendamentos, 'sessão', 'sessões') }} e toda a receita registrada</li>
@@ -57,19 +42,20 @@
       </ul>
     </div>
 
-    <div class="dc-exportar">
+    <div class="ec-exportar">
       <p>
         A guarda do prontuário pelo prazo exigido pelo seu conselho profissional continua sendo sua
         responsabilidade. Baixe uma cópia dos dados antes de excluir.
       </p>
-      <button type="button" class="mf-btn mf-btn--secundario" (click)="exportar()" [disabled]="exportando()">
-        {{ exportando() ? 'Gerando…' : (exportou() ? 'Exportar de novo' : 'Exportar meus dados') }}
+      <button type="button" class="mf-btn mf-btn--secundario" (click)="exportacao.exportar()"
+        [disabled]="exportacao.exportando()">
+        {{ exportacao.exportando() ? 'Gerando…' : (exportacao.exportou() ? 'Exportar de novo' : 'Exportar meus dados') }}
       </button>
-      @if (exportou()) {
-      <p class="dc-exportou" role="status">Arquivo baixado. Confira se ele abriu antes de continuar.</p>
+      @if (exportacao.exportou()) {
+      <p class="ec-exportou" role="status">Arquivo baixado. Confira se ele abriu antes de continuar.</p>
       }
-      @if (erroExportacao()) {
-      <p class="form-field-error" role="alert">{{ erroExportacao() }}</p>
+      @if (exportacao.erro()) {
+      <p class="form-field-error" role="alert">{{ exportacao.erro() }}</p>
       }
     </div>
 
@@ -84,19 +70,24 @@
       }
     </div>
 
-    <label class="checkbox-field">
-      <input type="checkbox" class="checkbox-input" [checked]="ciente()" (change)="ciente.set($any($event.target).checked)" />
-      <span class="checkbox-content">
-        <span class="checkbox-label">Entendo que a exclusão é definitiva</span>
-        <span class="checkbox-hint">Os dados não poderão ser recuperados.</span>
-      </span>
-    </label>
+    <div class="mf-opcao">
+      <div class="mf-opcao-texto">
+        <div class="mf-opcao-titulo" id="conta-ciente-rotulo">Entendo que a exclusão é definitiva</div>
+        <div class="mf-opcao-sub" id="conta-ciente-dica">Os dados não poderão ser recuperados.</div>
+      </div>
+      <button type="button" role="switch" class="toggle-track mf-switch" [class.active]="ciente()"
+        [attr.aria-checked]="ciente()" aria-labelledby="conta-ciente-rotulo" aria-describedby="conta-ciente-dica"
+        (click)="ciente.set(!ciente())">
+        <span class="toggle-thumb"></span>
+      </button>
+    </div>
   </form>
 
-  <button modal-rodape type="button" class="mf-btn mf-btn--secundario" (click)="fecharExclusao()" [disabled]="excluindo()">
+  <button modal-rodape type="button" class="mf-btn mf-btn--secundario" (click)="fechar()" [disabled]="excluindo()">
     Cancelar
   </button>
-  <button modal-rodape type="submit" form="form-excluir-conta" class="mf-btn dc-confirmar" [disabled]="!podeExcluir()">
+  <button modal-rodape type="submit" form="form-excluir-conta" class="mf-btn ec-confirmar"
+    [class.ec-bloqueado]="!liberado()" [disabled]="!podeExcluir()">
     {{ excluindo() ? 'Excluindo…' : 'Excluir conta definitivamente' }}
   </button>
 </app-modal>

@@ -9,12 +9,14 @@ import { PerfilPage } from './perfil';
 import { Perfil } from '../../services/perfil.service';
 import { alteracoesPendentesGuard } from '../../guards/alteracoes-pendentes-guard';
 import { environment } from '../../../environments/environment';
+import { simularDialogNativo } from '../../shared/components/modal/simular-dialog.spec-helper';
 
 @Component({ template: '' })
 class AgendaFake {}
 
 const URL_PERFIL = `${environment.apiUrl}/auth/me/`;
 const URL_FOTO = `${URL_PERFIL}foto/`;
+const URL_RESUMO = `${URL_PERFIL}dados/`;
 
 const PERFIL: Perfil = {
   id: 1,
@@ -65,8 +67,11 @@ describe('PerfilPage', () => {
     harness = await RouterTestingHarness.create();
     component = await harness.navigateByUrl('/perfil', PerfilPage);
     http.expectOne(URL_PERFIL).flush(PERFIL);
+    http.expectOne(URL_RESUMO).flush({ clinicas: 3, pacientes: 1, agendamentos: 1414 });
     harness.detectChanges();
   });
+
+  const tela = () => harness.routeNativeElement as HTMLElement;
 
   afterEach(() => http.verify());
 
@@ -103,7 +108,7 @@ describe('PerfilPage', () => {
       expect(component.fotoExibida()).toBe('https://pub-teste.r2.dev/perfis/nova.png');
       expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:preview');
       expect(component.temAlteracoesPendentes()).toBe(false);
-      expect(component.sucesso()).toBeTruthy();
+      expect(component.aviso()).toBe('Perfil atualizado');
     });
 
     it('salvar com remoção pendente envia DELETE', () => {
@@ -181,17 +186,17 @@ describe('PerfilPage', () => {
       expect(component.temAlteracoesPendentes()).toBe(false);
     });
 
-    it('cancelar sem alterações navega direto, sem modal', async () => {
-      await component.cancelar();
+    it('descartar sem alterações não faz nada', async () => {
+      await component.descartar();
       expect(component.confirmacao()).toBeNull();
-      await vi.waitFor(() => expect(router.url).toBe('/agenda'));
+      expect(router.url).toBe('/perfil');
     });
 
-    it('cancelar com alterações abre o modal; confirmar descarta e volta para a foto antiga', async () => {
+    it('descartar com alterações abre o modal; confirmar descarta e volta para a foto antiga', async () => {
       component.firstName.set('Joana');
       selecionarFoto(component, arquivo());
 
-      const cancelamento = component.cancelar();
+      const cancelamento = component.descartar();
       harness.detectChanges();
       expect(harness.routeNativeElement?.querySelector('app-confirm-modal')).toBeTruthy();
 
@@ -206,10 +211,10 @@ describe('PerfilPage', () => {
       expect(router.url).toBe('/perfil');
     });
 
-    it('cancelar com alterações e fechar o modal mantém tudo', async () => {
+    it('descartar com alterações e fechar o modal mantém tudo', async () => {
       component.firstName.set('Joana');
 
-      const cancelamento = component.cancelar();
+      const cancelamento = component.descartar();
       component.responderConfirmacao(false);
       await cancelamento;
 
@@ -253,6 +258,61 @@ describe('PerfilPage', () => {
       const sujo = new Event('beforeunload', { cancelable: true });
       window.dispatchEvent(sujo);
       expect(sujo.defaultPrevented).toBe(true);
+    });
+  });
+
+  describe('layout', () => {
+    it('cabeçalho mostra o nome, o registro e os números da conta', () => {
+      const identidade = tela().querySelector('.perfil-identidade')!.textContent!.replace(/\s+/g, ' ');
+
+      expect(identidade).toContain('João Silva');
+      expect(identidade).toContain('CREFITO 12345-F');
+      expect(identidade).toContain('dr_silva');
+      expect(identidade).toContain('3 clínicas');
+      expect(identidade).toContain('1 paciente');
+      expect(identidade).toContain('1.414 sessões registradas');
+    });
+
+    it('não tem mais a seta de voltar no topo', () => {
+      expect(tela().querySelector('.form-back-btn')).toBeNull();
+      expect(tela().querySelector('h1')!.textContent).toContain('Meu perfil');
+    });
+
+    it('a barra de salvar só aparece quando há alterações', () => {
+      expect(tela().querySelector('.perfil-barra')).toBeNull();
+
+      component.telefone.set('11988887777');
+      harness.detectChanges();
+
+      const barra = tela().querySelector('.perfil-barra')!;
+      expect(barra.textContent).toContain('Você tem alterações não salvas');
+      expect(barra.querySelector('button[type="submit"]')!.getAttribute('form')).toBe('form-perfil');
+    });
+
+    it('enviar o formulário (botão da barra) salva o perfil', () => {
+      component.firstName.set('Joana');
+      harness.detectChanges();
+
+      tela().querySelector('#form-perfil')!.dispatchEvent(new Event('submit', { cancelable: true }));
+      http.expectOne({ method: 'PATCH', url: URL_PERFIL }).flush({ ...PERFIL, first_name: 'Joana' });
+      harness.detectChanges();
+
+      expect(tela().querySelector('.perfil-barra')).toBeNull();
+      expect(tela().querySelector('.perfil-aviso')!.textContent).toContain('Perfil atualizado');
+    });
+
+    it('"Alterar senha" abre o modal e, depois de trocar, avisa e fecha', () => {
+      const dialog = simularDialogNativo();
+      [...tela().querySelectorAll('button')].find((b) => b.textContent!.trim() === 'Alterar senha')!.click();
+      harness.detectChanges();
+      expect(tela().querySelector('app-alterar-senha')).toBeTruthy();
+
+      component.aoAlterarSenha();
+      harness.detectChanges();
+
+      expect(tela().querySelector('app-alterar-senha')).toBeNull();
+      expect(component.aviso()).toBe('Senha alterada');
+      dialog.restaurar();
     });
   });
 });

@@ -1,79 +1,52 @@
-import { Component, ElementRef, Injector, computed, inject, output, signal } from '@angular/core';
+import { Component, ElementRef, Injector, computed, inject, input, output, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ContaService, ResumoDosDados } from '../../../services/conta.service';
+import { ExportacaoDados } from '../../../services/exportacao-dados.service';
 import { Modal } from '../../../shared/components/modal/modal';
-import { formatarDataISO } from '../../../shared/utils/datas';
-import { baixarArquivo } from '../../../shared/utils/download';
 import { focarPrimeiroCampoComErro, tratarErrosApi, temErro, mensagensErro } from '../../../shared/utils/form-errors';
 
 /**
- * Seção "Seus dados" do Perfil (LGPD): exportar uma cópia dos dados e excluir a conta.
- * A exclusão é definitiva e imediata; por isso o modal mostra o que será apagado, oferece a
- * exportação ali mesmo e pede a senha e a confirmação explícita.
+ * Card de risco "Excluir conta" do Perfil e o modal de confirmação (LGPD). A exclusão é definitiva
+ * e imediata; por isso o modal mostra o que será apagado, oferece a exportação ali mesmo e pede a
+ * senha e a confirmação explícita.
  */
 @Component({
-  selector: 'app-dados-da-conta',
+  selector: 'app-excluir-conta',
   imports: [Modal],
-  templateUrl: './dados-da-conta.html',
-  styleUrls: ['../../../../styles/form-page.css', '../../../../styles/modal-form.css', './dados-da-conta.css'],
+  templateUrl: './excluir-conta.html',
+  styleUrls: ['../../../../styles/form-page.css', '../../../../styles/modal-form.css', './excluir-conta.css'],
 })
-export class DadosDaConta {
+export class ExcluirConta {
   private conta = inject(ContaService);
   private host = inject<ElementRef<HTMLElement>>(ElementRef);
   private injector = inject(Injector);
+  readonly exportacao = inject(ExportacaoDados);
 
+  /** Quantidades da conta (já buscadas pela página); sem elas, o aviso usa textos genéricos. */
+  readonly resumo = input<ResumoDosDados | null>(null);
   /** A conta foi excluída no backend: quem usa limpa a sessão local e leva ao login. */
   readonly contaExcluida = output<void>();
 
-  exportando = signal(false);
-  erroExportacao = signal('');
-  exportou = signal(false);
-
   modalAberto = signal(false);
-  resumo = signal<ResumoDosDados | null>(null);
   senha = signal('');
   ciente = signal(false);
   excluindo = signal(false);
   erroGeral = signal('');
   erros = signal<Record<string, string[]>>({});
 
-  readonly podeExcluir = computed(() => !!this.senha() && this.ciente() && !this.excluindo());
+  /** Senha digitada e confirmação ligada: o botão sai do tom apagado. */
+  readonly liberado = computed(() => !!this.senha() && this.ciente());
+  readonly podeExcluir = computed(() => this.liberado() && !this.excluindo());
 
-  exportar() {
-    if (this.exportando()) return;
-    this.exportando.set(true);
-    this.erroExportacao.set('');
-
-    this.conta.exportar().subscribe({
-      next: (arquivo) => {
-        baixarArquivo(arquivo, `gestao-fisio-dados-${formatarDataISO()}.zip`);
-        this.exportando.set(false);
-        this.exportou.set(true);
-      },
-      error: (erro: HttpErrorResponse) => {
-        this.exportando.set(false);
-        this.erroExportacao.set(
-          erro.status === 429
-            ? 'Você já exportou várias vezes na última hora. Tente de novo mais tarde.'
-            : 'Não foi possível gerar a exportação. Tente novamente.'
-        );
-      },
-    });
-  }
-
-  abrirExclusao() {
+  abrir() {
     this.senha.set('');
     this.ciente.set(false);
     this.erros.set({});
     this.erroGeral.set('');
     this.modalAberto.set(true);
-    this.conta.resumo().subscribe({
-      next: (resumo) => this.resumo.set(resumo),
-      error: () => this.resumo.set(null), // sem as quantidades, o aviso continua valendo
-    });
   }
 
-  fecharExclusao() {
+  fechar() {
     if (this.excluindo()) return;
     this.modalAberto.set(false);
     this.senha.set('');
@@ -100,7 +73,7 @@ export class DadosDaConta {
   }
 
   plural(quantidade: number, singular: string, plural: string): string {
-    return `${quantidade} ${quantidade === 1 ? singular : plural}`;
+    return `${quantidade.toLocaleString('pt-BR')} ${quantidade === 1 ? singular : plural}`;
   }
 
   temErro(campo: string): boolean {

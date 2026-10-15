@@ -1,147 +1,583 @@
-/* ─── Avatar (profile page) ─── */
-.avatar-container {
-  position: relative;
-  display: inline-block;
+/* ═══════════════════════════════════════════════════════
+   Perfil — coluna única de cards. Campos, seções e botões vêm de
+   modal-form.css (mf-*); alertas e spinner, de form-page.css.
+   ═══════════════════════════════════════════════════════ */
+
+.perfil-pagina {
+  min-height: 100vh;
+  padding: 1.25rem 1rem 8rem; /* espaço para a barra de salvar não cobrir o fim da página */
 }
 
-.avatar-large {
+@media (min-width: 1024px) {
+  .perfil-pagina {
+    padding: 2rem 2.5rem 8rem;
+  }
+}
+
+.perfil-coluna {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.perfil-titulo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.perfil-subtitulo {
+  margin-top: 4px;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.perfil-so-celular {
+  display: flex;
+}
+
+.perfil-so-desktop {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .perfil-titulo {
+    font-size: 1.625rem;
+  }
+
+  .perfil-so-celular {
+    display: none;
+  }
+
+  .perfil-so-desktop {
+    display: flex;
+  }
+}
+
+/* ─── Card base ─── */
+.perfil-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  animation: fadeInUp 0.35s ease-out both;
+}
+
+.perfil-card-cabecalho {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 1.25rem 1.5rem 0;
+}
+
+.perfil-card-cabecalho + .perfil-linha {
+  margin-top: 1rem;
+}
+
+.perfil-icone {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface-hover);
+  color: var(--color-text-secondary);
+}
+
+.perfil-icone svg {
+  width: 20px;
+  height: 20px;
+}
+
+.perfil-card-titulo {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.perfil-card-descricao {
+  margin-top: 2px;
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+}
+
+.perfil-card-corpo {
+  padding: 1.25rem 1.5rem 1.5rem;
+  gap: 1.5rem;
+}
+
+.perfil-divisor {
+  height: 1px;
+  background: var(--color-border);
+}
+
+/* ─── Identidade ─── */
+.perfil-identidade {
+  overflow: hidden;
+}
+
+.perfil-identidade-topo {
+  display: flex;
+  align-items: center;
+  gap: 1.375rem;
+  padding: 1.5rem;
+}
+
+.perfil-avatar-area {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.perfil-avatar {
   width: 96px;
   height: 96px;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--color-primary) 15%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border: 2px solid var(--color-border);
+  background: color-mix(in srgb, var(--color-primary) 20%, transparent);
+  /* anel fino separando a foto do card */
+  box-shadow: 0 0 0 4px var(--color-surface), 0 0 0 5px var(--color-border);
+  transition: opacity 0.2s ease;
 }
 
-.avatar-large--removendo {
-  opacity: 0.4;
-  border-style: dashed;
+.perfil-avatar--removendo {
+  opacity: 0.35;
 }
 
-.form-action-link--neutral {
-  color: var(--color-primary);
-}
-
-.avatar-large-img {
+.perfil-avatar-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.avatar-large-initials {
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--color-primary);
-  line-height: 1;
+.perfil-avatar-iniciais {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #9fc0d6;
 }
 
-.avatar-camera-btn {
+.perfil-camera {
   position: absolute;
-  bottom: 2px;
-  right: 2px;
-  width: 30px;
-  height: 30px;
+  right: -4px;
+  bottom: -4px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
+  border: 3px solid var(--color-surface);
   background: var(--color-primary);
-  color: white;
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid var(--color-bg);
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: filter 0.15s ease;
 }
 
-.avatar-camera-btn:hover {
-  background: var(--color-primary-hover);
+.perfil-camera:hover:not(:disabled) {
+  filter: brightness(1.12);
 }
 
-.avatar-camera-btn:disabled {
-  opacity: 0.5;
+.perfil-camera:disabled {
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
-/* ─── Trocar Senha (expandable section) ─── */
-.senha-toggle-btn {
-  width: 100%;
+.perfil-camera svg {
+  width: 16px;
+  height: 16px;
+}
+
+.perfil-identidade-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.perfil-nome {
+  font-size: 1.375rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--color-text-primary);
+  overflow-wrap: anywhere;
+}
+
+.perfil-registro {
+  margin-top: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.perfil-chip {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--color-surface-hover);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #cbd5e1;
+}
+
+.perfil-linha-acoes {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+}
+
+.perfil-usuario {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  background: none;
+  gap: 6px;
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+}
+
+.perfil-usuario svg {
+  width: 14px;
+  height: 14px;
+}
+
+.perfil-separador {
+  width: 1px;
+  height: 14px;
+  background: var(--color-border);
+}
+
+.perfil-link {
   border: none;
-  padding: 0.625rem 0;
-  color: var(--color-text-primary);
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: 0.8125rem;
   font-weight: 500;
-  font-size: 0.875rem;
+  color: #7fa7c4;
   cursor: pointer;
-  transition: color 0.15s;
 }
 
-.senha-toggle-btn:hover {
-  color: var(--color-primary);
+.perfil-link:hover:not(:disabled) {
+  text-decoration: underline;
 }
 
-.senha-toggle-chevron {
-  width: 1rem;
-  height: 1rem;
-  margin-left: auto;
-  color: var(--color-text-muted);
-  transition: transform 0.2s ease;
+.perfil-link:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
-.senha-toggle-chevron--open {
-  transform: rotate(180deg);
+.perfil-link--neutro {
+  color: var(--color-text-secondary);
 }
 
-.senha-section {
+.perfil-foto-aviso {
+  margin-top: 6px;
+  font-size: 0.75rem;
+  color: var(--color-warning);
+}
+
+.perfil-sair {
+  align-self: flex-start;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  margin: -6px -10px 0 0;
+  padding: 0 12px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+/* Igual ao "Sair" da barra lateral: só o ícone e o texto ficam vermelhos */
+.perfil-sair:hover {
+  color: var(--color-danger);
+}
+
+.perfil-sair svg,
+.perfil-sair-celular svg,
+.perfil-botao-icone svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Números da conta */
+.perfil-numeros {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid var(--color-border);
+  background: color-mix(in srgb, var(--color-bg) 35%, transparent);
+}
+
+.perfil-numeros p {
+  padding: 0.875rem 1.5rem;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.perfil-numeros p + p {
+  border-left: 1px solid var(--color-border);
+}
+
+.perfil-numero {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Linhas de ação (Segurança e dados) ─── */
+.perfil-linha {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.perfil-linha-texto {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  padding-top: 0.75rem;
-  animation: fadeSlideIn 0.25s ease-out;
+  gap: 2px;
 }
 
-.senha-input-wrapper {
-  position: relative;
+.perfil-linha-titulo {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.perfil-linha-sub {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.perfil-linha .mf-btn {
+  flex-shrink: 0;
+}
+
+.perfil-botao-icone {
   display: flex;
   align-items: center;
+  gap: 8px;
 }
 
-.senha-input-wrapper .input-field {
-  padding-right: 3rem;
+.perfil-linha-erro {
+  padding: 0 1.5rem 1rem;
+  margin-top: -0.25rem;
 }
 
-.senha-visibility-btn {
-  position: absolute;
-  right: 0.5rem;
-  display: flex;
+.perfil-sair-celular {
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
+  gap: 8px;
+  width: 100%;
+  height: 48px;
+}
+
+/* ─── Celular ─── */
+@media (max-width: 639px) {
+  .perfil-identidade-topo {
+    gap: 1rem;
+    padding: 1.125rem 1rem 1rem;
+  }
+
+  .perfil-avatar {
+    width: 76px;
+    height: 76px;
+  }
+
+  .perfil-avatar-iniciais {
+    font-size: 1.625rem;
+  }
+
+  .perfil-nome {
+    font-size: 1.125rem;
+  }
+
+  .perfil-registro {
+    font-size: 0.8125rem;
+  }
+
+  .perfil-numeros p {
+    padding: 0.75rem 1rem;
+  }
+
+  .perfil-numero {
+    font-size: 1.125rem;
+  }
+
+  .perfil-card-cabecalho {
+    padding: 1rem 1rem 0;
+  }
+
+  .perfil-card-corpo {
+    padding: 1.125rem 1rem 1.25rem;
+  }
+
+  /* No celular o botão desce para baixo do texto e ocupa a largura toda */
+  .perfil-linha {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 1rem;
+  }
+
+  .perfil-linha .mf-btn {
+    height: 48px;
+    justify-content: center;
+  }
+
+  .perfil-linha-erro {
+    padding: 0 1rem 1rem;
+  }
+}
+
+/* ─── Barra de salvar (fixa no rodapé da tela) ─── */
+.perfil-barra {
+  position: fixed;
+  left: 0;
+  right: 0;
+  /* acima da navegação inferior do celular */
+  bottom: calc(5rem + 8px + env(safe-area-inset-bottom));
+  z-index: 40;
+  display: flex;
+  justify-content: center;
+  padding: 0 1rem;
+  pointer-events: none;
+  animation: perfil-barra-entrar 0.2s ease-out;
+}
+
+@media (min-width: 1024px) {
+  .perfil-barra {
+    left: 14rem; /* largura da barra lateral */
+    bottom: 1.75rem;
+  }
+}
+
+.perfil-barra-caixa {
+  pointer-events: auto;
+  width: min(760px, 100%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 12px 12px 18px;
+  border: 1px solid #2f3f58;
+  border-radius: 16px;
+  background: var(--color-surface-hover);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+}
+
+.perfil-barra-ponto {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-warning);
+}
+
+.perfil-barra-texto {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+}
+
+.perfil-barra-descartar {
   border: none;
   background: transparent;
-  color: var(--color-text-muted);
-  cursor: pointer;
-  border-radius: 0.375rem;
-  transition: color 0.15s, background 0.15s;
-  padding: 0;
+  color: #cbd5e1;
 }
 
-.senha-visibility-btn:hover {
-  color: var(--color-text-secondary);
-  background: rgba(255, 255, 255, 0.06);
+.perfil-barra-descartar:hover:not(:disabled) {
+  background: var(--color-border);
 }
 
-.senha-visibility-btn svg {
-  width: 1.125rem;
-  height: 1.125rem;
+@media (max-width: 639px) {
+  .perfil-barra-caixa {
+    flex-wrap: wrap;
+    padding: 12px;
+  }
+
+  .perfil-barra-texto {
+    flex-basis: calc(100% - 20px);
+  }
+
+  .perfil-barra-caixa .mf-btn {
+    white-space: nowrap;
+  }
+
+  .perfil-barra-caixa .mf-btn--primario {
+    flex: 1;
+  }
 }
 
-.senha-submit-btn {
-  margin-top: 0.25rem;
+/* ─── Aviso de sucesso (some sozinho) ─── */
+.perfil-aviso {
+  position: fixed;
+  top: calc(3.5rem + 12px); /* abaixo do cabeçalho do celular */
+  left: 50%;
+  z-index: 60;
+  width: min(420px, calc(100vw - 2rem));
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, var(--color-money) 35%, transparent);
+  border-radius: 14px;
+  background: #0f2a24;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  font-size: 0.875rem;
+  color: #a7f3d0;
+  animation: perfil-aviso-entrar 0.2s ease-out;
 }
 
+.perfil-aviso svg {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  color: var(--color-money);
+}
+
+@media (min-width: 1024px) {
+  .perfil-aviso {
+    top: 1.5rem;
+    left: calc(50% + 7rem); /* centro da área de conteúdo, descontando a barra lateral */
+  }
+}
+
+@keyframes perfil-barra-entrar {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@keyframes perfil-aviso-entrar {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .perfil-barra,
+  .perfil-aviso,
+  .perfil-card {
+    animation: none;
+  }
+}

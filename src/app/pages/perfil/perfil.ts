@@ -3,15 +3,18 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { PerfilService, Perfil } from '../../services/perfil.service';
 import { AuthService } from '../../services/auth.service';
+import { ContaService, ResumoDosDados } from '../../services/conta.service';
+import { ExportacaoDados } from '../../services/exportacao-dados.service';
 import { TelefoneMaskDirective } from '../../shared/directives/telefone-mask.directive';
 import { ConfirmModal } from '../../shared/components/confirm-modal/confirm-modal';
-import { RequisitosSenha } from '../../shared/components/requisitos-senha/requisitos-senha';
 import { ComAlteracoesPendentes } from '../../guards/alteracoes-pendentes-guard';
-import { tratarErrosApi, temErro, mensagensErro, limparErro } from '../../shared/utils/form-errors';
-import { DadosDaConta } from './dados-da-conta/dados-da-conta';
+import { tratarErrosApi, temErro, mensagensErro } from '../../shared/utils/form-errors';
+import { AlterarSenha } from './alterar-senha/alterar-senha';
+import { ExcluirConta } from './excluir-conta/excluir-conta';
 
 const TIPOS_FOTO_PERMITIDOS = ['image/jpeg', 'image/png', 'image/webp'];
 const TAMANHO_MAXIMO_FOTO = 5 * 1024 * 1024;
+const DURACAO_AVISO_MS = 4000;
 
 interface Confirmacao {
   titulo: string;
@@ -21,9 +24,9 @@ interface Confirmacao {
 
 @Component({
   selector: 'app-perfil',
-  imports: [TelefoneMaskDirective, ConfirmModal, RequisitosSenha, DadosDaConta],
+  imports: [TelefoneMaskDirective, ConfirmModal, AlterarSenha, ExcluirConta],
   templateUrl: './perfil.html',
-  styleUrls: ['../../../styles/form-page.css', './perfil.css'],
+  styleUrls: ['../../../styles/form-page.css', '../../../styles/modal-form.css', './perfil.css'],
   host: {
     '(window:beforeunload)': 'onBeforeUnload($event)',
   },
@@ -32,6 +35,8 @@ export class PerfilPage implements ComAlteracoesPendentes {
   private router = inject(Router);
   readonly perfilService = inject(PerfilService);
   private auth = inject(AuthService);
+  private conta = inject(ContaService);
+  readonly exportacao = inject(ExportacaoDados);
 
   // Form fields
   firstName = signal('');
@@ -52,25 +57,18 @@ export class PerfilPage implements ComAlteracoesPendentes {
   erroGeral = signal('');
   erros = signal<Record<string, string[]>>({});
   erroFoto = signal('');
-  sucesso = signal('');
   processandoFoto = signal(false);
+
+  /** Números da conta no cabeçalho (clínicas, pacientes, sessões); null enquanto carrega ou se falhar. */
+  resumo = signal<ResumoDosDados | null>(null);
+  /** Aviso flutuante de sucesso ("Perfil atualizado", "Senha alterada"), some sozinho. */
+  aviso = signal('');
+  private temporizadorAviso: ReturnType<typeof setTimeout> | null = null;
+  alterandoSenha = signal(false);
 
   // Modal de confirmação (descartar alterações / sair sem salvar)
   confirmacao = signal<Confirmacao | null>(null);
   private resolverConfirmacao: ((confirmado: boolean) => void) | null = null;
-
-  // Trocar senha
-  mostrarTrocarSenha = signal(false);
-  senhaAtual = signal('');
-  novaSenha = signal('');
-  confirmarSenha = signal('');
-  salvandoSenha = signal(false);
-  errosSenha = signal<Record<string, string[]>>({});
-  erroGeralSenha = signal('');
-  sucessoSenha = signal('');
-  mostrarSenhaAtual = signal(false);
-  mostrarNovaSenha = signal(false);
-  mostrarConfirmarSenha = signal(false);
 
   readonly camposAlterados = computed(() => {
     const perfil = this.perfilService.perfil();
@@ -98,6 +96,10 @@ export class PerfilPage implements ComAlteracoesPendentes {
   constructor() {
     // Garante que o perfil seja carregado (idempotente — se já carregou, não faz nada)
     this.perfilService.carregar().subscribe();
+    this.conta.resumo().subscribe({
+      next: (resumo) => this.resumo.set(resumo),
+      error: () => this.resumo.set(null), // a faixa de números só não aparece
+    });
 
     // Preenche os campos quando o perfil estiver disponível
     effect(() => {
@@ -110,6 +112,7 @@ export class PerfilPage implements ComAlteracoesPendentes {
     inject(DestroyRef).onDestroy(() => {
       this.revogarPreview();
       this.responderConfirmacao(false);
+      if (this.temporizadorAviso) clearTimeout(this.temporizadorAviso);
     });
   }
 
@@ -129,7 +132,6 @@ export class PerfilPage implements ComAlteracoesPendentes {
     this.erros.set({});
     this.erroGeral.set('');
     this.erroFoto.set('');
-    this.sucesso.set('');
     this.salvando.set(true);
 
     const dados: Partial<Perfil> = {
@@ -184,8 +186,22 @@ export class PerfilPage implements ComAlteracoesPendentes {
 
   private concluirSalvamento() {
     this.salvando.set(false);
-    this.sucesso.set('Perfil atualizado com sucesso!');
-    setTimeout(() => this.sucesso.set(''), 3000);
+    this.mostrarAviso('Perfil atualizado');
+  }
+
+  private mostrarAviso(mensagem: string) {
+    if (this.temporizadorAviso) clearTimeout(this.temporizadorAviso);
+    this.aviso.set(mensagem);
+    this.temporizadorAviso = setTimeout(() => this.aviso.set(''), DURACAO_AVISO_MS);
+  }
+
+  aoAlterarSenha() {
+    this.alterandoSenha.set(false);
+    this.mostrarAviso('Senha alterada');
+  }
+
+  formatarNumero(valor: number): string {
+    return valor.toLocaleString('pt-BR');
   }
 
   private extrairErroFoto(err: any): string | null {
@@ -200,60 +216,6 @@ export class PerfilPage implements ComAlteracoesPendentes {
 
   mensagensErro(campo: string): string[] {
     return mensagensErro(this.erros(), campo);
-  }
-
-  temErroSenha(campo: string): boolean {
-    return temErro(this.errosSenha(), campo);
-  }
-
-  mensagensErroSenha(campo: string): string[] {
-    return mensagensErro(this.errosSenha(), campo);
-  }
-
-  aoDigitarNovaSenha(valor: string) {
-    this.novaSenha.set(valor);
-    limparErro(this.errosSenha, 'nova_senha');
-  }
-
-  toggleTrocarSenha() {
-    this.mostrarTrocarSenha.update(v => !v);
-    if (!this.mostrarTrocarSenha()) {
-      // Limpa campos ao fechar
-      this.senhaAtual.set('');
-      this.novaSenha.set('');
-      this.confirmarSenha.set('');
-      this.errosSenha.set({});
-      this.erroGeralSenha.set('');
-      this.sucessoSenha.set('');
-    }
-  }
-
-  trocarSenha() {
-    this.errosSenha.set({});
-    this.erroGeralSenha.set('');
-    this.sucessoSenha.set('');
-
-    if (!this.senhaAtual().trim() || !this.novaSenha().trim() || !this.confirmarSenha().trim()) {
-      this.erroGeralSenha.set('Preencha todos os campos.');
-      return;
-    }
-
-    this.salvandoSenha.set(true);
-
-    this.auth.trocarSenha(this.senhaAtual(), this.novaSenha(), this.confirmarSenha()).subscribe({
-      next: () => {
-        this.salvandoSenha.set(false);
-        this.sucessoSenha.set('Senha alterada com sucesso!');
-        this.senhaAtual.set('');
-        this.novaSenha.set('');
-        this.confirmarSenha.set('');
-        setTimeout(() => this.sucessoSenha.set(''), 3000);
-      },
-      error: (err) => {
-        this.salvandoSenha.set(false);
-        tratarErrosApi(err, this.errosSenha, this.erroGeralSenha, 'Erro ao alterar senha.');
-      },
-    });
   }
 
   onFotoSelecionada(event: Event) {
@@ -352,15 +314,9 @@ export class PerfilPage implements ComAlteracoesPendentes {
     }
   }
 
-  voltar() {
-    this.router.navigate(['/agenda']);
-  }
-
-  async cancelar() {
-    if (!this.temAlteracoesPendentes()) {
-      this.router.navigate(['/agenda']);
-      return;
-    }
+  /** "Descartar" da barra de alterações: pede confirmação e volta aos dados salvos. */
+  async descartar() {
+    if (!this.temAlteracoesPendentes()) return;
 
     const confirmado = await this.pedirConfirmacao({
       titulo: 'Descartar alterações?',
