@@ -125,13 +125,13 @@
 
 /* Confirm button — danger variant */
 .confirm-modal--danger .confirm-btn--confirm {
-  background: var(--color-danger);
+  background: var(--color-danger-solid);
   color: #fff;
 }
 
 .confirm-modal--danger .confirm-btn--confirm:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--color-danger) 85%, black);
-  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-danger) 30%, transparent);
+  background: var(--color-danger-solid-hover);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-danger-solid) 35%, transparent);
 }
 
 /* Confirm button — warning variant */

@@ -27,6 +27,8 @@
   --color-money: #34d399;      /* valores monetários, sucesso  */
   --color-warning: #fbbf24;    /* experimental, atenção        */
   --color-danger: #f87171;     /* cancelado, erro              */
+  --color-danger-solid: #6b1616;       /* fundo de botão destrutivo (texto branco) */
+  --color-danger-solid-hover: #8b1818;
 
   /* ─── Paleta rotativa para identificação de clínicas (seção 3) ─── */
   --color-clinic-1: #3b82f6;   /* azul    */
