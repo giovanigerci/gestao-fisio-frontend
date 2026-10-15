@@ -278,6 +278,12 @@ describe('PerfilPage', () => {
       expect(tela().querySelector('h1')!.textContent).toContain('Meu perfil');
     });
 
+    it('o fim da página mostra o e-mail de contato do suporte', () => {
+      const link = tela().querySelector('.perfil-ajuda a')!;
+
+      expect(link.getAttribute('href')).toBe('mailto:contato@gestao-fisio.com');
+    });
+
     it('a barra de salvar só aparece quando há alterações', () => {
       expect(tela().querySelector('.perfil-barra')).toBeNull();
 

@@ -123,13 +123,19 @@
     </div>
 
     <!-- Footer -->
-    <div class="login-footer" style="flex-direction: column; align-items: center; gap: 12px;">
-      <a routerLink="/registrar" class="login-link">Criar conta</a>
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <a routerLink="/termos" class="login-link" style="font-size: 0.75rem; font-weight: 400; opacity: 0.65;">Termos de Uso</a>
-        <span style="color: rgba(71,85,105,0.5); font-size: 0.75rem;">·</span>
-        <a routerLink="/privacidade" class="login-link" style="font-size: 0.75rem; font-weight: 400; opacity: 0.65;">Política de Privacidade</a>
-      </div>
+    <div class="login-footer login-footer--empilhado">
+      <p class="login-convite">Não tem conta? <a routerLink="/registrar" class="login-link">Criar conta</a></p>
+      <p class="login-ajuda">
+        Precisa de ajuda?
+        <a href="mailto:contato@gestao-fisio.com" class="login-rodape-link login-ajuda__link">contato@gestao-fisio.com</a>
+      </p>
     </div>
   </div>
+
+  <!-- Documentos legais: discretos, na base da tela -->
+  <nav class="login-legal" aria-label="Documentos legais">
+    <a routerLink="/termos" class="login-rodape-link">Termos de Uso</a>
+    <span class="login-legal__separador" aria-hidden="true">·</span>
+    <a routerLink="/privacidade" class="login-rodape-link">Privacidade</a>
+  </nav>
 </div>

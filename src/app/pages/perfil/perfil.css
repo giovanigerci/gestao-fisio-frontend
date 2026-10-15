@@ -266,6 +266,18 @@
   text-decoration: underline;
 }
 
+/* Contato do suporte, no fim da página */
+.perfil-ajuda {
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+}
+
+.perfil-ajuda .perfil-link {
+  text-decoration: none;
+  white-space: nowrap; /* não quebra o endereço no hífen */
+}
+
 .perfil-link:disabled {
   opacity: 0.6;
   cursor: not-allowed;

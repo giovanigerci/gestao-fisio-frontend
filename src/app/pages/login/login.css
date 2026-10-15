@@ -2,6 +2,7 @@
 .login-page {
   min-height: 100dvh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 24px 16px;
@@ -26,6 +27,7 @@
 .login-container {
   width: 100%;
   max-width: 400px;
+  margin-block: auto; /* centraliza na altura e empurra os links legais para a base */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -198,6 +200,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   margin-top: -8px;
   margin-bottom: 8px;
   padding: 0 2px;
@@ -365,6 +368,53 @@
 .login-link:hover {
   color: var(--color-primary-hover, #467192);
   text-decoration: underline;
+}
+
+/* ─── Rodapé: conta e ajuda junto do formulário; documentos legais na base (um tom só; links em peso 500) ─── */
+.login-footer--empilhado {
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.login-convite {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+}
+
+.login-legal {
+  position: relative;
+  z-index: 1;
+  margin-top: 32px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+}
+
+.login-legal__separador {
+  color: var(--color-text-muted);
+}
+
+.login-rodape-link {
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color var(--transition-fast, 0.15s);
+}
+
+.login-rodape-link:hover {
+  color: var(--color-text-primary);
+  text-decoration: underline;
+}
+
+.login-ajuda {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.login-ajuda__link {
+  white-space: nowrap; /* não quebra o endereço no hífen */
 }
 
 /* ─── Legal Accept Text (Registro) ─── */

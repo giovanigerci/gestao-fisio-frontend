@@ -23,4 +23,18 @@ describe('Login', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('o rodapé mostra o e-mail de contato do suporte', () => {
+    const link = (fixture.nativeElement as HTMLElement).querySelector('.login-ajuda a')!;
+
+    expect(link.getAttribute('href')).toBe('mailto:contato@gestao-fisio.com');
+    expect(link.textContent).toContain('contato@gestao-fisio.com');
+  });
+
+  it('os documentos legais ficam na base da página, fora do bloco do formulário', () => {
+    const legal = (fixture.nativeElement as HTMLElement).querySelector('.login-page > .login-legal')!;
+    const destinos = [...legal.querySelectorAll('a')].map((a) => a.getAttribute('href'));
+
+    expect(destinos).toEqual(['/termos', '/privacidade']);
+  });
 });
