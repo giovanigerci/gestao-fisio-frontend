@@ -42,7 +42,7 @@ Telas autenticadas precisam do backend rodando localmente.
 - Status de agendamento: `'AG' | 'RE' | 'CA'` (agendado, realizado, cancelado). `eh_experimental: true` = aula experimental, sempre gratuita.
 - Cadastro em 2 etapas: `POST /api/auth/registrar/enviar-codigo/` (valida os dados e envia um código de 6 dígitos ao e-mail; 429 com `aguardar_segundos` se pedir de novo antes de 60s) e `POST /api/auth/registrar/` (mesmos dados + `codigo`). A senha não é guardada no servidor entre as etapas: a tela reenvia o formulário com o código. E-mail é obrigatório e único (sem diferenciar maiúsculas).
 - Auth: `POST /api/auth/token/` (login) e `GET /api/auth/me/` (sessão, via `PerfilService`); o refresh é responsabilidade do interceptor. Telas de visitante checam a sessão com `PerfilService.verificarSessao()`, que usa `SKIP_AUTH_RETRY` (`interceptors/auth-context.ts`) para um 401 não disparar refresh nem redirecionar para `/login` — sem isso, o guard do `/login` entraria em loop.
-- Foto de perfil: `POST /api/auth/me/foto/` (multipart, campo `foto`; JPEG/PNG/WEBP até 5 MB) e `DELETE` no mesmo endpoint. Na tela de perfil a foto só é enviada/removida ao clicar em "Salvar".
+- Foto de perfil: `POST /api/auth/me/foto/` (multipart, campo `foto`; JPEG/PNG/WEBP até 5 MB) e `DELETE` no mesmo endpoint. Na tela de perfil a foto só é enviada/removida ao clicar em "Salvar alterações".
 - Clínicas e pacientes: listagem paginada (`?page=`, `?search=`, total em `count`) e `/opcoes/` (`[{id, nome}]`; nas clínicas também `cor`) para dropdowns. A listagem de clínicas traz `atendimentos_mes` e `receita_mes` (mês atual, mesma regra do resumo financeiro) e vem com as inativas no fim.
 - Agendamentos: `?data_inicio=&data_fim=`; status individual via `PATCH /api/agendamentos/{id}/`; `POST /api/agendamentos/recorrente/`; `PATCH /api/agendamentos/confirmar-dia/?data=YYYY-MM-DD`.
 - Receita: `GET /api/resumo-financeiro/?periodo=mes|semana&data=YYYY-MM-DD`; série diária (realizado, acumulado, previsto e período anterior) em `/resumo-financeiro/evolucao/`; histórico mensal/anual em `/resumo-financeiro/historico/?agrupar=mes|ano`. A semana vai de domingo a sábado, igual na agenda, no rótulo do financeiro e no backend — mantenha os três alinhados.
@@ -60,7 +60,7 @@ Telas autenticadas precisam do backend rodando localmente.
 
 - Tokens vivem em cookies HttpOnly: o JavaScript nunca lê, grava ou guarda token — nada de `localStorage`/`sessionStorage` para auth.
 - Todo request passa pelo `auth-interceptor` (`withCredentials: true`, refresh no 401 e retry). O refresh é único: `RenovacaoDeSessao` (`interceptors/renovacao-de-sessao.ts`) compartilha o refresh em andamento entre todas as requisições que recebem 401 juntas — o backend rotaciona o refresh token e invalida o anterior a cada uso (access de 5 min), então dois refresh em paralelo deslogariam o usuário. Ao mexer nele, evite também loop de refresh (401 vindo do próprio `/token/refresh/`).
-- Dados da conta (LGPD), na aba Perfil (`pages/perfil/dados-da-conta/`): `GET /auth/me/exportar/` (ZIP com CSVs; baixe com `baixarArquivo()` de `shared/utils/download.ts`), `GET /auth/me/dados/` (quantidades) e `POST /auth/excluir-conta/` com a senha (exclusão imediata e definitiva). Depois de excluir, limpe o perfil e vá para `/login?mensagem=conta-excluida`. Os Termos (8.1, 8.3) e a Privacidade (6, 7) descrevem esse fluxo: se ele mudar, atualize os textos e a versão deles.
+- Dados da conta (LGPD), na aba Perfil: `GET /auth/me/exportar/` (ZIP com CSVs) pelo `ExportacaoDados` (`services/exportacao-dados.service.ts`, estado compartilhado entre o card "Segurança e dados" e o modal de exclusão; baixa com `baixarArquivo()` de `shared/utils/download.ts`), `GET /auth/me/dados/` (quantidades: a página busca e passa por input ao `ExcluirConta`) e `POST /auth/excluir-conta/` com a senha (`pages/perfil/excluir-conta/`; exclusão imediata e definitiva). Depois de excluir, limpe o perfil e vá para `/login?mensagem=conta-excluida`. Os Termos (8.1, 8.3) e a Privacidade (6, 7) descrevem esse fluxo: se ele mudar, atualize os textos e a versão deles.
 - Em produção a API fica em `https://api.gestao-fisio.com/api` (domínio próprio apontando para o Render). Por ser subdomínio de `gestao-fisio.com`, é *same-site* com o front e os cookies continuam first-party. Não aponte o build de produção para `*.onrender.com` nem outro domínio: viraria cross-site e os navegadores bloqueiam cookies de terceiros. A origem do front precisa estar em `CORS_ALLOWED_ORIGINS` no backend.
 - Não cacheie respostas de `/api/**` no `ngsw-config.json`: são dados de saúde e financeiros, autenticados.
 
@@ -89,8 +89,9 @@ Telas autenticadas precisam do backend rodando localmente.
 - Erros de validação ficam no próprio campo (`aria-invalid` + `aria-describedby`), não num alerta genérico; depois de mostrá-los, `focarPrimeiroCampoComErro()` (`form-errors.ts`) leva o foco ao primeiro campo inválido.
 - Sessão: a agenda vai para o dia salvo pelo `salvos$` do `AgendamentoService` (mesma semana: recarga silenciosa; outra semana: troca a semana). Ao repetir, a prévia (`GET /agendamentos/verificar-recorrencia/`, com debounce) mostra as datas e as ocupadas antes de criar; a regra de conflito é a do backend (mesmo paciente, mesma data e mesmo início).
 - Effects que dependem de datas: dependa de uma chave em texto (ex: `inicioSemanaISO`), não do `Date` — um `Date` novo com o mesmo valor re-dispara o effect.
+- Exceção: o Perfil é página, não modal (coluna única). "Salvar alterações" fica numa barra flutuante que só aparece com alterações pendentes, o sucesso vira um aviso que some sozinho (`aviso`) e a troca de senha abre o `AlterarSenha` (`pages/perfil/alterar-senha/`) em modal.
 - Seções do formulário em `<fieldset>` + `<legend class="mf-secao-titulo">` (ver PacienteForm).
-- Estilos: `styles/modal-form.css` (campos com fundo mais escuro, `mf-grid-2`, prévia, linha de opção, botões). No celular, campos com 16px de fonte (abaixo disso o iOS dá zoom ao focar).
+- Estilos: `styles/modal-form.css` (campos com fundo mais escuro, `mf-grid-2`, prévia, linha de opção, botões). No celular, campos com 16px de fonte (abaixo disso o iOS dá zoom ao focar). Botão destrutivo preenchido usa `--color-danger-solid` com texto branco; `--color-danger` é claro (para texto, ícone e fundos translúcidos sobre o tema escuro) e como fundo sólido vira salmão.
 - Testes: debounce sobre `toObservable` não avança com `vi.useFakeTimers` (o effect do Angular também roda em timer); espere com o relógio real (ver `agendamento-form.spec.ts`). O jsdom não tem `showModal()`/`close()`; use `simularDialogNativo()` de `shared/components/modal/simular-dialog.spec-helper.ts` (arquivos `*.spec-helper.ts` ficam fora do build do app).
 
 ## Gráficos
@@ -108,7 +109,7 @@ Telas autenticadas precisam do backend rodando localmente.
 
 ## Dívidas conhecidas (apague ao resolver)
 
-1. Cobertura baixa: só `perfil`, `financeiro`, `clinicas` (listagem), `guestGuard`, `shared/utils/datas` e `shared/utils/clinic-colors` têm testes de comportamento; os demais specs são apenas "should create".
+1. Cobertura baixa: só `perfil` (e seus modais), `financeiro`, `clinicas` (listagem), `guestGuard`, `shared/utils/datas` e `shared/utils/clinic-colors` têm testes de comportamento; os demais specs são apenas "should create".
 
 ## Fluxo de trabalho
 
