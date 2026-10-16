@@ -47,7 +47,7 @@ Telas autenticadas precisam do backend rodando localmente.
 - Agendamentos: `?data_inicio=&data_fim=`; status individual via `PATCH /api/agendamentos/{id}/`; `POST /api/agendamentos/recorrente/`; `PATCH /api/agendamentos/confirmar-dia/?data=YYYY-MM-DD`.
 - Receita: `GET /api/resumo-financeiro/?periodo=mes|semana&data=YYYY-MM-DD`; série diária (realizado, acumulado, previsto e período anterior) em `/resumo-financeiro/evolucao/`; histórico mensal/anual em `/resumo-financeiro/historico/?agrupar=mes|ano`. A semana vai de domingo a sábado, igual na agenda, no rótulo do financeiro e no backend — mantenha os três alinhados.
 - Não existem `/vinculos/`, `/agendamentos/blocos/`, `/financeiro/*` nem `/pacientes/count/`.
-- Erros de validação vêm como `{campo: ["mensagem"]}`; trate com `tratarErrosApi` de `form-errors.ts`.
+- Erros de validação vêm como `{campo: ["mensagem"]}`; trate com `tratarErrosApi` de `form-errors.ts`. O 429 (limite de tentativas da API) já vira `MENSAGEM_MUITAS_TENTATIVAS` ali; telas com tratamento próprio (login) usam a mesma constante.
 - Falta um dado? Proponha o campo ou endpoint no backend; não compense com lógica no frontend.
 
 ## Dinheiro e datas (bugs clássicos)
@@ -63,12 +63,14 @@ Telas autenticadas precisam do backend rodando localmente.
 - Dados da conta (LGPD), na aba Perfil: `GET /auth/me/exportar/` (ZIP com CSVs) pelo `ExportacaoDados` (`services/exportacao-dados.service.ts`, estado compartilhado entre o card "Segurança e dados" e o modal de exclusão; baixa com `baixarArquivo()` de `shared/utils/download.ts`), `GET /auth/me/dados/` (quantidades: a página busca e passa por input ao `ExcluirConta`) e `POST /auth/excluir-conta/` com a senha (`pages/perfil/excluir-conta/`; exclusão imediata e definitiva). Depois de excluir, limpe o perfil e vá para `/login?mensagem=conta-excluida`. Os Termos (8.1, 8.3) e a Privacidade (6, 7) descrevem esse fluxo: se ele mudar, atualize os textos e a versão deles.
 - Em produção a API fica em `https://api.gestao-fisio.com/api` (domínio próprio apontando para o Render). Por ser subdomínio de `gestao-fisio.com`, é *same-site* com o front e os cookies continuam first-party. Não aponte o build de produção para `*.onrender.com` nem outro domínio: viraria cross-site e os navegadores bloqueiam cookies de terceiros. A origem do front precisa estar em `CORS_ALLOWED_ORIGINS` no backend.
 - Não cacheie respostas de `/api/**` no `ngsw-config.json`: são dados de saúde e financeiros, autenticados.
+- Os cookies de sessão (`access` e `refresh`) são do host da API e o front não depende dos nomes. Trocar a senha derruba as outras sessões e a resposta já traz cookies novos para a atual; redefinir a senha derruba todas.
 
 ## Produção e PWA
 
 - Domínio principal: `gestao-fisio.com` (Vercel, conectado a Production). `www.gestao-fisio.com` redireciona com 308 para ele; DNS na Cloudflare com proxy desligado (nuvem cinza) nos registros da Vercel.
 - Versões do PWA (`atualizacao/`): `AtualizacaoDoApp` troca para a versão nova na próxima mudança de página depois do `VERSION_READY` (momento seguro: o guard de alterações pendentes já passou), recarrega na hora no `UNRECOVERABLE_STATE` e procura versão nova quando o app volta para a tela. Se o código de uma página não baixa (deploy apagou o `chunk-*.js` que a versão aberta pede), `withNavigationErrorHandler` abre a URL de destino do zero, uma vez por URL a cada 10s para não entrar em ciclo. Sintoma sem isso: barra lateral e perfil aparecem, mas nenhuma página abre até o F5.
 - Recargas de página passam pelo token `RECARGA_DA_PAGINA` (nada de `location.reload()` direto): os testes substituem.
+- Cabeçalhos de segurança no `vercel.json` (X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy e CSP). A CSP começou como `Content-Security-Policy-Report-Only` (só avisa no console); depois de validada em produção, troque para `Content-Security-Policy`. Ela proíbe script inline e handlers `on*` no HTML — por isso `inlineCritical: false` no `angular.json` (o Angular inlinava o CSS com `onload`). Domínio externo novo (imagem, fonte, API) precisa entrar na CSP.
 - O service worker serve o app do cache para quem já visitou, então um site fora do ar pode parecer normal no seu navegador (assets `lazy`, como `/logo.png`, quebram primeiro). Depois de deploy ou mudança de domínio/DNS, valide numa aba anônima.
 
 ## Testes
