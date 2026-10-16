@@ -1,7 +1,9 @@
 import { Component, inject, signal, OnInit, ViewEncapsulation } from '@angular/core';
 
+import { HttpErrorResponse } from '@angular/common/http';
 import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { MENSAGEM_MUITAS_TENTATIVAS } from '../../shared/utils/form-errors';
 
 @Component({
   selector: 'app-login',
@@ -55,9 +57,9 @@ export class Login implements OnInit {
       next: () => {
         this.router.navigate(['/agenda']);
       },
-      error: () => {
+      error: (erro: HttpErrorResponse) => {
         this.carregando.set(false);
-        this.erro.set('Usuário ou senha inválidos.');
+        this.erro.set(erro.status === 429 ? MENSAGEM_MUITAS_TENTATIVAS : 'Usuário ou senha inválidos.');
       },
     });
   }

@@ -1,6 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injector, WritableSignal, afterNextRender } from '@angular/core';
 
+/** Resposta 429 do limite de tentativas da API. */
+export const MENSAGEM_MUITAS_TENTATIVAS = 'Muitas tentativas seguidas. Aguarde alguns minutos e tente novamente.';
+
 /**
  * Trata erros da API (padrão Django REST Framework) e atualiza os signals de estado.
  */
@@ -53,6 +56,8 @@ export function tratarErrosApi(
       erroGeralSignal.set(err.error?.detail || 'Permissão negada.');
     } else if (err.status === 404) {
       erroGeralSignal.set('Registro não encontrado.');
+    } else if (err.status === 429) {
+      erroGeralSignal.set(MENSAGEM_MUITAS_TENTATIVAS);
     } else {
       erroGeralSignal.set(mensagemPadrao);
     }
