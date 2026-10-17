@@ -266,6 +266,46 @@
   text-decoration: underline;
 }
 
+/* E-mail: só muda pelo modal (confirmação por código), então aparece como texto com o botão ao lado */
+.perfil-campo-fixo {
+  min-height: 44px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 14px;
+  border: 1px dashed var(--color-border);
+  border-radius: 12px;
+}
+
+.perfil-campo-fixo__valor {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+}
+
+.perfil-campo-fixo__valor--vazio {
+  color: var(--color-text-muted);
+}
+
+.perfil-campo-fixo .perfil-link {
+  flex-shrink: 0;
+}
+
+@media (max-width: 639px) {
+  .perfil-campo-fixo {
+    min-height: 48px;
+  }
+
+  .perfil-campo-fixo__valor {
+    font-size: 1rem;
+  }
+}
+
 /* Contato do suporte, no fim da página */
 .perfil-ajuda {
   text-align: center;

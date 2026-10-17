@@ -1,0 +1,85 @@
+<app-modal titulo="Alterar e-mail" (fechar)="aoFechar()">
+
+  <!-- Celular: a ação fica no cabeçalho (o rodapé some atrás do teclado) -->
+  <button modal-acao-topo type="submit" form="form-alterar-email" class="mf-acao-topo" [disabled]="enviando()">
+    {{ enviando() ? 'Enviando…' : (etapa() === 'email' ? 'Enviar' : 'Confirmar') }}
+  </button>
+
+  @if (etapa() === 'email') {
+  <form id="form-alterar-email" class="mf-form" (submit)="$event.preventDefault(); enviarCodigo()" novalidate>
+    @if (erroGeral()) {
+    <div class="form-alert form-alert--error" role="alert">
+      <p>{{ erroGeral() }}</p>
+    </div>
+    }
+
+    <p class="ae-texto">
+      @if (emailAtual()) {
+      Hoje: <strong>{{ emailAtual() }}</strong>.
+      }
+      Confirme com sua senha e enviaremos um código para o novo endereço. O e-mail da conta só muda depois que você
+      digitar o código.
+    </p>
+
+    <div>
+      <label class="form-label" for="email-novo">Novo e-mail</label>
+      <input id="email-novo" type="email" maxlength="254" autocomplete="email" autofocus [value]="novoEmail()"
+        (input)="digitar('email', $any($event.target).value)" class="input-field" placeholder="email@exemplo.com"
+        [class.input-field--error]="temErro('email')" [attr.aria-invalid]="temErro('email')"
+        [attr.aria-describedby]="temErro('email') ? 'email-novo-erro' : null" />
+      @if (temErro('email')) {
+      <p class="form-field-error" id="email-novo-erro">{{ mensagensErro('email').join(' ') }}</p>
+      }
+    </div>
+
+    <div>
+      <label class="form-label" for="email-senha">Senha atual</label>
+      <input id="email-senha" type="password" maxlength="128" autocomplete="current-password" [value]="senhaAtual()"
+        (input)="digitar('senha_atual', $any($event.target).value)" class="input-field"
+        [class.input-field--error]="temErro('senha_atual')" [attr.aria-invalid]="temErro('senha_atual')"
+        [attr.aria-describedby]="temErro('senha_atual') ? 'email-senha-erro' : null" />
+      @if (temErro('senha_atual')) {
+      <p class="form-field-error" id="email-senha-erro">{{ mensagensErro('senha_atual').join(' ') }}</p>
+      }
+    </div>
+  </form>
+  } @else {
+  <form id="form-alterar-email" class="mf-form" (submit)="$event.preventDefault(); confirmar()" novalidate>
+    @if (erroGeral()) {
+    <div class="form-alert form-alert--error" role="alert">
+      <p>{{ erroGeral() }}</p>
+    </div>
+    }
+
+    <p class="ae-texto">Enviamos um código de 6 dígitos para <strong>{{ novoEmail().trim() }}</strong>.</p>
+
+    <div>
+      <label class="form-label" for="email-codigo">Código</label>
+      <input id="email-codigo" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" autofocus
+        placeholder="000000" [value]="codigo()" (input)="digitarCodigo($any($event.target).value)"
+        class="input-field ae-codigo" [class.input-field--error]="temErro('codigo')"
+        [attr.aria-invalid]="temErro('codigo')" [attr.aria-describedby]="temErro('codigo') ? 'email-codigo-erro' : null" />
+      @if (temErro('codigo')) {
+      <p class="form-field-error" id="email-codigo-erro">{{ mensagensErro('codigo').join(' ') }}</p>
+      }
+      @if (reenviado()) {
+      <p class="ae-reenviado" role="status">Enviamos um novo código. O anterior não vale mais.</p>
+      }
+    </div>
+
+    <div class="ae-acoes">
+      <button type="button" class="ae-link" (click)="reenviarCodigo()" [disabled]="enviando() || segundosParaReenvio() > 0">
+        {{ segundosParaReenvio() > 0 ? 'Reenviar em ' + segundosParaReenvio() + 's' : 'Reenviar código' }}
+      </button>
+      <button type="button" class="ae-link" (click)="usarOutroEmail()" [disabled]="enviando()">Usar outro e-mail</button>
+    </div>
+  </form>
+  }
+
+  <button modal-rodape type="button" class="mf-btn mf-btn--secundario" (click)="aoFechar()" [disabled]="enviando()">
+    Cancelar
+  </button>
+  <button modal-rodape type="submit" form="form-alterar-email" class="mf-btn mf-btn--primario" [disabled]="enviando()">
+    {{ enviando() ? 'Enviando…' : (etapa() === 'email' ? 'Enviar código' : 'Confirmar e-mail') }}
+  </button>
+</app-modal>

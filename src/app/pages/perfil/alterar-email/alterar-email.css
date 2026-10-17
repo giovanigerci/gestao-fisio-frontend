@@ -1,0 +1,50 @@
+.ae-texto {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+.ae-texto strong {
+  color: var(--color-text-primary);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.ae-codigo {
+  font-size: 1.25rem;
+  letter-spacing: 0.4em;
+  font-variant-numeric: tabular-nums;
+}
+
+.ae-reenviado {
+  margin-top: 6px;
+  font-size: 0.8125rem;
+  color: var(--color-money);
+}
+
+.ae-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+
+.ae-link {
+  border: none;
+  background: none;
+  padding: 4px 0;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #7fa7c4;
+  cursor: pointer;
+}
+
+.ae-link:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.ae-link:disabled {
+  color: var(--color-text-muted);
+  cursor: default;
+}

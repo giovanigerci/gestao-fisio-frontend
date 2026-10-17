@@ -6,7 +6,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { PerfilPage } from './perfil';
-import { Perfil } from '../../services/perfil.service';
+import { Perfil, PerfilService } from '../../services/perfil.service';
 import { alteracoesPendentesGuard } from '../../guards/alteracoes-pendentes-guard';
 import { environment } from '../../../environments/environment';
 import { simularDialogNativo } from '../../shared/components/modal/simular-dialog.spec-helper';
@@ -254,7 +254,7 @@ describe('PerfilPage', () => {
       window.dispatchEvent(limpo);
       expect(limpo.defaultPrevented).toBe(false);
 
-      component.email.set('outro@exemplo.com');
+      component.firstName.set('Outro');
       const sujo = new Event('beforeunload', { cancelable: true });
       window.dispatchEvent(sujo);
       expect(sujo.defaultPrevented).toBe(true);
@@ -319,6 +319,45 @@ describe('PerfilPage', () => {
       expect(tela().querySelector('app-alterar-senha')).toBeNull();
       expect(component.aviso()).toBe('Senha alterada');
       dialog.restaurar();
+    });
+  });
+
+  describe('e-mail', () => {
+    it('aparece como texto, sem campo editável, e não vai no PATCH do perfil', () => {
+      expect(tela().querySelector('.perfil-campo-fixo')!.textContent).toContain('joao@exemplo.com');
+      expect(tela().querySelector('input[type="email"]')).toBeNull();
+
+      component.firstName.set('Joana');
+      component.salvar();
+
+      const req = http.expectOne({ method: 'PATCH', url: URL_PERFIL });
+      expect('email' in req.request.body).toBe(false);
+      req.flush({ ...PERFIL, first_name: 'Joana' });
+    });
+
+    it('"Alterar" abre o modal e, depois de confirmar, avisa e fecha', () => {
+      const dialog = simularDialogNativo();
+      (tela().querySelector('.perfil-campo-fixo .perfil-link') as HTMLButtonElement).click();
+      harness.detectChanges();
+      expect(tela().querySelector('app-alterar-email')).toBeTruthy();
+
+      component.aoAlterarEmail();
+      harness.detectChanges();
+
+      expect(tela().querySelector('app-alterar-email')).toBeNull();
+      expect(component.aviso()).toBe('E-mail alterado');
+      dialog.restaurar();
+    });
+
+    it('trocar o e-mail não apaga edições ainda não salvas', () => {
+      component.firstName.set('Joana');
+
+      TestBed.inject(PerfilService).confirmarTrocaDeEmail('novo@exemplo.com', '123456').subscribe();
+      http.expectOne(`${URL_PERFIL}email/confirmar/`).flush({ ...PERFIL, email: 'novo@exemplo.com' });
+      harness.detectChanges();
+
+      expect(component.firstName()).toBe('Joana');
+      expect(tela().querySelector('.perfil-campo-fixo')!.textContent).toContain('novo@exemplo.com');
     });
   });
 });

@@ -145,15 +145,15 @@
               }
             </div>
             <div>
-              <label class="form-label" for="perfil-email">E-mail</label>
-              <input id="perfil-email" maxlength="254" type="email" autocomplete="email" [value]="email()"
-                (input)="email.set($any($event.target).value)" class="input-field"
-                [class.input-field--error]="temErro('email')" placeholder="email@exemplo.com"
-                [attr.aria-invalid]="temErro('email')"
-                [attr.aria-describedby]="temErro('email') ? 'perfil-email-erro' : null" />
-              @if (temErro('email')) {
-              <p class="form-field-error" id="perfil-email-erro">{{ mensagensErro('email').join(' ') }}</p>
-              }
+              <span class="form-label" id="perfil-email-rotulo">E-mail</span>
+              <div class="perfil-campo-fixo" role="group" aria-labelledby="perfil-email-rotulo">
+                <span class="perfil-campo-fixo__valor" [class.perfil-campo-fixo__valor--vazio]="!perfil.email">
+                  {{ perfil.email || 'Nenhum e-mail' }}
+                </span>
+                <button type="button" class="perfil-link" (click)="alterandoEmail.set(true)">
+                  {{ perfil.email ? 'Alterar' : 'Adicionar' }}
+                </button>
+              </div>
             </div>
             <div>
               <label class="form-label" for="perfil-telefone">Telefone</label>
@@ -281,6 +281,11 @@
     </svg>
     {{ aviso() }}
   </div>
+  }
+
+  @if (alterandoEmail()) {
+  <app-alterar-email [emailAtual]="perfilService.perfil()?.email ?? ''" (fechar)="alterandoEmail.set(false)"
+    (alterado)="aoAlterarEmail()" />
   }
 
   @if (alterandoSenha()) {

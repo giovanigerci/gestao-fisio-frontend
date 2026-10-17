@@ -105,6 +105,18 @@ export class PerfilService {
     );
   }
 
+  /** 1º passo da troca de e-mail: confere a senha e envia um código para o novo endereço. */
+  solicitarTrocaDeEmail(email: string, senhaAtual: string) {
+    return this.http.post<{ detail: string }>(`${this.url}email/`, { email, senha_atual: senhaAtual });
+  }
+
+  /** 2º passo: com o código, o e-mail da conta muda. */
+  confirmarTrocaDeEmail(email: string, codigo: string) {
+    return this.http.post<Perfil>(`${this.url}email/confirmar/`, { email, codigo }).pipe(
+      tap((perfil) => this._perfil.set(perfil))
+    );
+  }
+
   uploadFoto(arquivo: File) {
     const formData = new FormData();
     formData.append('foto', arquivo);

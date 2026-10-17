@@ -9,8 +9,11 @@ import { TelefoneMaskDirective } from '../../shared/directives/telefone-mask.dir
 import { ConfirmModal } from '../../shared/components/confirm-modal/confirm-modal';
 import { ComAlteracoesPendentes } from '../../guards/alteracoes-pendentes-guard';
 import { tratarErrosApi, temErro, mensagensErro } from '../../shared/utils/form-errors';
+import { AlterarEmail } from './alterar-email/alterar-email';
 import { AlterarSenha } from './alterar-senha/alterar-senha';
 import { ExcluirConta } from './excluir-conta/excluir-conta';
+
+type DadosEditaveis = Pick<Perfil, 'first_name' | 'last_name' | 'telefone' | 'especialidade' | 'crefito' | 'username'>;
 
 const TIPOS_FOTO_PERMITIDOS = ['image/jpeg', 'image/png', 'image/webp'];
 const TAMANHO_MAXIMO_FOTO = 5 * 1024 * 1024;
@@ -24,7 +27,7 @@ interface Confirmacao {
 
 @Component({
   selector: 'app-perfil',
-  imports: [TelefoneMaskDirective, ConfirmModal, AlterarSenha, ExcluirConta],
+  imports: [TelefoneMaskDirective, ConfirmModal, AlterarEmail, AlterarSenha, ExcluirConta],
   templateUrl: './perfil.html',
   styleUrls: ['../../../styles/form-page.css', '../../../styles/modal-form.css', './perfil.css'],
   host: {
@@ -41,7 +44,6 @@ export class PerfilPage implements ComAlteracoesPendentes {
   // Form fields
   firstName = signal('');
   lastName = signal('');
-  email = signal('');
   telefone = signal('');
   especialidade = signal('');
   crefito = signal('');
@@ -65,6 +67,7 @@ export class PerfilPage implements ComAlteracoesPendentes {
   aviso = signal('');
   private temporizadorAviso: ReturnType<typeof setTimeout> | null = null;
   alterandoSenha = signal(false);
+  alterandoEmail = signal(false);
 
   // Modal de confirmação (descartar alterações / sair sem salvar)
   confirmacao = signal<Confirmacao | null>(null);
@@ -78,7 +81,6 @@ export class PerfilPage implements ComAlteracoesPendentes {
     return (
       diferente(this.firstName(), perfil.first_name) ||
       diferente(this.lastName(), perfil.last_name) ||
-      diferente(this.email(), perfil.email) ||
       digitos(this.telefone()) !== digitos(perfil.telefone) ||
       diferente(this.especialidade(), perfil.especialidade) ||
       diferente(this.crefito(), perfil.crefito)
@@ -93,6 +95,17 @@ export class PerfilPage implements ComAlteracoesPendentes {
 
   readonly fotoExibida = computed(() => this.previewFoto() ?? this.perfilService.perfil()?.foto ?? null);
 
+  /** Só os dados do formulário: trocar o e-mail ou a foto não recarrega os campos (e não apaga edições não salvas). */
+  private readonly dadosEditaveis = computed<DadosEditaveis | null>(
+    () => {
+      const perfil = this.perfilService.perfil();
+      if (!perfil) return null;
+      const { first_name, last_name, telefone, especialidade, crefito, username } = perfil;
+      return { first_name, last_name, telefone, especialidade, crefito, username };
+    },
+    { equal: (a, b) => JSON.stringify(a) === JSON.stringify(b) },
+  );
+
   constructor() {
     // Garante que o perfil seja carregado (idempotente — se já carregou, não faz nada)
     this.perfilService.carregar().subscribe();
@@ -101,11 +114,10 @@ export class PerfilPage implements ComAlteracoesPendentes {
       error: () => this.resumo.set(null), // a faixa de números só não aparece
     });
 
-    // Preenche os campos quando o perfil estiver disponível
     effect(() => {
-      const perfil = this.perfilService.perfil();
-      if (perfil) {
-        this.preencherCampos(perfil);
+      const dados = this.dadosEditaveis();
+      if (dados) {
+        this.preencherCampos(dados);
       }
     });
 
@@ -116,10 +128,9 @@ export class PerfilPage implements ComAlteracoesPendentes {
     });
   }
 
-  private preencherCampos(perfil: Perfil) {
+  private preencherCampos(perfil: DadosEditaveis) {
     this.firstName.set(perfil.first_name);
     this.lastName.set(perfil.last_name);
-    this.email.set(perfil.email);
     this.telefone.set(perfil.telefone);
     this.especialidade.set(perfil.especialidade);
     this.crefito.set(perfil.crefito);
@@ -137,7 +148,6 @@ export class PerfilPage implements ComAlteracoesPendentes {
     const dados: Partial<Perfil> = {
       first_name: this.firstName().trim(),
       last_name: this.lastName().trim(),
-      email: this.email().trim(),
       telefone: this.telefone().trim(),
       especialidade: this.especialidade().trim(),
       crefito: this.crefito().trim(),
@@ -198,6 +208,11 @@ export class PerfilPage implements ComAlteracoesPendentes {
   aoAlterarSenha() {
     this.alterandoSenha.set(false);
     this.mostrarAviso('Senha alterada');
+  }
+
+  aoAlterarEmail() {
+    this.alterandoEmail.set(false);
+    this.mostrarAviso('E-mail alterado');
   }
 
   formatarNumero(valor: number): string {
