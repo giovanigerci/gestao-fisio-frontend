@@ -18,6 +18,9 @@ export interface Paciente {
   status: 'Ativo' | 'Inativo';
 }
 
+/** Item da listagem: histórico médico, endereço e documentos só vêm no detalhe (buscarPorId). */
+export type PacienteNaLista = Pick<Paciente, 'id' | 'nome' | 'telefone' | 'ultima_visita' | 'total_sessoes' | 'status'>;
+
 export interface RespostaPaginada<T> {
   count: number;
   next: string | null;
@@ -39,11 +42,11 @@ export class PacienteService {
     if (search) {
       params = params.set('search', search);
     }
-    return this.http.get<RespostaPaginada<Paciente>>(this.url, { params });
+    return this.http.get<RespostaPaginada<PacienteNaLista>>(this.url, { params });
   }
 
   listarPorUrl(url: string) {
-    return this.http.get<RespostaPaginada<Paciente>>(url);
+    return this.http.get<RespostaPaginada<PacienteNaLista>>(url);
   }
 
   buscarOpcoes() {

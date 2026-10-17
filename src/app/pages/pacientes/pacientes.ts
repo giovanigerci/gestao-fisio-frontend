@@ -3,7 +3,7 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EMPTY, catchError, debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { PacienteService, Paciente } from '../../services/paciente.service';
+import { PacienteService, PacienteNaLista } from '../../services/paciente.service';
 import { Card } from '../../shared/components/card/card';
 import { EmptyState } from '../../shared/components/empty-state/empty-state';
 import { Badge, BadgeVariant } from '../../shared/components/badge/badge';
@@ -23,13 +23,13 @@ export class Pacientes implements AfterViewInit, OnDestroy {
   private destroyRef = inject(DestroyRef);
   private router = inject(Router);
 
-  pacientes = signal<Paciente[]>([]);
+  pacientes = signal<PacienteNaLista[]>([]);
   termoBusca = signal('');
   carregando = signal(true);
   carregandoMais = signal(false);
   erro = signal('');
   processandoAcao = signal(false);
-  confirmandoExclusao = signal<Paciente | null>(null);
+  confirmandoExclusao = signal<PacienteNaLista | null>(null);
   nextUrl = signal<string | null>(null);
 
   corDoPaciente = corDoPaciente;
@@ -137,11 +137,11 @@ export class Pacientes implements AfterViewInit, OnDestroy {
     this.termoBusca.set('');
   }
 
-  editarPaciente(paciente: Paciente) {
+  editarPaciente(paciente: PacienteNaLista) {
     this.router.navigate(['/pacientes', paciente.id, 'editar']);
   }
 
-  confirmarExclusao(paciente: Paciente, event: Event) {
+  confirmarExclusao(paciente: PacienteNaLista, event: Event) {
     event.stopPropagation();
     this.confirmandoExclusao.set(paciente);
   }
