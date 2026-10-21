@@ -9,6 +9,7 @@ import { ProgressBar } from '../../shared/components/progress-bar/progress-bar';
 import { ConfirmModal } from '../../shared/components/confirm-modal/confirm-modal';
 import { corDaClinica } from '../../shared/utils/clinic-colors';
 import { formatarDataISO, parseDataISO } from '../../shared/utils/datas';
+import { formatarValor, resumirDia, segmentosDoProgresso, varianteDoStatus } from './dia-da-agenda';
 
 interface DiaAgenda {
   data: string;
@@ -111,32 +112,9 @@ export class Agenda {
     return dias.find(d => d.data === sel) || dias.find(d => d.ehHoje) || dias[0];
   });
 
-  resumoDia = computed(() => {
-    const dia = this.diaSelecionado();
-    if (!dia) return { realizados: 0, total: 0, valorTotal: 0 };
-    const ags = dia.agendamentos;
-    return {
-      realizados: ags.filter(a => a.status === 'RE').length,
-      total: ags.length,
-      valorTotal: ags
-        .filter(a => a.status !== 'CA' && !a.eh_experimental)
-        .reduce((sum, a) => sum + a.valor_calculado, 0),
-    };
-  });
+  resumoDia = computed(() => resumirDia(this.diaSelecionado()?.agendamentos ?? []));
 
-  progressSegments = computed(() => {
-    const r = this.resumoDia();
-    if (r.total === 0) return [];
-    const segs: { value: number; color: string }[] = [];
-    if (r.realizados > 0) {
-      segs.push({ value: r.realizados, color: 'var(--color-money)' });
-    }
-    const restante = r.total - r.realizados;
-    if (restante > 0) {
-      segs.push({ value: restante, color: 'var(--color-border)' });
-    }
-    return segs;
-  });
+  progressSegments = computed(() => segmentosDoProgresso(this.resumoDia()));
 
   clinicasDoDia = computed(() => {
     const dia = this.diaSelecionado();
@@ -405,12 +383,7 @@ export class Agenda {
   }
 
   getStatusVariant(status: string): BadgeVariant {
-    switch (status) {
-      case 'AG': return 'agendado';
-      case 'RE': return 'realizado';
-      case 'CA': return 'cancelado';
-      default: return 'agendado';
-    }
+    return varianteDoStatus(status);
   }
 
   getIniciais(nome: string): string {
@@ -427,7 +400,7 @@ export class Agenda {
   }
 
   formatarValor(valor: number): string {
-    return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    return formatarValor(valor);
   }
 
   getStatusLabel(status: string): string {
