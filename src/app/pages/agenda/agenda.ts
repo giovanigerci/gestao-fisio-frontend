@@ -12,8 +12,7 @@ import { formatarDataISO, parseDataISO } from '../../shared/utils/datas';
 import { AgendaMes, DiaEscolhido } from './agenda-mes/agenda-mes';
 import { DiaDoMes } from './dia-do-mes/dia-do-mes';
 import { formatarValor, resumirDia, segmentosDoProgresso, varianteDoStatus } from './dia-da-agenda';
-
-export type Visao = 'semana' | 'mes';
+import { Visao, lerVisaoSalva, salvarVisao } from './visao-salva';
 
 interface DiaAgenda {
   data: string;
@@ -48,7 +47,7 @@ export class Agenda {
   mostrandoModalConfirmacao = signal(false);
   processandoConfirmacaoDia = signal(false);
   relogio = signal(new Date());
-  visao = signal<Visao>('semana');
+  visao = signal<Visao>(lerVisaoSalva());
   diaAbertoNoMes = signal<DiaEscolhido | null>(null);
 
   corDaClinica = corDaClinica;
@@ -309,6 +308,12 @@ export class Agenda {
         this.carregando.set(false);
       },
     });
+  }
+
+  /** Escolha feita no seletor: vale também para as próximas vezes que a agenda abrir. */
+  escolherVisao(visao: Visao) {
+    salvarVisao(visao);
+    this.mudarVisao(visao);
   }
 
   mudarVisao(visao: Visao) {

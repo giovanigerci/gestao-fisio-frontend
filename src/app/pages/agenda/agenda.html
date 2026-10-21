@@ -10,9 +10,9 @@
     </div>
     <div class="agenda-visao" role="group" aria-label="Visualização da agenda">
       <button type="button" class="agenda-visao-btn" [attr.aria-pressed]="visao() === 'semana'"
-        (click)="mudarVisao('semana')">Semana</button>
+        (click)="escolherVisao('semana')">Semana</button>
       <button type="button" class="agenda-visao-btn" [attr.aria-pressed]="visao() === 'mes'"
-        (click)="mudarVisao('mes')">Mês</button>
+        (click)="escolherVisao('mes')">Mês</button>
     </div>
     <a (click)="novoAgendamento()" class="agenda-btn-nova">+ Sessão</a>
   </div>

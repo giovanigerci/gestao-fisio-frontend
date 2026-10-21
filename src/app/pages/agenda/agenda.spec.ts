@@ -7,6 +7,8 @@ import { Agenda } from './agenda';
 import { AgendamentoService } from '../../services/agendamento.service';
 import { formatarDataISO } from '../../shared/utils/datas';
 
+beforeEach(() => localStorage.clear());
+
 describe('Agenda — semana de domingo a sábado', () => {
   let component: Agenda;
 
@@ -237,5 +239,70 @@ describe('Agenda — visão do mês', () => {
 
     expect(component.agendamentos().map((a) => a.id)).toEqual([2]);
     expect(component.carregando()).toBe(false);
+  });
+});
+
+describe('Agenda — visão lembrada no aparelho', () => {
+  let http: HttpTestingController;
+  let fixture: ComponentFixture<Agenda>;
+
+  const buscas = () => http.match((req) => req.url.endsWith('/agendamentos/') && req.method === 'GET');
+
+  async function abrirAgenda() {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(2026, 9, 21, 10, 0));
+    TestBed.configureTestingModule({
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
+    });
+    http = TestBed.inject(HttpTestingController);
+    fixture = TestBed.createComponent(Agenda);
+    fixture.detectChanges();
+    await fixture.whenStable();
+  }
+
+  afterEach(() => {
+    vi.useRealTimers();
+    http.verify();
+  });
+
+  it('abre direto no mês quando foi a última escolha', async () => {
+    localStorage.setItem('gf:agenda-visao', 'mes');
+
+    await abrirAgenda();
+
+    expect(fixture.componentInstance.visao()).toBe('mes');
+    const [req] = buscas();
+    expect(req.request.params.get('data_inicio')).toBe('2026-10-01');
+    expect(req.request.params.get('data_fim')).toBe('2026-10-31');
+    req.flush([]);
+  });
+
+  it('escolher no seletor guarda a visão para a próxima vez', async () => {
+    await abrirAgenda();
+    buscas().forEach((req) => req.flush([]));
+
+    const botaoMes = [...(fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>('.agenda-visao-btn')]
+      .find((b) => b.textContent?.includes('Mês'))!;
+    botaoMes.click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    buscas().forEach((req) => req.flush([]));
+
+    expect(localStorage.getItem('gf:agenda-visao')).toBe('mes');
+  });
+
+  it('"Abrir na semana" a partir de um dia do mês não troca a preferência', async () => {
+    localStorage.setItem('gf:agenda-visao', 'mes');
+    await abrirAgenda();
+    buscas().forEach((req) => req.flush([]));
+
+    fixture.componentInstance.abrirDiaNoMes({ data: '2026-10-21', ancora: new DOMRect() });
+    fixture.componentInstance.abrirDiaNaSemana();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    buscas().forEach((req) => req.flush([]));
+
+    expect(fixture.componentInstance.visao()).toBe('semana');
+    expect(localStorage.getItem('gf:agenda-visao')).toBe('mes');
   });
 });
