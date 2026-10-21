@@ -117,3 +117,125 @@ describe('Agenda — busca da semana', () => {
     vi.useRealTimers();
   });
 });
+
+describe('Agenda — visão do mês', () => {
+  let component: Agenda;
+  let http: HttpTestingController;
+  let fixture: ComponentFixture<Agenda>;
+
+  const buscas = () => http.match((req) => req.url.endsWith('/agendamentos/') && req.method === 'GET');
+  const periodo = (req: ReturnType<typeof buscas>[number]) =>
+    `${req.request.params.get('data_inicio')} a ${req.request.params.get('data_fim')}`;
+
+  async function iniciar(agora: Date) {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(agora);
+    TestBed.configureTestingModule({
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
+    });
+    http = TestBed.inject(HttpTestingController);
+    fixture = TestBed.createComponent(Agenda);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+    await fixture.whenStable();
+    buscas().forEach((req) => req.flush([]));
+  }
+
+  async function atualizar() {
+    fixture.detectChanges();
+    await fixture.whenStable();
+  }
+
+  afterEach(() => {
+    vi.useRealTimers();
+    http.verify();
+  });
+
+  it('trocar para Mês busca o mês inteiro numa requisição só', async () => {
+    await iniciar(new Date(2026, 9, 7, 10, 0));
+
+    component.mudarVisao('mes');
+    await atualizar();
+
+    const [req] = buscas();
+    expect(periodo(req)).toBe('2026-10-01 a 2026-10-31');
+    req.flush([]);
+  });
+
+  it('no mês, o nome do mês aparece só na navegação, sem repetir abaixo do título', async () => {
+    await iniciar(new Date(2026, 7, 10, 10, 0));
+    const elemento = fixture.nativeElement as HTMLElement;
+    expect(elemento.querySelector('.agenda-subtitle')?.textContent).toContain('Agosto');
+
+    component.mudarVisao('mes');
+    await atualizar();
+    buscas().forEach((req) => req.flush([]));
+
+    expect(elemento.querySelector('.agenda-subtitle')).toBeNull();
+    expect(elemento.querySelector('.agenda-mes-nome')?.textContent).toContain('Agosto 2026');
+  });
+
+  it('às 22h30 do dia 31, o próximo mês é novembro inteiro', async () => {
+    await iniciar(new Date(2026, 9, 31, 22, 30));
+    component.mudarVisao('mes');
+    await atualizar();
+    buscas().forEach((req) => req.flush([]));
+
+    component.proximoMes();
+    await atualizar();
+
+    const [req] = buscas();
+    expect(periodo(req)).toBe('2026-11-01 a 2026-11-30');
+    req.flush([]);
+  });
+
+  it('abrir um dia e ir para a semana mostra a semana daquele dia', async () => {
+    await iniciar(new Date(2026, 9, 7, 10, 0));
+    component.mudarVisao('mes');
+    await atualizar();
+    buscas().forEach((req) => req.flush([]));
+
+    component.abrirDiaNoMes({ data: '2026-10-21', ancora: new DOMRect() });
+    component.abrirDiaNaSemana();
+    await atualizar();
+
+    expect(component.visao()).toBe('semana');
+    expect(component.diaAbertoNoMes()).toBeNull();
+    expect(component.dataSelecionada()).toBe('2026-10-21');
+    const [req] = buscas();
+    expect(periodo(req)).toBe('2026-10-18 a 2026-10-24');
+    req.flush([]);
+  });
+
+  it('sessão salva em outro mês leva a agenda para o mês dela', async () => {
+    await iniciar(new Date(2026, 9, 7, 10, 0));
+    component.mudarVisao('mes');
+    await atualizar();
+    buscas().forEach((req) => req.flush([]));
+
+    const service = TestBed.inject(AgendamentoService);
+    service.criar({ data: '2026-11-12' }).subscribe();
+    http.expectOne((req) => req.method === 'POST').flush({ id: 1, data: '2026-11-12' });
+    await atualizar();
+
+    const [req] = buscas();
+    expect(periodo(req)).toBe('2026-11-01 a 2026-11-30');
+    req.flush([]);
+  });
+
+  it('trocando de mês rápido, a resposta atrasada do mês anterior é ignorada', async () => {
+    await iniciar(new Date(2026, 9, 7, 10, 0));
+    component.mudarVisao('mes');
+    await atualizar();
+    const [outubro] = buscas();
+
+    component.proximoMes();
+    await atualizar();
+    const [novembro] = buscas();
+    novembro.flush([{ id: 2, data: '2026-11-03' }]);
+    outubro.flush([{ id: 1, data: '2026-10-07' }]);
+
+    expect(component.agendamentos().map((a) => a.id)).toEqual([2]);
+    expect(component.carregando()).toBe(false);
+  });
+});

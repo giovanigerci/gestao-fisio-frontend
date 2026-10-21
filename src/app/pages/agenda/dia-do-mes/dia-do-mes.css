@@ -1,0 +1,297 @@
+.dia {
+  position: fixed;
+  inset: auto 0 0;
+  width: 100%;
+  max-width: 100%;
+  max-height: 85vh;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-bottom: none;
+  border-radius: 24px 24px 0 0;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.4);
+  animation: dia-sobe 0.25s ease-out;
+}
+
+.dia::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+.dia-caixa {
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.dia-alca {
+  align-self: center;
+  width: 40px;
+  height: 4px;
+  margin-top: 10px;
+  border-radius: 2px;
+  background: var(--color-border);
+  flex-shrink: 0;
+}
+
+.dia-cabecalho {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px 0 20px;
+}
+
+.dia-titulo {
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.dia-fechar {
+  width: 44px;
+  height: 44px;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.dia-fechar svg {
+  width: 20px;
+  height: 20px;
+}
+
+.dia-fechar:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
+
+.dia-resumo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 20px 12px;
+}
+
+.dia-resumo-linha {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.dia-progresso {
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.dia-valor {
+  font-weight: 600;
+  color: var(--color-money);
+}
+
+.dia-lista {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0 16px 12px;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dia-sessao {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 44px 8px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px 12px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--color-bg) 50%, var(--color-surface));
+  color: var(--color-text-primary);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.dia-sessao:hover {
+  border-color: color-mix(in srgb, var(--color-primary) 40%, transparent);
+}
+
+.dia-sessao--cancelada {
+  opacity: 0.5;
+}
+
+.dia-sessao--cancelada .dia-sessao-paciente {
+  text-decoration: line-through;
+}
+
+.dia-sessao-hora {
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.dia-sessao-ponto {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.dia-sessao-textos {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dia-sessao-paciente {
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dia-sessao-clinica {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.dia-sessao-fim {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.dia-sessao-valor {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-money);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.dia-sessao-valor--zero {
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+  font-weight: 400;
+}
+
+.dia-vazio {
+  padding: 16px 20px 20px;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.dia-rodape {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px 20px;
+  border-top: 1px solid var(--color-border);
+}
+
+.dia-botao {
+  flex: 1;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.dia-botao--secundario {
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-primary);
+}
+
+.dia-botao--primario {
+  border: none;
+  background: var(--color-primary);
+  color: var(--color-text-primary);
+}
+
+.dia-botao--primario:hover {
+  background: var(--color-primary-hover);
+}
+
+@keyframes dia-sobe {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes dia-aparece {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (min-width: 1024px) {
+  .dia {
+    inset: 50% auto auto 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    max-height: min(600px, calc(100vh - 32px));
+    border-bottom: 1px solid var(--color-border);
+    border-radius: 16px;
+    background: var(--color-surface-hover);
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
+    animation: none;
+  }
+
+  .dia:not(.dia--posicionada) {
+    visibility: hidden;
+  }
+
+  .dia--ao-lado {
+    inset: auto;
+    transform: none;
+    animation: dia-aparece 0.15s ease-out;
+  }
+
+  .dia::backdrop {
+    background: transparent;
+    backdrop-filter: none;
+  }
+
+  .dia-caixa {
+    max-height: min(600px, calc(100vh - 32px));
+  }
+
+  .dia-alca {
+    display: none;
+  }
+
+  .dia-cabecalho {
+    padding-top: 12px;
+  }
+
+  .dia-sessao {
+    background: var(--color-surface);
+  }
+}

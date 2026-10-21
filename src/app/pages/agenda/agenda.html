@@ -1,13 +1,58 @@
 <div class="agenda-page">
 
   <!-- Header -->
-  <div class="agenda-header">
+  <div class="agenda-header" [class.agenda-header--mes]="visao() === 'mes'">
     <div>
       <h1 class="agenda-title">Agenda</h1>
+      @if (visao() === 'semana') {
       <p class="agenda-subtitle">{{ tituloSemana() }}</p>
+      }
+    </div>
+    <div class="agenda-visao" role="group" aria-label="Visualização da agenda">
+      <button type="button" class="agenda-visao-btn" [attr.aria-pressed]="visao() === 'semana'"
+        (click)="mudarVisao('semana')">Semana</button>
+      <button type="button" class="agenda-visao-btn" [attr.aria-pressed]="visao() === 'mes'"
+        (click)="mudarVisao('mes')">Mês</button>
     </div>
     <a (click)="novoAgendamento()" class="agenda-btn-nova">+ Sessão</a>
   </div>
+
+  @if (visao() === 'mes') {
+  <div class="agenda-mes-nav">
+    <button (click)="mesAnterior()" class="agenda-nav-btn" aria-label="Mês anterior">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+        class="w-5 h-5" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+      </svg>
+    </button>
+    <span class="agenda-mes-nome" aria-live="polite">{{ tituloMes() }}</span>
+    <button (click)="proximoMes()" class="agenda-nav-btn" aria-label="Próximo mês">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+        class="w-5 h-5" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+      </svg>
+    </button>
+    <button type="button" (click)="irParaHoje()" class="agenda-btn-hoje">Hoje</button>
+  </div>
+
+  @if (erro()) {
+  <div class="agenda-error">
+    <p class="agenda-error-text">{{ erro() }}</p>
+    <button (click)="carregarAgendamentos()" class="agenda-error-retry">
+      Tentar novamente
+    </button>
+  </div>
+  }
+
+  <app-agenda-mes [mes]="inicioMesISO()" [agendamentos]="agendamentos()" [carregando]="carregando()"
+    [diaAberto]="diaAbertoNoMes()?.data ?? null" (diaEscolhido)="abrirDiaNoMes($event)" />
+
+  @if (diaAbertoNoMes(); as aberto) {
+  <app-dia-do-mes [data]="aberto.data" [agendamentos]="sessoesDoDiaAberto()" [ancora]="aberto.ancora"
+    (fechar)="fecharDiaNoMes()" (sessaoEscolhida)="abrirSessaoDoMes($event)" (abrirNaSemana)="abrirDiaNaSemana()"
+    (novaSessao)="novaSessaoNoDia()" />
+  }
+  } @else {
 
   <!-- Day Strip Selector -->
   <div class="agenda-day-strip-wrapper">
@@ -191,6 +236,7 @@
     </div>
     }
   </div>
+  }
   }
   }
 

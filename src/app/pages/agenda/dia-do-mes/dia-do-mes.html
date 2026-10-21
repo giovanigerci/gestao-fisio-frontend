@@ -1,0 +1,59 @@
+<dialog #dialogo class="dia" [class.dia--posicionada]="posicionada()" [class.dia--ao-lado]="posicao()"
+  [style.top.px]="posicao()?.top" [style.left.px]="posicao()?.left" [attr.aria-labelledby]="idTitulo"
+  (cancel)="aoCancelar($event)" (mousedown)="aoPressionar($event)" (click)="aoClicar($event)">
+  <div class="dia-caixa">
+    <span class="dia-alca" aria-hidden="true"></span>
+
+    <header class="dia-cabecalho">
+      <h2 class="dia-titulo" [id]="idTitulo">{{ titulo() }}</h2>
+      @if (ehHoje()) {
+      <app-badge variant="hoje" />
+      }
+      <button type="button" class="dia-fechar" aria-label="Fechar" (click)="fechar.emit()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+          aria-hidden="true">
+          <path stroke-linecap="round" d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      </button>
+    </header>
+
+    @if (agendamentos().length > 0) {
+    <div class="dia-resumo">
+      <div class="dia-resumo-linha">
+        <span class="dia-progresso">{{ resumo().realizados }}/{{ resumo().total }} realizadas</span>
+        <span class="dia-valor">{{ formatarValor(resumo().valorTotal) }}</span>
+      </div>
+      <app-progress-bar [segments]="segmentos()" [height]="4" />
+    </div>
+
+    <ul class="dia-lista">
+      @for (agendamento of agendamentos(); track agendamento.id) {
+      <li>
+        <button type="button" class="dia-sessao" [class.dia-sessao--cancelada]="agendamento.status === 'CA'"
+          (click)="sessaoEscolhida.emit(agendamento)">
+          <span class="dia-sessao-hora">{{ agendamento.hora_inicio.substring(0, 5) }}</span>
+          <span class="dia-sessao-ponto" [style.background-color]="corDaClinica(agendamento.cor_clinica)"></span>
+          <span class="dia-sessao-textos">
+            <span class="dia-sessao-paciente">{{ agendamento.nome_paciente || 'Desconhecido' }}</span>
+            <span class="dia-sessao-clinica">{{ agendamento.nome_clinica || '—' }}</span>
+          </span>
+          <span class="dia-sessao-fim">
+            <span class="dia-sessao-valor" [class.dia-sessao-valor--zero]="agendamento.eh_experimental">
+              {{ formatarValor(agendamento.valor_calculado) }}
+            </span>
+            <app-badge [variant]="variante(agendamento)" />
+          </span>
+        </button>
+      </li>
+      }
+    </ul>
+    } @else {
+    <p class="dia-vazio">Nenhuma sessão neste dia.</p>
+    }
+
+    <footer class="dia-rodape">
+      <button type="button" class="dia-botao dia-botao--secundario" (click)="abrirNaSemana.emit()">Abrir na semana</button>
+      <button type="button" class="dia-botao dia-botao--primario" (click)="novaSessao.emit()">+ Sessão neste dia</button>
+    </footer>
+  </div>
+</dialog>

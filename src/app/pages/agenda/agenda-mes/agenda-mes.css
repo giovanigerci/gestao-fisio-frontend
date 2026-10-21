@@ -1,0 +1,220 @@
+:host {
+  display: block;
+}
+
+.mes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: opacity 0.2s ease;
+}
+
+.mes--carregando {
+  opacity: 0.5;
+}
+
+.mes-grade {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--color-border);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.mes-dia-semana {
+  padding: 8px 0 6px;
+  background: var(--color-surface);
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.mes-fora {
+  min-height: 88px;
+  background: color-mix(in srgb, var(--color-bg) 50%, var(--color-surface));
+}
+
+.mes-dia {
+  min-width: 0;
+  min-height: 88px;
+  padding: 4px 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+  border: none;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+@media (hover: hover) {
+  .mes-dia:hover {
+    background: var(--color-surface-hover);
+  }
+}
+
+.mes-dia:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+
+.mes-dia--aberto {
+  background: var(--color-surface-hover);
+  box-shadow: inset 0 0 0 2px var(--color-primary);
+}
+
+.mes-numero {
+  align-self: center;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.mes-dia--hoje .mes-numero {
+  background: var(--color-primary);
+  color: var(--color-text-primary);
+}
+
+.mes-etiqueta {
+  min-width: 0;
+  height: 16px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--cor-clinica) 30%, transparent);
+  font-size: 0.625rem;
+  line-height: 16px;
+}
+
+.mes-etiqueta--so-desktop,
+.mes-etiqueta-ponto,
+.mes-etiqueta-hora,
+.mes-mais--desktop {
+  display: none;
+}
+
+.mes-etiqueta-nome {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mes-etiqueta--cancelada {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+
+.mes-mais {
+  padding: 0 4px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--color-primary) 65%, var(--color-text-primary));
+}
+
+.mes-legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.mes-legenda-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.mes-legenda-ponto {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+@media (min-width: 1024px) {
+  .mes-grade {
+    border-radius: 14px;
+  }
+
+  .mes-dia-semana {
+    padding: 10px 10px 8px;
+    text-align: left;
+  }
+
+  .mes-fora,
+  .mes-dia {
+    min-height: 128px;
+  }
+
+  .mes-dia {
+    padding: 8px;
+    gap: 4px;
+  }
+
+  .mes-numero {
+    align-self: flex-start;
+    width: 24px;
+    height: 24px;
+    font-size: 0.8125rem;
+  }
+
+  .mes-etiqueta {
+    height: auto;
+    padding: 3px 6px;
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--cor-clinica) 16%, transparent);
+    font-size: 0.6875rem;
+    line-height: 1.4;
+  }
+
+  .mes-etiqueta--so-desktop {
+    display: flex;
+  }
+
+  .mes-etiqueta-ponto {
+    display: block;
+    flex-shrink: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--cor-clinica);
+  }
+
+  .mes-etiqueta-hora {
+    display: inline;
+    flex-shrink: 0;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .mes-mais {
+    font-size: 0.6875rem;
+  }
+
+  .mes-mais--celular {
+    display: none;
+  }
+
+  .mes-mais--desktop {
+    display: block;
+  }
+}

@@ -1,0 +1,44 @@
+<div class="mes" [class.mes--carregando]="carregando()" [attr.aria-busy]="carregando()">
+  <div class="mes-grade">
+    @for (nome of diasDaSemana; track nome) {
+    <span class="mes-dia-semana" aria-hidden="true">{{ nome }}</span>
+    }
+
+    @for (celula of celulas(); track $index) {
+    @if (celula) {
+    <button type="button" class="mes-dia" [class.mes-dia--hoje]="celula.ehHoje"
+      [class.mes-dia--aberto]="celula.data === diaAberto()" [attr.aria-label]="celula.rotulo"
+      (click)="escolher(celula.data, $event)">
+      <span class="mes-numero">{{ celula.dia }}</span>
+      @for (etiqueta of celula.etiquetas; track etiqueta.id) {
+      <span class="mes-etiqueta" [class.mes-etiqueta--cancelada]="etiqueta.cancelada"
+        [class.mes-etiqueta--so-desktop]="etiqueta.soNoDesktop" [style.--cor-clinica]="etiqueta.cor">
+        <span class="mes-etiqueta-ponto"></span>
+        <span class="mes-etiqueta-hora">{{ etiqueta.hora }}</span>
+        <span class="mes-etiqueta-nome">{{ etiqueta.nome }}</span>
+      </span>
+      }
+      @if (celula.maisNoCelular) {
+      <span class="mes-mais mes-mais--celular">+{{ celula.maisNoCelular }}</span>
+      }
+      @if (celula.maisNoDesktop) {
+      <span class="mes-mais mes-mais--desktop">+{{ celula.maisNoDesktop }} mais</span>
+      }
+    </button>
+    } @else {
+    <span class="mes-fora" aria-hidden="true"></span>
+    }
+    }
+  </div>
+
+  @if (legenda().length > 0) {
+  <div class="mes-legenda">
+    @for (clinica of legenda(); track clinica.id) {
+    <span class="mes-legenda-item">
+      <span class="mes-legenda-ponto" [style.background-color]="clinica.cor"></span>
+      {{ clinica.nome }}
+    </span>
+    }
+  </div>
+  }
+</div>

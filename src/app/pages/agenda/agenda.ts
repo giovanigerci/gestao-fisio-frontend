@@ -9,7 +9,11 @@ import { ProgressBar } from '../../shared/components/progress-bar/progress-bar';
 import { ConfirmModal } from '../../shared/components/confirm-modal/confirm-modal';
 import { corDaClinica } from '../../shared/utils/clinic-colors';
 import { formatarDataISO, parseDataISO } from '../../shared/utils/datas';
+import { AgendaMes, DiaEscolhido } from './agenda-mes/agenda-mes';
+import { DiaDoMes } from './dia-do-mes/dia-do-mes';
 import { formatarValor, resumirDia, segmentosDoProgresso, varianteDoStatus } from './dia-da-agenda';
+
+export type Visao = 'semana' | 'mes';
 
 interface DiaAgenda {
   data: string;
@@ -23,7 +27,7 @@ interface DiaAgenda {
 
 @Component({
   selector: 'app-agenda',
-  imports: [RouterOutlet, Badge, Card, EmptyState, ProgressBar, ConfirmModal],
+  imports: [RouterOutlet, Badge, Card, EmptyState, ProgressBar, ConfirmModal, AgendaMes, DiaDoMes],
   templateUrl: './agenda.html',
   styleUrl: './agenda.css',
 })
@@ -44,8 +48,11 @@ export class Agenda {
   mostrandoModalConfirmacao = signal(false);
   processandoConfirmacaoDia = signal(false);
   relogio = signal(new Date());
+  visao = signal<Visao>('semana');
+  diaAbertoNoMes = signal<DiaEscolhido | null>(null);
 
   corDaClinica = corDaClinica;
+  private ultimaBusca = 0;
 
   private readonly DIAS_SEMANA = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
   private readonly DIAS_ABREV = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
@@ -75,6 +82,36 @@ export class Agenda {
       return `${inicio.getDate()} – ${fim.getDate()} De ${this.MESES_EXTENSO[fim.getMonth()]}`;
     }
     return `${inicio.getDate()} ${this.MESES[inicio.getMonth()]} – ${fim.getDate()} ${this.MESES[fim.getMonth()]} ${fim.getFullYear()}`;
+  });
+
+  readonly inicioMesISO = computed(() => {
+    const d = this.dataReferencia();
+    return formatarDataISO(new Date(d.getFullYear(), d.getMonth(), 1));
+  });
+
+  private readonly fimMesISO = computed(() => {
+    const d = this.dataReferencia();
+    return formatarDataISO(new Date(d.getFullYear(), d.getMonth() + 1, 0));
+  });
+
+  tituloMes = computed(() => {
+    const d = this.dataReferencia();
+    return `${this.MESES_EXTENSO[d.getMonth()]} ${d.getFullYear()}`;
+  });
+
+  private readonly periodo = computed(() =>
+    this.visao() === 'mes'
+      ? { inicio: this.inicioMesISO(), fim: this.fimMesISO() }
+      : { inicio: this.inicioSemanaISO(), fim: formatarDataISO(this.fimSemana()) },
+  );
+
+  private readonly chavePeriodo = computed(() => `${this.periodo().inicio}|${this.periodo().fim}`);
+
+  sessoesDoDiaAberto = computed(() => {
+    const data = this.diaAbertoNoMes()?.data;
+    return this.agendamentos()
+      .filter((a) => a.data === data)
+      .sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio));
   });
 
   diasDaSemana = computed<DiaAgenda[]>(() => {
@@ -226,14 +263,14 @@ export class Agenda {
       }
     }
 
-    // Sempre que a semana mudar, buscar agendamentos do intervalo correto. Depende do início como
-    // texto: um Date novo da mesma semana (ex: "Hoje" já estando nela) não dispara outra busca
+    // Sempre que a semana ou o mês mudar, buscar o período visível. Depende do período como
+    // texto: um Date novo do mesmo período (ex: "Hoje" já estando nele) não dispara outra busca
     effect(() => {
-      const dataInicio = this.inicioSemanaISO();
-      untracked(() => this.carregarAgendamentos(dataInicio, formatarDataISO(this.fimSemana())));
+      const [dataInicio, dataFim] = this.chavePeriodo().split('|');
+      untracked(() => this.carregarAgendamentos(dataInicio, dataFim));
     });
 
-    // Sessão salva no modal: mostra o dia dela; na mesma semana, recarrega sem tirar a agenda da tela
+    // Sessão salva no modal: mostra o dia dela; no mesmo período, recarrega sem tirar a agenda da tela
     this.agendamentoService.salvos$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((data) => this.mostrarDiaSalvo(data));
@@ -241,36 +278,87 @@ export class Agenda {
 
   private mostrarDiaSalvo(data: string) {
     this.dataSelecionada.set(data);
-    const mesmaSemana = data >= this.inicioSemanaISO() && data <= formatarDataISO(this.fimSemana());
-    if (mesmaSemana) {
+    const { inicio, fim } = this.periodo();
+    if (data >= inicio && data <= fim) {
       this.carregarAgendamentos(undefined, undefined, { silencioso: true });
     } else {
-      this.dataReferencia.set(parseDataISO(data)); // o effect busca a nova semana
+      this.dataReferencia.set(parseDataISO(data)); // o effect busca o novo período
     }
   }
 
   carregarAgendamentos(dataInicio?: string, dataFim?: string, { silencioso = false } = {}) {
     if (!dataInicio || !dataFim) {
-      const inicio = this.inicioSemana();
-      const fim = this.fimSemana();
-      dataInicio = formatarDataISO(inicio);
-      dataFim = formatarDataISO(fim);
+      ({ inicio: dataInicio, fim: dataFim } = this.periodo());
     }
 
     if (!silencioso) this.carregando.set(true);
     this.erro.set('');
 
+    // Trocando de mês ou semana rápido, só a resposta da última busca vale
+    const busca = ++this.ultimaBusca;
     this.agendamentoService.listar(dataInicio, dataFim).subscribe({
       next: (resp) => {
+        if (busca !== this.ultimaBusca) return;
         const dados = Array.isArray(resp) ? resp : resp.results;
         this.agendamentos.set(dados);
         this.carregando.set(false);
       },
       error: () => {
+        if (busca !== this.ultimaBusca) return;
         this.erro.set('Erro ao carregar agendamentos. Tente novamente.');
         this.carregando.set(false);
       },
     });
+  }
+
+  mudarVisao(visao: Visao) {
+    if (visao === this.visao()) return;
+    const base = visao === 'mes' ? this.diaSelecionado().data : this.diaDeReferenciaNoMes();
+    this.diaAbertoNoMes.set(null);
+    this.dataSelecionada.set(base);
+    this.dataReferencia.set(parseDataISO(base));
+    this.visao.set(visao);
+  }
+
+  /** Ao voltar para a semana: o dia escolhido, se estiver no mês aberto; senão hoje ou o dia 1. */
+  private diaDeReferenciaNoMes() {
+    const noMes = (data: string) => data >= this.inicioMesISO() && data <= this.fimMesISO();
+    const hoje = formatarDataISO();
+    if (noMes(this.dataSelecionada())) return this.dataSelecionada();
+    return noMes(hoje) ? hoje : this.inicioMesISO();
+  }
+
+  mesAnterior() {
+    this.diaAbertoNoMes.set(null);
+    this.dataReferencia.update((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1));
+  }
+
+  proximoMes() {
+    this.diaAbertoNoMes.set(null);
+    this.dataReferencia.update((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1));
+  }
+
+  abrirDiaNoMes(dia: DiaEscolhido) {
+    this.dataSelecionada.set(dia.data);
+    this.diaAbertoNoMes.set(dia);
+  }
+
+  fecharDiaNoMes() {
+    this.diaAbertoNoMes.set(null);
+  }
+
+  abrirSessaoDoMes(agendamento: Agendamento) {
+    this.diaAbertoNoMes.set(null);
+    this.abrirDetalhes(agendamento);
+  }
+
+  abrirDiaNaSemana() {
+    this.mudarVisao('semana');
+  }
+
+  novaSessaoNoDia() {
+    this.diaAbertoNoMes.set(null);
+    this.novoAgendamento();
   }
 
   semanaAnterior() {
