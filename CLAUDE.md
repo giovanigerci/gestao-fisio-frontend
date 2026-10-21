@@ -99,6 +99,12 @@ Telas autenticadas precisam do backend rodando localmente.
 - Estilos: `styles/modal-form.css` (campos com fundo mais escuro, `mf-grid-2`, prévia, linha de opção, botões). No celular, campos com 16px de fonte (abaixo disso o iOS dá zoom ao focar). Botão destrutivo preenchido usa `--color-danger-solid` com texto branco; `--color-danger` é claro (para texto, ícone e fundos translúcidos sobre o tema escuro) e como fundo sólido vira salmão.
 - Testes: debounce sobre `toObservable` não avança com `vi.useFakeTimers` (o effect do Angular também roda em timer); espere com o relógio real (ver `agendamento-form.spec.ts`). O jsdom não tem `showModal()`/`close()`; use `simularDialogNativo()` de `shared/components/modal/simular-dialog.spec-helper.ts` (arquivos `*.spec-helper.ts` ficam fora do build do app).
 
+## Agenda
+
+- Visões Semana e Mês (`visao` em `Agenda`). A busca depende do período como texto (`chavePeriodo`), não do `Date`, e só a resposta da última busca vale: trocar de mês rápido não mistura dados. O mês vem numa requisição só (o backend aceita até 93 dias).
+- Mês: `AgendaMes` desenha a grade (células montadas em `agenda-mes/celulas-do-mes.ts`, função pura testada) e `DiaDoMes` mostra as sessões do dia sobre o `<dialog>` nativo: painel de baixo no celular e janela ao lado do dia no desktop (`posicionarJanela`). O dia inteiro é um botão; as etiquetas não são clicáveis uma a uma.
+- Resumo do dia (realizadas, valor, progresso, badge do status) fica em `pages/agenda/dia-da-agenda.ts`, usado pela semana e pelo mês: não duplique a conta.
+
 ## Gráficos
 
 - Forma pelo trabalho do dado: evolução no tempo = linha (receita acumulada); parte do todo = rosca com no máximo 6 fatias (o excedente vira "Outras"); totais por período = colunas. Nunca dois eixos Y no mesmo gráfico.
@@ -114,7 +120,7 @@ Telas autenticadas precisam do backend rodando localmente.
 
 ## Dívidas conhecidas (apague ao resolver)
 
-1. Cobertura baixa: só `perfil` (e seus modais), `financeiro`, `clinicas` (listagem), `guestGuard`, `shared/utils/datas` e `shared/utils/clinic-colors` têm testes de comportamento; os demais specs são apenas "should create".
+1. Cobertura baixa: só `perfil` (e seus modais), `financeiro`, `agenda` (semana e mês), `clinicas` (listagem), `guestGuard`, `shared/utils/datas` e `shared/utils/clinic-colors` têm testes de comportamento; os demais specs são apenas "should create".
 
 ## Fluxo de trabalho
 
