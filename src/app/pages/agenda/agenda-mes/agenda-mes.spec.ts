@@ -19,6 +19,8 @@ describe('AgendaMes', () => {
     )!;
 
   beforeEach(() => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(2026, 9, 20, 10, 0));
     fixture = TestBed.createComponent(AgendaMes);
     fixture.componentRef.setInput('mes', '2026-10-01');
     fixture.componentRef.setInput('agendamentos', [
@@ -28,6 +30,8 @@ describe('AgendaMes', () => {
     ]);
     fixture.detectChanges();
   });
+
+  afterEach(() => vi.useRealTimers());
 
   it('desenha um botão por dia do mês e deixa vazios os dias de outros meses', () => {
     expect(elemento().querySelectorAll('.mes-dia').length).toBe(31);
