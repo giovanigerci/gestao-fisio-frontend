@@ -71,6 +71,7 @@ Telas autenticadas precisam do backend rodando localmente.
 
 - Domínio principal: `gestao-fisio.com` (Vercel, conectado a Production). `www.gestao-fisio.com` redireciona com 308 para ele; DNS na Cloudflare com proxy desligado (nuvem cinza) nos registros da Vercel.
 - Versões do PWA (`atualizacao/`): `AtualizacaoDoApp` troca para a versão nova na próxima mudança de página depois do `VERSION_READY` (momento seguro: o guard de alterações pendentes já passou), recarrega na hora no `UNRECOVERABLE_STATE` e procura versão nova quando o app volta para a tela. Se o código de uma página não baixa (deploy apagou o `chunk-*.js` que a versão aberta pede), `withNavigationErrorHandler` abre a URL de destino do zero, uma vez por URL a cada 10s para não entrar em ciclo. Sintoma sem isso: barra lateral e perfil aparecem, mas nenhuma página abre até o F5.
+- As recargas automáticas do `AtualizacaoDoApp` passam por `podeRecarregarAutomaticamente` (`atualizacao/trava-de-recarga.ts`): no máximo uma por minuto na aba, para uma versão que continua falhando (ex: service worker antigo preso atrás do redirecionamento do `www`) não virar um ciclo de recargas.
 - Recargas de página passam pelo token `RECARGA_DA_PAGINA` (nada de `location.reload()` direto): os testes substituem.
 - Cabeçalhos de segurança no `vercel.json` (X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy e CSP). A CSP começou como `Content-Security-Policy-Report-Only` (só avisa no console); depois de validada em produção, troque para `Content-Security-Policy`. Ela proíbe script inline e handlers `on*` no HTML — por isso `inlineCritical: false` no `angular.json` (o Angular inlinava o CSS com `onload`). Domínio externo novo (imagem, fonte, API) precisa entrar na CSP.
 - A fonte Inter é servida pelo próprio site (`public/fonts/`, fonte variável + licença OFL): nada de Google Fonts, que mandaria o IP de cada visitante ao Google.
@@ -101,7 +102,7 @@ Telas autenticadas precisam do backend rodando localmente.
 
 ## Agenda
 
-- Visões Semana e Mês (`visao` em `Agenda`). A busca depende do período como texto (`chavePeriodo`), não do `Date`, e só a resposta da última busca vale: trocar de mês rápido não mistura dados. O mês vem numa requisição só (o backend aceita até 93 dias).
+- Visões Semana e Mês (`visao` em `Agenda`). A escolha feita no seletor fica salva no aparelho (`visao-salva.ts`, `localStorage`: no celular e no computador cada uma pode ser diferente); "Abrir na semana", a partir de um dia do mês, é só navegação e não troca a preferência. A busca depende do período como texto (`chavePeriodo`), não do `Date`, e só a resposta da última busca vale: trocar de mês rápido não mistura dados. O mês vem numa requisição só (o backend aceita até 93 dias).
 - Mês: `AgendaMes` desenha a grade (células montadas em `agenda-mes/celulas-do-mes.ts`, função pura testada) e `DiaDoMes` mostra as sessões do dia sobre o `<dialog>` nativo: painel de baixo no celular e janela ao lado do dia no desktop (`posicionarJanela`). O dia inteiro é um botão; as etiquetas não são clicáveis uma a uma.
 - Resumo do dia (realizadas, valor, progresso, badge do status) fica em `pages/agenda/dia-da-agenda.ts`, usado pela semana e pelo mês: não duplique a conta.
 
