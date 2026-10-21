@@ -17,6 +17,7 @@ describe('AtualizacaoDoApp', () => {
   let router: Router;
 
   function iniciar(isEnabled = true) {
+    sessionStorage.clear();
     versoes = new Subject();
     irrecuperavel = new Subject();
     checkForUpdate = vi.fn().mockResolvedValue(false);
@@ -60,6 +61,22 @@ describe('AtualizacaoDoApp', () => {
     irrecuperavel.next({ type: 'UNRECOVERABLE_STATE', reason: 'hash mismatch' });
 
     expect(recarregar).toHaveBeenCalledTimes(1);
+  });
+
+  it('falhando de novo logo depois de recarregar, não entra em ciclo de recargas', () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(2026, 9, 21, 10, 0, 0));
+    iniciar();
+
+    irrecuperavel.next({ type: 'UNRECOVERABLE_STATE', reason: 'hash mismatch' });
+    vi.setSystemTime(new Date(2026, 9, 21, 10, 0, 30));
+    irrecuperavel.next({ type: 'UNRECOVERABLE_STATE', reason: 'hash mismatch' });
+    expect(recarregar).toHaveBeenCalledTimes(1);
+
+    vi.setSystemTime(new Date(2026, 9, 21, 10, 1, 5));
+    irrecuperavel.next({ type: 'UNRECOVERABLE_STATE', reason: 'hash mismatch' });
+    expect(recarregar).toHaveBeenCalledTimes(2);
+    vi.useRealTimers();
   });
 
   it('app voltando para a tela procura versão nova', () => {

@@ -3,6 +3,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { SwUpdate } from '@angular/service-worker';
 import { filter } from 'rxjs';
 import { RECARGA_DA_PAGINA } from './recarga-da-pagina';
+import { podeRecarregarAutomaticamente } from './trava-de-recarga';
 
 /**
  * Mantém o PWA na versão publicada (recomendação do guia do service worker do Angular):
@@ -12,6 +13,8 @@ import { RECARGA_DA_PAGINA } from './recarga-da-pagina';
  * - cache inconsistente (UNRECOVERABLE_STATE): a versão aberta não consegue mais carregar seus
  *   arquivos; recarrega na hora;
  * - app voltando para a tela (PWA aberto no celular por dias): procura versão nova.
+ *
+ * As recargas automáticas acontecem no máximo uma vez por minuto (`podeRecarregarAutomaticamente`).
  */
 @Service()
 export class AtualizacaoDoApp {
@@ -28,12 +31,12 @@ export class AtualizacaoDoApp {
       .pipe(filter((evento) => evento.type === 'VERSION_READY'))
       .subscribe(() => (this.versaoNovaPronta = true));
 
-    this.swUpdate.unrecoverable.subscribe(() => this.recarga.recarregar());
+    this.swUpdate.unrecoverable.subscribe(() => this.recarregar());
 
     this.router.events
       .pipe(filter((evento) => evento instanceof NavigationEnd))
       .subscribe(() => {
-        if (this.versaoNovaPronta) this.recarga.recarregar();
+        if (this.versaoNovaPronta) this.recarregar();
       });
 
     this.documento.addEventListener('visibilitychange', () => {
@@ -41,5 +44,9 @@ export class AtualizacaoDoApp {
         this.swUpdate.checkForUpdate().catch(() => {}); // offline: tenta na próxima vez
       }
     });
+  }
+
+  private recarregar() {
+    if (podeRecarregarAutomaticamente()) this.recarga.recarregar();
   }
 }
