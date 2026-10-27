@@ -1,9 +1,5 @@
-<dialog #dialogo class="dia" [class.dia--posicionada]="posicionada()" [class.dia--ao-lado]="posicao()"
-  [style.top.px]="posicao()?.top" [style.left.px]="posicao()?.left" [attr.aria-labelledby]="idTitulo"
-  (cancel)="aoCancelar($event)" (mousedown)="aoPressionar($event)" (click)="aoClicar($event)">
-  <div class="dia-caixa">
-    <span class="dia-alca" aria-hidden="true"></span>
-
+<app-folha [rotuladoPor]="idTitulo" [ancora]="ancora()" [largura]="400" (fechar)="fechar.emit()">
+  <div class="dia">
     <header class="dia-cabecalho">
       <h2 class="dia-titulo" [id]="idTitulo">{{ titulo() }}</h2>
       @if (ehHoje()) {
@@ -56,4 +52,4 @@
       <button type="button" class="dia-botao dia-botao--primario" (click)="novaSessao.emit()">+ Sessão neste dia</button>
     </footer>
   </div>
-</dialog>
+</app-folha>

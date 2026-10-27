@@ -1,0 +1,9 @@
+<dialog #dialogo class="folha" [class.folha--posicionada]="posicionada()" [class.folha--ao-lado]="posicao()"
+  [style.--folha-largura]="largura() + 'px'" [style.top.px]="posicao()?.top" [style.left.px]="posicao()?.left"
+  [attr.aria-labelledby]="rotuladoPor()" (cancel)="aoCancelar($event)" (mousedown)="aoPressionar($event)"
+  (click)="aoClicar($event)">
+  <div class="folha-caixa">
+    <span class="folha-alca" aria-hidden="true"></span>
+    <ng-content />
+  </div>
+</dialog>
