@@ -131,7 +131,7 @@
 
 .sf-icone--ligado {
   background: color-mix(in srgb, var(--color-primary) 20%, transparent);
-  color: #7fa7c4;
+  color: color-mix(in srgb, var(--color-primary) 70%, var(--color-text-primary));
 }
 
 .sf-icone svg {

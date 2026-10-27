@@ -167,7 +167,7 @@ describe('Agenda — visão do mês', () => {
   it('no mês, o nome do mês aparece só na navegação, sem repetir abaixo do título', async () => {
     await iniciar(new Date(2026, 7, 10, 10, 0));
     const elemento = fixture.nativeElement as HTMLElement;
-    expect(elemento.querySelector('.agenda-subtitle')?.textContent).toContain('Agosto');
+    expect(elemento.querySelector('.agenda-subtitle')?.textContent).toBe('9 – 15 de agosto');
 
     component.mudarVisao('mes');
     await atualizar();
@@ -304,5 +304,58 @@ describe('Agenda — visão lembrada no aparelho', () => {
 
     expect(fixture.componentInstance.visao()).toBe('semana');
     expect(localStorage.getItem('gf:agenda-visao')).toBe('mes');
+  });
+});
+
+describe('Agenda — acessível pelo teclado', () => {
+  let http: HttpTestingController;
+  let fixture: ComponentFixture<Agenda>;
+  const elemento = () => fixture.nativeElement as HTMLElement;
+
+  beforeEach(async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(new Date(2026, 9, 7, 10, 0));
+    TestBed.configureTestingModule({
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
+    });
+    http = TestBed.inject(HttpTestingController);
+    fixture = TestBed.createComponent(Agenda);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    http.match((req) => req.url.endsWith('/agendamentos/')).forEach((req) =>
+      req.flush([
+        {
+          id: 1, profissional: 1, clinica: 1, paciente: 1, data: '2026-10-07', hora_inicio: '08:00:00', hora_fim: '09:00:00',
+          status: 'AG', eh_experimental: false, valor_calculado: 80, nome_paciente: 'Mariana Costa', nome_clinica: 'Movi',
+          cor_clinica: 1,
+        },
+      ]),
+    );
+    fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    http.verify();
+  });
+
+  it('"+ Sessão" é um link de verdade para a nova sessão do dia escolhido', () => {
+    const link = elemento().querySelector<HTMLAnchorElement>('a.agenda-btn-nova')!;
+
+    expect(link.getAttribute('href')).toBe('/agenda/novo?data=2026-10-07');
+  });
+
+  it('o cartão da sessão é um botão e abre os detalhes', () => {
+    const cartao = elemento().querySelector<HTMLButtonElement>('button.agenda-item-layout')!;
+
+    cartao.click();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.agendamentoSelecionado()?.id).toBe(1);
+    expect(elemento().querySelector('app-detalhes-da-sessao')).not.toBeNull();
+  });
+
+  it('o subtítulo da semana usa "de" minúsculo, como em português', () => {
+    expect(elemento().querySelector('.agenda-subtitle')?.textContent).toBe('4 – 10 de outubro');
   });
 });

@@ -1,0 +1,160 @@
+.detalhe-cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 12px 0 20px;
+}
+
+.detalhe-titulo {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.detalhe-fechar {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.detalhe-fechar svg {
+  width: 20px;
+  height: 20px;
+}
+
+.detalhe-fechar:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
+
+.detalhe-corpo {
+  margin: 0;
+  padding: 16px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detalhe-linha {
+  display: flex;
+  gap: 16px;
+}
+
+.detalhe-linha .detalhe-campo {
+  flex: 1;
+}
+
+.detalhe-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.detalhe-campo dt {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+
+.detalhe-campo dd {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.detalhe-campo dd.detalhe-valor--zero {
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+  font-weight: 400;
+}
+
+.detalhe-campo dd.detalhe-selos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-top: 2px;
+}
+
+.detalhe-acoes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 4px 20px 24px;
+}
+
+.detalhe-acao {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.detalhe-acao svg {
+  width: 16px;
+  height: 16px;
+}
+
+.detalhe-acao:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.detalhe-acao--editar {
+  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+  color: var(--color-primary);
+  border-color: color-mix(in srgb, var(--color-primary) 20%, transparent);
+}
+
+.detalhe-acao--editar:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-primary) 20%, transparent);
+}
+
+.detalhe-acao--realizado {
+  background: color-mix(in srgb, var(--color-money) 10%, transparent);
+  color: var(--color-money);
+  border-color: color-mix(in srgb, var(--color-money) 20%, transparent);
+}
+
+.detalhe-acao--realizado:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-money) 20%, transparent);
+}
+
+.detalhe-acao--cancelar {
+  background: color-mix(in srgb, var(--color-warning) 10%, transparent);
+  color: var(--color-warning);
+  border-color: color-mix(in srgb, var(--color-warning) 20%, transparent);
+}
+
+.detalhe-acao--cancelar:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-warning) 20%, transparent);
+}
+
+.detalhe-acao--excluir {
+  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
+  color: var(--color-danger);
+  border-color: color-mix(in srgb, var(--color-danger) 20%, transparent);
+}
+
+.detalhe-acao--excluir:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-danger) 20%, transparent);
+}

@@ -39,7 +39,7 @@
   font-size: 0.8125rem;
   font-weight: 600;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-text-primary);
   text-decoration: none;
   transition: all 0.2s ease;
   white-space: nowrap;
@@ -227,7 +227,7 @@
 }
 
 .agenda-day-item--selected .agenda-day-number {
-  color: #ffffff;
+  color: var(--color-text-primary);
 }
 
 .agenda-day-item--hoje:not(.agenda-day-item--selected) .agenda-day-number {
@@ -388,10 +388,23 @@
 }
 
 .agenda-item-layout {
+  width: 100%;
+  padding: 0;
   display: flex;
   align-items: flex-start;
   gap: 12px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
   cursor: pointer;
+}
+
+.agenda-item-layout:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 6px;
 }
 
 .agenda-item-time {
@@ -458,188 +471,6 @@
   text-decoration: line-through;
 }
 
-/* ─── Modal Overlay ─── */
-.agenda-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  z-index: 50;
-  animation: fadeIn 0.2s ease-out;
-}
-
-/* ─── Modal ─── */
-.agenda-modal {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 51;
-  background: var(--color-surface);
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
-  border: 1px solid var(--color-border);
-  border-bottom: none;
-  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.4);
-  animation: slideUp 0.25s ease-out;
-  max-height: 85vh;
-  overflow-y: auto;
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(100%);
-    opacity: 0.5;
-  }
-
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.agenda-modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 20px 0;
-}
-
-.agenda-modal-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--color-text-primary);
-}
-
-.agenda-modal-close {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border: none;
-  background: color-mix(in srgb, var(--color-border) 60%, transparent);
-  color: var(--color-text-secondary);
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.agenda-modal-close:hover {
-  background: var(--color-surface-hover);
-  color: var(--color-text-primary);
-}
-
-.agenda-modal-body {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.agenda-modal-field {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.agenda-modal-row {
-  display: flex;
-  gap: 16px;
-}
-
-.agenda-modal-row .agenda-modal-field {
-  flex: 1;
-}
-
-.agenda-modal-label {
-  font-size: 0.6875rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-text-muted);
-}
-
-.agenda-modal-value {
-  font-size: 0.9375rem;
-  font-weight: 500;
-  color: var(--color-text-primary);
-}
-
-.agenda-modal-badges {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-/* ─── Modal Actions ─── */
-.agenda-modal-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  padding: 4px 20px 24px;
-}
-
-.agenda-action-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  border: 1px solid transparent;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.agenda-action-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.agenda-action-btn--editar {
-  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
-  color: var(--color-primary);
-  border-color: color-mix(in srgb, var(--color-primary) 20%, transparent);
-}
-
-.agenda-action-btn--editar:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--color-primary) 20%, transparent);
-}
-
-.agenda-action-btn--realizado {
-  background: color-mix(in srgb, var(--color-money) 10%, transparent);
-  color: var(--color-money);
-  border-color: color-mix(in srgb, var(--color-money) 20%, transparent);
-}
-
-.agenda-action-btn--realizado:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--color-money) 20%, transparent);
-}
-
-.agenda-action-btn--cancelar {
-  background: color-mix(in srgb, var(--color-warning) 10%, transparent);
-  color: var(--color-warning);
-  border-color: color-mix(in srgb, var(--color-warning) 20%, transparent);
-}
-
-.agenda-action-btn--cancelar:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--color-warning) 20%, transparent);
-}
-
-.agenda-action-btn--excluir {
-  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
-  color: var(--color-danger);
-  border-color: color-mix(in srgb, var(--color-danger) 20%, transparent);
-}
-
-.agenda-action-btn--excluir:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--color-danger) 20%, transparent);
-}
-
 /* ─── Animations ─── */
 @keyframes fadeSlideIn {
   from {
@@ -655,35 +486,6 @@
 
 /* Animations fadeIn, fadeInUp, and spin are defined globally in styles.css */
 
-
-/* ─── Desktop: Modal centered (>= 1024px) ─── */
-@media (min-width: 1024px) {
-  .agenda-modal {
-    top: 50%;
-    left: 50%;
-    bottom: auto;
-    right: auto;
-    transform: translate(-50%, -50%);
-    border-radius: 20px;
-    border: 1px solid var(--color-border);
-    max-width: 480px;
-    width: 90%;
-    max-height: 80vh;
-    animation: fadeScaleIn 0.2s ease-out;
-  }
-
-  @keyframes fadeScaleIn {
-    from {
-      opacity: 0;
-      transform: translate(-50%, -50%) scale(0.95);
-    }
-
-    to {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
-    }
-  }
-}
 
 /* ─── Banners de Confirmação ─── */
 .agenda-banner {
@@ -786,185 +588,20 @@
   border-radius: 10px;
   font-size: 0.875rem;
   font-weight: 600;
-  background: #3b82f6;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--color-text-primary);
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.35);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--color-primary) 35%, transparent);
 }
 
 .agenda-banner-btn:hover {
-  background: #2563eb;
+  background: var(--color-primary-hover);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.45);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-primary) 45%, transparent);
 }
 
 .agenda-banner-btn:active {
   transform: translateY(0);
-}
-
-/* ─── Modal de Confirmação em Lote (Estado 3) ─── */
-.agenda-modal-drag-bar {
-  width: 36px;
-  height: 4px;
-  background: var(--color-border);
-  border-radius: 2px;
-  margin: 10px auto 0;
-}
-
-.agenda-confirm-header-texts {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.agenda-confirm-subtitle {
-  font-size: 0.8125rem;
-  color: var(--color-text-secondary);
-}
-
-.agenda-confirm-body {
-  padding: 16px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.agenda-confirm-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-height: 260px;
-  overflow-y: auto;
-  padding-right: 4px;
-}
-
-.agenda-confirm-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  background: color-mix(in srgb, var(--color-surface-hover) 50%, transparent);
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
-}
-
-.agenda-confirm-hora {
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  font-variant-numeric: tabular-nums;
-  min-width: 42px;
-}
-
-.agenda-confirm-paciente {
-  flex: 1;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.agenda-confirm-valor {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--color-money);
-  font-variant-numeric: tabular-nums;
-}
-
-.agenda-confirm-footer-summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 8px;
-  border-top: 1px solid var(--color-border);
-}
-
-.agenda-confirm-cancelados-tag {
-  display: flex;
-  align-items: center;
-}
-
-.agenda-confirm-cancelados-text {
-  font-size: 0.75rem;
-  color: color-mix(in srgb, var(--color-danger) 85%, transparent);
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.agenda-confirm-total-val {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: var(--color-money);
-  font-variant-numeric: tabular-nums;
-}
-
-.agenda-confirm-actions {
-  display: grid;
-  grid-template-columns: 1fr 1.6fr;
-  gap: 10px;
-  padding: 12px 20px 24px;
-}
-
-.agenda-btn-secondary {
-  padding: 12px 16px;
-  border-radius: 12px;
-  background: color-mix(in srgb, var(--color-border) 40%, transparent);
-  color: var(--color-text-secondary);
-  border: 1px solid var(--color-border);
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.agenda-btn-secondary:hover:not(:disabled) {
-  background: var(--color-surface-hover);
-  color: var(--color-text-primary);
-}
-
-.agenda-btn-secondary:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.agenda-btn-confirmar-lote {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 12px 16px;
-  border-radius: 12px;
-  background: #3b82f6;
-  color: #ffffff;
-  border: none;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
-}
-
-.agenda-btn-confirmar-lote:hover:not(:disabled) {
-  background: #2563eb;
-  box-shadow: 0 6px 18px rgba(59, 130, 246, 0.5);
-  transform: translateY(-1px);
-}
-
-.agenda-btn-confirmar-lote:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.agenda-spinner-sm {
-  width: 1rem;
-  height: 1rem;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: #ffffff;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
 }

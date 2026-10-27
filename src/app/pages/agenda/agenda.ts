@@ -1,6 +1,6 @@
 import { Component, inject, signal, computed, effect, DestroyRef, untracked } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Router, ActivatedRoute, RouterOutlet } from '@angular/router';
+import { Router, ActivatedRoute, RouterLink, RouterOutlet } from '@angular/router';
 import { AgendamentoService, Agendamento } from '../../services/agendamento.service';
 import { Badge, BadgeVariant } from '../../shared/components/badge/badge';
 import { Card } from '../../shared/components/card/card';
@@ -10,6 +10,8 @@ import { ConfirmModal } from '../../shared/components/confirm-modal/confirm-moda
 import { corDaClinica } from '../../shared/utils/clinic-colors';
 import { formatarDataISO, parseDataISO } from '../../shared/utils/datas';
 import { AgendaMes, DiaEscolhido } from './agenda-mes/agenda-mes';
+import { ConfirmacaoDoDia } from './confirmacao-do-dia/confirmacao-do-dia';
+import { DetalhesDaSessao } from './detalhes-da-sessao/detalhes-da-sessao';
 import { DiaDoMes } from './dia-do-mes/dia-do-mes';
 import { formatarValor, resumirDia, segmentosDoProgresso, varianteDoStatus } from './dia-da-agenda';
 import { Visao, lerVisaoSalva, salvarVisao } from './visao-salva';
@@ -26,7 +28,10 @@ interface DiaAgenda {
 
 @Component({
   selector: 'app-agenda',
-  imports: [RouterOutlet, Badge, Card, EmptyState, ProgressBar, ConfirmModal, AgendaMes, DiaDoMes],
+  imports: [
+    RouterLink, RouterOutlet, Badge, Card, EmptyState, ProgressBar, ConfirmModal, AgendaMes, DiaDoMes, DetalhesDaSessao,
+    ConfirmacaoDoDia,
+  ],
   templateUrl: './agenda.html',
   styleUrl: './agenda.css',
 })
@@ -78,9 +83,11 @@ export class Agenda {
     const fim = this.fimSemana();
 
     if (inicio.getMonth() === fim.getMonth()) {
-      return `${inicio.getDate()} – ${fim.getDate()} De ${this.MESES_EXTENSO[fim.getMonth()]}`;
+      return `${inicio.getDate()} – ${fim.getDate()} de ${this.MESES_EXTENSO[fim.getMonth()].toLowerCase()}`;
     }
-    return `${inicio.getDate()} ${this.MESES[inicio.getMonth()]} – ${fim.getDate()} ${this.MESES[fim.getMonth()]} ${fim.getFullYear()}`;
+    const mesInicio = this.MESES[inicio.getMonth()].toLowerCase();
+    const mesFim = this.MESES[fim.getMonth()].toLowerCase();
+    return `${inicio.getDate()} ${mesInicio} – ${fim.getDate()} ${mesFim} ${fim.getFullYear()}`;
   });
 
   readonly inicioMesISO = computed(() => {
@@ -134,7 +141,7 @@ export class Agenda {
         diaSemana: this.DIAS_SEMANA[d.getDay()],
         diaSemanaAbrev: this.DIAS_ABREV[d.getDay()],
         diaNumero: d.getDate(),
-        diaFormatado: `${d.getDate()} De ${this.MESES_EXTENSO[d.getMonth()]}`,
+        diaFormatado: `${d.getDate()} de ${this.MESES_EXTENSO[d.getMonth()].toLowerCase()}`,
         ehHoje: d.getTime() === hoje.getTime(),
         agendamentos: agendamentosDoDia,
       });
@@ -503,15 +510,6 @@ export class Agenda {
       case 'CA': return 'Cancelado';
       default: return status;
     }
-  }
-
-  formatarDataBR(dataStr: string): string {
-    if (!dataStr) return '';
-    const partes = dataStr.split('-');
-    if (partes.length === 3) {
-      return `${partes[2]}/${partes[1]}/${partes[0]}`;
-    }
-    return dataStr;
   }
 
   abrirModalConfirmacaoDia() {
