@@ -1,135 +1,134 @@
-# GestãoFisio - Frontend
+# GestãoFisio — Frontend
 
-O **GestãoFisio** é um sistema completo de agenda e gestão financeira voltado para fisioterapeutas e instrutores de Pilates autônomos. Este repositório contém o código-fonte do **Frontend**, desenvolvido como uma Single Page Application (SPA) e Progressive Web App (PWA).
+O **GestãoFisio** é um sistema de agenda e receita para fisioterapeutas e instrutores de Pilates autônomos que atendem em várias clínicas. Este repositório contém o **frontend**: uma SPA/PWA em Angular 22, usada principalmente no celular.
 
-O backend correspondente (API Rest) pode ser encontrado neste repositório: [gestao-fisio-backend](https://github.com/giovanigerci/gestao-fisio-backend).
+- **Em produção:** [gestao-fisio.com](https://gestao-fisio.com)
+- **Backend (API REST em Django/DRF):** [gestao-fisio-backend](https://github.com/giovanigerci/gestao-fisio-backend)
 
----
-
-## 🛠️ Stack Tecnológica
-
-- **[Angular 22](https://angular.dev/)**: Framework principal do projeto, utilizando Standalone Components (sem módulos NgModule).
-- **TypeScript**: Linguagem base para tipagem forte e maior segurança no desenvolvimento.
-- **[Tailwind CSS v4.1](https://tailwindcss.com/)**: Framework utilitário para estilização responsiva. Complementado por CSS customizado com design tokens (variáveis CSS) em `src/styles/tokens.css`.
-- **Signals**: Gerenciamento de estado reativo nativo do Angular (sem NgRx ou RxJS pesado para state management).
-- **PWA (Progressive Web App)**: Configurado via `@angular/service-worker` para permitir instalação no dispositivo.
+> **Regra de ouro do projeto:** regra de negócio e dinheiro são calculados no backend; o frontend exibe. Nenhum valor de receita é recalculado no cliente: as telas usam `valor_calculado` e os totais de `/resumo-financeiro/`.
 
 ---
 
-## 🏗️ Arquitetura e Organização
+## ✨ Destaques técnicos
 
-O projeto segue uma organização modular dentro de `src/app/`:
-
-### `services/`
-Lógica de comunicação com a API. Um serviço por domínio:
-
-| Serviço                   | Responsabilidade                                |
-|---------------------------|-------------------------------------------------|
-| `auth.service.ts`         | Login, logout, registro, recuperação de senha   |
-| `perfil.service.ts`       | Dados do profissional autenticado (Signal global) |
-| `clinica.service.ts`      | CRUD de clínicas                                |
-| `paciente.service.ts`     | CRUD de pacientes                               |
-| `agendamento.service.ts`  | CRUD de agendamentos                            |
-| `financeiro.service.ts`   | Resumo financeiro por período                   |
-
-### `guards/`
-- **`authGuard`**: Garante que rotas internas sejam acessadas apenas por usuários autenticados. Redireciona para `/login` caso contrário.
-- **`guestGuard`**: Impede que usuários já autenticados acessem as telas de login ou registro. Redireciona para `/agenda`.
-
-### `interceptors/`
-- **`authInterceptor`**: Configura **todas** as requisições para enviar credenciais (`withCredentials: true`). Gerencia automaticamente o fluxo de *refresh token* ao receber erro 401 — reenfileira a requisição original após renovar o `access_token`. A autenticação é baseada em **cookies HttpOnly** (não em `localStorage`), o que impede o acesso dos tokens via JavaScript e mitiga ataques XSS.
-
-### `components/` (shell)
-Componentes globais, renderizados pelo `app.html`:
-- **`nav-bar`**: Navegação principal. Mobile: barra inferior fixada. Desktop (≥ 1024px): sidebar lateral de 14rem.
-- **`mobile-header`**: Header superior fixado (logo + avatar) — visível apenas em mobile.
-
-### `shared/components/`
-Componentes reutilizáveis:
-- `badge`: Tags de status (Agendado, Realizado, Cancelado, Experimental, Hoje)
-- `card`: Container de item de lista com acento de cor da clínica
-- `confirm-modal`: Modal de confirmação de ação destrutiva
-- `empty-state`: Ilustração de estado vazio
-- `progress-bar`: Barra de progresso segmentada por clínica
-
-### `pages/`
-Todas as páginas são lazy-loaded via `loadComponent` em `app.routes.ts`.
-
-| Rota                     | Componente               | Guard        |
-|--------------------------|--------------------------|--------------|
-| `/login`                 | `Login`                  | `guestGuard` |
-| `/registrar`             | `Registrar`              | `guestGuard` |
-| `/esqueci-senha`         | `EsqueciSenha`           | `guestGuard` |
-| `/redefinir-senha`       | `RedefinirSenha`         | `guestGuard` |
-| `/termos`                | `TermosPage`             | —            |
-| `/privacidade`           | `PrivacidadePage`        | —            |
-| `/agenda`                | `Agenda`                 | `authGuard`  |
-| `/agenda/novo`           | `AgendamentoForm`        | `authGuard`  |
-| `/agenda/:id/editar`     | `AgendamentoForm`        | `authGuard`  |
-| `/pacientes`             | `Pacientes`              | `authGuard`  |
-| `/pacientes/novo`        | `PacienteForm`           | `authGuard`  |
-| `/pacientes/:id/editar`  | `PacienteForm`           | `authGuard`  |
-| `/clinicas`              | `Clinicas`               | `authGuard`  |
-| `/clinicas/novo`         | `ClinicaForm`            | `authGuard`  |
-| `/clinicas/:id/editar`   | `ClinicaForm`            | `authGuard`  |
-| `/financeiro`            | `Financeiro`             | `authGuard`  |
-| `/perfil`                | `PerfilPage`             | `authGuard`  |
-| `/**`                    | `NotFound`               | —            |
+- **Sessão com cookies HttpOnly e refresh único.** O JavaScript nunca lê nem guarda token. O backend rotaciona o refresh token a cada uso, então um `RenovacaoDeSessao` compartilha o refresh em andamento entre todas as requisições que recebem 401 ao mesmo tempo, com retry e backoff quando a API está acordando. Sem isso, dois refresh em paralelo deslogariam o usuário.
+- **Formulários em modal que são rotas.** Criar/editar abre num `<dialog>` nativo sobre a listagem, mas cada formulário tem URL própria (`/clinicas/novo`, `/pacientes/:id/editar`). O botão voltar do Android fecha o modal, o F5 e os links diretos funcionam, e um `canDeactivate` pergunta "Descartar alterações?" só quando o estado mudou de verdade.
+- **Acessibilidade.** Modais e painéis sobre `<dialog>` (foco preso, Esc, leitor de tela), combobox de busca no padrão WAI-ARIA, erros no próprio campo com `aria-invalid`/`aria-describedby`, foco levado ao primeiro campo inválido e tudo que abre algo é `<button>` ou link alcançável pelo teclado.
+- **Gráficos com intenção.** Chart.js encapsulado num componente, com a configuração montada em funções puras testáveis. A paleta das clínicas foi validada para contraste e daltonismo, a cor de cada clínica é a mesma em todas as telas, e todo gráfico tem legenda em HTML e versão em tabela.
+- **PWA que se atualiza sozinho com segurança.** A versão nova entra na próxima mudança de página, depois do guard de alterações pendentes, para nenhum formulário ser perdido. Se um deploy apagou o chunk que a versão aberta pede, a navegação é refeita do zero, com trava para não virar ciclo de recargas.
+- **Segurança no deploy.** Content Security Policy estrita (sem script inline), `X-Frame-Options`, `Referrer-Policy` e `Permissions-Policy` no `vercel.json`. A fonte Inter é servida pelo próprio site, sem Google Fonts (que mandaria o IP de cada visitante ao Google).
+- **LGPD na prática.** Exportação de todos os dados da conta (ZIP com CSVs), exclusão definitiva da conta com confirmação por senha, troca de e-mail confirmada por código, e Termos e Política de Privacidade versionados no próprio app.
+- **Datas sem os bugs clássicos.** `new Date('YYYY-MM-DD')` vira o dia anterior no Brasil (UTC-3), e `toISOString()` depois das 21h vira o dia seguinte. As datas da API passam por `formatarDataISO`/`parseDataISO`, e os testes fixam o relógio no pior caso (22h30 de um dia 31).
 
 ---
 
-## ✨ Funcionalidades Implementadas
+## 🛠️ Stack
 
-- **Autenticação completa**: Login, registro, logout, recuperação e redefinição de senha via e-mail.
-- **Agenda**: Visualização semanal de agendamentos por dia. Criação, edição, marcação como realizado/cancelado e exclusão. Suporte a agendamentos recorrentes (por semanas) e confirmação em lote do dia.
-- **Pacientes**: Listagem com busca, criação e edição.
-- **Clínicas**: Listagem com busca, criação e edição (incluindo cor de identificação).
-- **Financeiro**: Receita total e por clínica, navegável por semana ou mês.
-- **Perfil**: Visualização e edição dos dados do profissional, upload/remoção de foto de perfil e troca de senha.
-
----
-
-## 📱 PWA - Progressive Web App
-
-Este projeto está configurado como PWA (`@angular/pwa`). O GestãoFisio pode ser instalado diretamente no dispositivo (desktop ou mobile) como aplicativo nativo, com ícones, splash screen e suporte offline básico.
+- **[Angular 22](https://angular.dev/)**: 100% standalone, rotas com lazy loading, control flow nativo (`@if`, `@for`) e services com `@Service()`.
+- **Signals** para estado (`signal`, `computed`, `effect`), sem NgRx.
+- **TypeScript 6**.
+- **[Tailwind CSS v4](https://tailwindcss.com/)** configurado no CSS (`@theme`), com design tokens em `src/styles/tokens.css` e CSS por componente.
+- **[Chart.js 4](https://www.chartjs.org/)** para os gráficos do financeiro.
+- **PWA** com `@angular/service-worker`.
+- **[Vitest](https://vitest.dev/)** + jsdom para os testes.
+- **Vercel** para o deploy, com a API num subdomínio próprio (same-site, cookies first-party).
 
 ---
 
-## 🚀 Rodando o Projeto Localmente
+## 📋 Funcionalidades
+
+- **Acesso:** login com "manter conectado", cadastro em duas etapas com código de verificação por e-mail, recuperação e redefinição de senha com checklist dos requisitos, e mensagem própria quando a API limita as tentativas.
+- **Agenda:** visões de **semana** e **mês** (a escolha fica salva no aparelho). Sessões avulsas ou com repetição semanal, com prévia das datas e das já ocupadas antes de criar. Marcação de realizada/cancelada, confirmação do dia inteiro em lote e aula experimental (sempre gratuita).
+- **Pacientes:** listagem com busca no servidor e scroll infinito, formulário em seções (dados pessoais, contato e saúde) com máscaras de CPF e telefone e idade calculada pela data de nascimento.
+- **Clínicas:** cards com atendimentos e receita do mês, valor por atendimento com máscara de moeda e cor de identificação usada em todo o app.
+- **Financeiro:** receita da semana ou do mês por clínica, evolução diária (realizado, previsto e período anterior), composição por clínica e histórico mensal/anual.
+- **Perfil:** dados do profissional, foto, troca de senha e de e-mail, exportação dos dados e exclusão da conta.
+
+---
+
+## 🏗️ Arquitetura
+
+```
+src/app/
+├── atualizacao/     # ciclo de vida do PWA (versão nova, chunk perdido, trava de recarga)
+├── components/      # shell: nav-bar (barra inferior no celular, lateral no desktop) e mobile-header
+├── guards/          # authGuard, guestGuard e alteracoesPendentesGuard
+├── interceptors/    # authInterceptor (credenciais, refresh e retry) e RenovacaoDeSessao
+├── pages/           # uma pasta por tela; formulários como rotas filhas da listagem
+├── services/        # um service por recurso da API; HTTP só aqui
+└── shared/
+    ├── components/  # badge, card, combobox, confirm-modal, empty-state, folha, grafico,
+    │                # modal, progress-bar, requisitos-senha
+    ├── directives/  # máscaras de CPF, telefone e moeda
+    ├── pipes/       # telefone
+    └── utils/       # datas, cores das clínicas e dos gráficos, erros de formulário, download...
+```
+
+### Services
+
+| Service                      | Responsabilidade                                                       |
+|------------------------------|------------------------------------------------------------------------|
+| `auth.service.ts`            | Login, logout, cadastro em duas etapas, recuperação e troca de senha   |
+| `perfil.service.ts`          | Profissional autenticado (signal global), foto, troca de e-mail e verificação de sessão |
+| `conta.service.ts`           | Resumo dos dados da conta, exportação e exclusão (LGPD)                |
+| `exportacao-dados.service.ts`| Estado do download da exportação, compartilhado entre telas            |
+| `clinica.service.ts`         | Clínicas: listagem paginada, opções para seleção e CRUD                |
+| `paciente.service.ts`        | Pacientes: listagem paginada com busca, detalhe e CRUD                 |
+| `agendamento.service.ts`     | Sessões: período, recorrência, prévia de conflitos e confirmação do dia|
+| `financeiro.service.ts`      | Resumo, evolução diária e histórico da receita                         |
+
+### Rotas
+
+Todas as páginas são carregadas sob demanda (`loadComponent`).
+
+| Rota                                      | Componente                  | Guard                          |
+|-------------------------------------------|-----------------------------|--------------------------------|
+| `/login`, `/registrar`                    | `Login`, `Registrar`        | `guestGuard`                   |
+| `/esqueci-senha`, `/redefinir-senha`      | `EsqueciSenha`, `RedefinirSenha` | `guestGuard`              |
+| `/termos`, `/privacidade`                 | `TermosPage`, `PrivacidadePage` | —                          |
+| `/agenda`                                 | `Agenda`                    | `authGuard`                    |
+| `/agenda/novo`, `/agenda/:id/editar`      | `AgendamentoForm` (modal)   | `alteracoesPendentesGuard`     |
+| `/pacientes`                              | `Pacientes`                 | `authGuard`                    |
+| `/pacientes/novo`, `/pacientes/:id/editar`| `PacienteForm` (modal)      | `alteracoesPendentesGuard`     |
+| `/clinicas`                               | `Clinicas`                  | `authGuard`                    |
+| `/clinicas/novo`, `/clinicas/:id/editar`  | `ClinicaForm` (modal)       | `alteracoesPendentesGuard`     |
+| `/financeiro`                             | `Financeiro`                | `authGuard`                    |
+| `/perfil`                                 | `PerfilPage`                | `authGuard` + `alteracoesPendentesGuard` |
+| `/**`                                     | `NotFound`                  | —                              |
+
+---
+
+## 🧪 Testes
+
+Testes com Vitest e `HttpTestingController`. Cobrem o interceptor e o refresh de sessão, os guards, as telas de perfil, financeiro, agenda (semana e mês) e clínicas, os formulários em modal, a lógica de datas, as cores das clínicas e o ciclo de atualização do PWA.
+
+```bash
+npm test -- --watch=false
+```
+
+---
+
+## 🚀 Rodando localmente
 
 ### Pré-requisitos
-- **Node.js v22+** (recomendado: `v22.23.2` ou superior)
-- **Backend**: A API precisa estar rodando simultaneamente. Consulte as instruções em [gestao-fisio-backend](https://github.com/giovanigerci/gestao-fisio-backend).
 
-### Passos para execução
+- **Node.js 22** (desenvolvido com `v22.23.2`) e npm 10.
+- **Backend** rodando em `http://localhost:8000`. Veja o [gestao-fisio-backend](https://github.com/giovanigerci/gestao-fisio-backend). As telas autenticadas dependem dele.
 
-1. **Clone este repositório:**
-   ```bash
-   git clone https://github.com/giovanigerci/gestao-fisio-frontend.git
-   cd gestao-fisio-frontend
-   ```
+### Passos
 
-2. **Instale as dependências:**
-   ```bash
-   npm install
-   ```
+```bash
+git clone https://github.com/giovanigerci/gestao-fisio-frontend.git
+cd gestao-fisio-frontend
+npm install
+npm start          # http://localhost:4200
+```
 
-3. **Verifique a URL da API:**
-   O arquivo `src/environments/environment.ts` define a URL base da API:
-   ```typescript
-   export const environment = {
-     production: false,
-     apiUrl: 'http://localhost:8000/api',
-   };
-   ```
-   Certifique-se de que o backend está rodando nessa porta. Não é necessário alterar este arquivo para uso local padrão.
+A URL da API fica em `src/environments/environment.ts` (`http://localhost:8000/api`). O build de produção (`npm run build`) troca esse arquivo por `environment.prod.ts`.
 
-4. **Inicie o servidor de desenvolvimento:**
-   ```bash
-   ng serve
-   # ou
-   npm start
-   ```
+---
 
-5. **Acesse no navegador:**
-   Abra [http://localhost:4200/](http://localhost:4200/).
+## 📚 Documentação
+
+- [`CLAUDE.md`](CLAUDE.md): convenções do projeto, contrato com a API e o porquê das decisões (autenticação, datas, gráficos, PWA, CSP).
+- [`docs/legal/`](docs/legal/): Termos de Uso, Política de Privacidade (LGPD), DPA, modelo de TCLE, Política de Cookies e Plano de Resposta a Incidentes.
