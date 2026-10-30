@@ -231,11 +231,11 @@ export class Agenda {
 
     if (ags.length > 0) {
       if (encerrado && pendentes.length > 0) {
-        estado = 'aguardando_confirmacao'; // Estado 2
+        estado = 'aguardando_confirmacao';
       } else if (encerrado && pendentes.length === 0 && realizados.length > 0) {
-        estado = 'confirmado'; // Estado 4
+        estado = 'confirmado';
       } else {
-        estado = 'durante'; // Estado 1
+        estado = 'durante';
       }
     }
 

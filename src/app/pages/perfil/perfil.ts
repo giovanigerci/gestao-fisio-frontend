@@ -41,7 +41,6 @@ export class PerfilPage implements ComAlteracoesPendentes {
   private conta = inject(ContaService);
   readonly exportacao = inject(ExportacaoDados);
 
-  // Form fields
   firstName = signal('');
   lastName = signal('');
   telefone = signal('');
@@ -54,7 +53,6 @@ export class PerfilPage implements ComAlteracoesPendentes {
   previewFoto = signal<string | null>(null);
   remocaoPendente = signal(false);
 
-  // UI state
   salvando = signal(false);
   erroGeral = signal('');
   erros = signal<Record<string, string[]>>({});
@@ -69,7 +67,6 @@ export class PerfilPage implements ComAlteracoesPendentes {
   alterandoSenha = signal(false);
   alterandoEmail = signal(false);
 
-  // Modal de confirmação (descartar alterações / sair sem salvar)
   confirmacao = signal<Confirmacao | null>(null);
   private resolverConfirmacao: ((confirmado: boolean) => void) | null = null;
 

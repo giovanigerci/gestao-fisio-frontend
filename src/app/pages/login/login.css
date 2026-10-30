@@ -1,4 +1,3 @@
-/* ─── Login Page ─── */
 .login-page {
   min-height: 100dvh;
   display: flex;
@@ -14,7 +13,6 @@
     var(--color-bg-page, #0a0f1a);
 }
 
-/* ─── SVG Reset ─── */
 .login-page svg {
   display: inline-block;
   vertical-align: middle;
@@ -23,7 +21,6 @@
 
 
 
-/* ─── Container ─── */
 .login-container {
   width: 100%;
   max-width: 400px;
@@ -37,7 +34,6 @@
   animation: fadeInUp var(--transition-slow, 0.5s) ease-out;
 }
 
-/* ─── Brand ─── */
 .login-brand {
   text-align: center;
   display: flex;
@@ -78,7 +74,6 @@
   font-weight: 400;
 }
 
-/* ─── Card ─── */
 .login-card {
   width: 100%;
   padding: 28px 24px;
@@ -92,14 +87,12 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
-/* ─── Form ─── */
 .login-form {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-/* ─── Form Field ─── */
 .form-field {
   display: flex;
   flex-direction: column;
@@ -195,7 +188,6 @@
   height: 18px;
 }
 
-/* ─── Extra Options Row ─── */
 .login-options-row {
   display: flex;
   align-items: center;
@@ -219,7 +211,6 @@
   text-decoration: underline;
 }
 
-/* ─── Toggle Row (compact, inline) ─── */
 .login-toggle-row {
   display: flex;
   align-items: center;
@@ -237,7 +228,6 @@
   background-color: var(--color-primary);
 }
 
-/* ─── Field Error (inline, per-field) ─── */
 .field-error {
   font-size: 0.75rem;
   color: var(--color-danger, #f87171);
@@ -255,7 +245,6 @@
   box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.25);
 }
 
-/* ─── Error Message ─── */
 .login-error {
   display: flex;
   align-items: center;
@@ -274,7 +263,6 @@
   flex-shrink: 0;
 }
 
-/* ─── Success Message ─── */
 .login-success {
   display: flex;
   align-items: center;
@@ -295,7 +283,6 @@
   height: 16px;
 }
 
-/* ─── Submit Button ─── */
 .login-btn {
   display: flex;
   align-items: center;
@@ -337,7 +324,6 @@
   pointer-events: none;
 }
 
-/* ─── Spinner ─── */
 .login-btn__spinner {
   display: inline-block;
   width: 18px;
@@ -348,15 +334,11 @@
   animation: spin 0.6s linear infinite;
 }
 
-/* Animation spin is defined globally in styles.css */
-
-/* ─── Footer ─── */
 .login-footer {
   display: flex;
   justify-content: center;
 }
 
-/* ─── Link ─── */
 .login-link {
   color: var(--color-primary);
   text-decoration: none;
@@ -370,7 +352,6 @@
   text-decoration: underline;
 }
 
-/* ─── Rodapé: conta e ajuda junto do formulário; documentos legais na base (um tom só; links em peso 500) ─── */
 .login-footer--empilhado {
   flex-direction: column;
   align-items: center;
@@ -417,7 +398,6 @@
   white-space: nowrap; /* não quebra o endereço no hífen */
 }
 
-/* ─── Legal Accept Text (Registro) ─── */
 .legal-accept-text {
   font-size: 0.8125rem;
   color: var(--color-text-secondary);
@@ -427,7 +407,6 @@
   opacity: 0.85;
 }
 
-/* ─── Desktop Adjustments ─── */
 @media (min-width: 768px) {
   .login-card {
     padding: 36px 32px;

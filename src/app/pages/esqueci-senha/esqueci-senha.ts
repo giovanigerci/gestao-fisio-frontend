@@ -35,7 +35,6 @@ export class EsqueciSenha {
       },
       error: () => {
         this.carregando.set(false);
-        // Mesmo em erro, o backend pode retornar 200, mas caso haja erro 500, exibe genérico
         this.erro.set('Ocorreu um erro ao processar sua solicitação. Tente novamente mais tarde.');
       },
     });

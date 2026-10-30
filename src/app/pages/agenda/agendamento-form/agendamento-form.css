@@ -1,4 +1,3 @@
-/* ─── Clínica: chips na cor de cada clínica ─── */
 .sf-clinicas {
   min-width: 0;
   margin: 0;
@@ -69,7 +68,6 @@
   color: var(--color-text-secondary);
 }
 
-/* ─── Data, início e fim ─── */
 .sf-grid-3 {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -87,7 +85,6 @@
   }
 }
 
-/* ─── Opções (experimental e repetir) ─── */
 .sf-opcoes {
   display: flex;
   flex-direction: column;
@@ -188,7 +185,6 @@
   }
 }
 
-/* ─── Datas que serão criadas ─── */
 .sf-datas {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

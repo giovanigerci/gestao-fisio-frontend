@@ -72,7 +72,6 @@ export class RedefinirSenha implements OnInit {
 
     this.authService.redefinirSenha(this.uid(), this.token(), this.novaSenha(), this.confirmarSenha()).subscribe({
       next: () => {
-        // Redireciona com mensagem de sucesso
         this.router.navigate(['/login'], { queryParams: { mensagem: 'senha-redefinida' } });
       },
       error: (err) => {

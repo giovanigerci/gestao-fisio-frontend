@@ -19,8 +19,6 @@ export class App {
     this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd)
     ).subscribe(event => {
-      // urlAfterRedirects contem a url completa com query params
-      // mas location.pathname também serviria aqui. Vamos usar event.urlAfterRedirects e extrair só o path:
       const path = event.urlAfterRedirects.split('?')[0];
       this.atualizarNav(path);
     });

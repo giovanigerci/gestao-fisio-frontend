@@ -1,10 +1,3 @@
-/* ═══════════════════════════════════════════════════════
-   Pacientes — Page-Specific Styles
-   Shared classes (header, search, states, avatar, table,
-   cards, responsive) come from list-page.css via styleUrls.
-   ═══════════════════════════════════════════════════════ */
-
-/* ─── Page Layout ─── */
 .pacientes-page {
   min-height: 100vh;
   background: var(--color-bg);
@@ -17,7 +10,6 @@
   }
 }
 
-/* ─── Desktop Table (specific columns) ─── */
 .pacientes-table {
   width: 100%;
   border-collapse: collapse;
@@ -48,7 +40,6 @@
   width: 3.5rem;
 }
 
-/* Cell: Paciente (avatar + nome) */
 .cell-paciente {
   display: flex;
   align-items: center;
@@ -64,20 +55,17 @@
   max-width: 16rem;
 }
 
-/* Cell: Visita "Nunca" muted style */
 .visita-nunca {
   color: var(--color-text-muted);
   font-style: italic;
 }
 
-/* Cell: Sessões */
 .td-sessoes {
   font-variant-numeric: tabular-nums;
   font-weight: 500;
   color: var(--color-text-primary);
 }
 
-/* ─── Mobile Card (specific fields) ─── */
 .card-telefone {
   color: var(--color-text-secondary);
   font-size: 0.8125rem;

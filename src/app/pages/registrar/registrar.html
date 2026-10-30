@@ -3,7 +3,6 @@
 
   <div class="login-container">
 
-    <!-- Brand -->
     <div class="login-brand">
       <div class="login-brand__icon">
         <img src="/logo.png" alt="Gestão Fisio Logo" style="width: 48px; height: 48px; object-fit: contain;" />
@@ -16,12 +15,10 @@
       </p>
     </div>
 
-    <!-- Register Card -->
     <div class="login-card">
       @if (etapa() === 'dados') {
       <form (submit)="$event.preventDefault(); enviarCodigo()" class="login-form">
 
-        <!-- Username -->
         <div class="form-field">
           <label for="reg-username" class="form-field__label">USUÁRIO</label>
           <div class="form-field__input-wrapper">
@@ -39,7 +36,6 @@
           }
         </div>
 
-        <!-- E-mail -->
         <div class="form-field">
           <label for="reg-email" class="form-field__label">E-MAIL</label>
           <div class="form-field__input-wrapper">
@@ -57,7 +53,6 @@
           }
         </div>
 
-        <!-- Password -->
         <div class="form-field">
           <label for="reg-password" class="form-field__label">SENHA</label>
           <div class="form-field__input-wrapper">
@@ -91,7 +86,6 @@
           <app-requisitos-senha [senha]="password()" [erro]="temErro('password')" />
         </div>
 
-        <!-- Telefone -->
         <div class="form-field">
           <label for="reg-telefone" class="form-field__label">TELEFONE</label>
           <div class="form-field__input-wrapper">
@@ -109,7 +103,6 @@
           }
         </div>
 
-        <!-- Especialidade -->
         <div class="form-field">
           <label for="reg-especialidade" class="form-field__label">ESPECIALIDADE</label>
           <div class="form-field__input-wrapper">
@@ -126,7 +119,6 @@
           }
         </div>
 
-        <!-- CREFITO -->
         <div class="form-field">
           <label for="reg-crefito" class="form-field__label">CREFITO</label>
           <div class="form-field__input-wrapper">
@@ -147,7 +139,6 @@
           }
         </div>
 
-        <!-- General Error -->
         @if (erroGeral()) {
         <div class="login-error">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -160,7 +151,6 @@
         </div>
         }
 
-        <!-- Legal Acceptance -->
         <p class="legal-accept-text">
           Ao criar sua conta, você declara que leu e concorda com os nossos
           <a routerLink="/termos" target="_blank" class="login-link" style="font-size: inherit; font-weight: 500;">Termos de Uso</a>
@@ -168,7 +158,6 @@
           <a routerLink="/privacidade" target="_blank" class="login-link" style="font-size: inherit; font-weight: 500;">Política de Privacidade</a>.
         </p>
 
-        <!-- Submit -->
         <button type="submit" [disabled]="carregando()" class="login-btn" [class.login-btn--loading]="carregando()">
           @if (carregando()) {
           <span class="login-btn__spinner"></span>
@@ -245,7 +234,6 @@
       }
     </div>
 
-    <!-- Footer -->
     <div class="login-footer login-footer--empilhado">
       <p class="login-convite">Já tem conta? <a routerLink="/login" class="login-link">Entrar</a></p>
       <p class="login-ajuda">
@@ -255,7 +243,6 @@
     </div>
   </div>
 
-  <!-- Documentos legais: discretos, na base da tela -->
   <nav class="login-legal" aria-label="Documentos legais">
     <a routerLink="/termos" class="login-rodape-link">Termos de Uso</a>
     <span class="login-legal__separador" aria-hidden="true">·</span>

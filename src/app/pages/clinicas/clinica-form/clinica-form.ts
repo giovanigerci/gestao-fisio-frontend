@@ -11,12 +11,11 @@ import { iniciais } from '../../../shared/utils/iniciais';
 import { ControleDeSaida } from '../../../shared/utils/controle-de-saida';
 import { focarPrimeiroCampoComErro, tratarErrosApi, temErro, mensagensErro } from '../../../shared/utils/form-errors';
 
-/** Criar/editar clínica num modal sobre a listagem (rotas filhas de /clinicas). */
 @Component({
   selector: 'app-clinica-form',
   imports: [Modal, ConfirmModal, TelefoneMaskDirective, MoedaMaskDirective],
   templateUrl: './clinica-form.html',
-  styleUrls: ['../../../../styles/form-page.css', '../../../../styles/modal-form.css', './clinica-form.css'],
+  styleUrls: ['../../../../styles/form-page.css', '../../../../styles/modal-form.css'],
 })
 export class ClinicaForm implements ComAlteracoesPendentes {
   private route = inject(ActivatedRoute);
@@ -138,8 +137,6 @@ export class ClinicaForm implements ComAlteracoesPendentes {
     return erros;
   }
 
-  // ─── Fechar e descartar ───
-
   /** ✕, Esc ou clique fora: volta para a listagem; o guard da rota pergunta se há alterações. */
   fechar() {
     this.voltarParaLista();
@@ -152,8 +149,6 @@ export class ClinicaForm implements ComAlteracoesPendentes {
   responderDescarte(descartar: boolean) {
     this.saida.responder(descartar);
   }
-
-  // ─── Excluir (só na edição) ───
 
   pedirExclusao() {
     this.confirmandoExclusao.set(true);

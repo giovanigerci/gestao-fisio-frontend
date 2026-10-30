@@ -2,9 +2,7 @@ import { InjectionToken } from '@angular/core';
 
 /** Recargas completas da página, isoladas num token para os testes poderem substituí-las. */
 export interface RecargaDaPagina {
-  /** Recarrega a página atual. */
   recarregar(): void;
-  /** Carrega a URL do zero (ex: a página que falhou ao abrir). */
   abrir(url: string): void;
 }
 

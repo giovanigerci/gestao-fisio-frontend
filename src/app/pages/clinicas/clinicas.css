@@ -1,10 +1,3 @@
-/* ═══════════════════════════════════════════════════════
-   Clínicas — Page-Specific Styles
-   Shared classes (header, states, avatar, infinite scroll)
-   come from list-page.css via styleUrls.
-   ═══════════════════════════════════════════════════════ */
-
-/* ─── Page Layout ─── */
 .clinicas-page {
   min-height: 100vh;
   background: var(--color-bg);
@@ -17,7 +10,6 @@
   }
 }
 
-/* ─── Grid: poucas clínicas, cada uma com destaque próprio ─── */
 .clinicas-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
@@ -25,7 +17,6 @@
   animation: fadeInUp 0.4s ease-out;
 }
 
-/* ─── Card da clínica ─── */
 .clinica-card {
   position: relative;
   display: flex;
@@ -176,7 +167,6 @@
   opacity: 0.55;
 }
 
-/* ─── Card de cadastro ─── */
 .clinica-nova {
   display: flex;
   flex-direction: column;
@@ -241,5 +231,3 @@
 .clinica-nova-item--vazio .clinica-nova {
   min-height: 240px;
 }
-
-/* Animation fadeInUp is defined globally in styles.css */

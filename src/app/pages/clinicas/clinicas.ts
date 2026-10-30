@@ -29,7 +29,6 @@ export class Clinicas implements AfterViewInit, OnDestroy {
   corDaClinica = corDaClinica;
   getIniciais = iniciais;
 
-  /** Referência ao elemento sentinela para IntersectionObserver */
   scrollSentinel = viewChild<ElementRef>('scrollSentinel');
   private observer: IntersectionObserver | null = null;
 
@@ -76,13 +75,11 @@ export class Clinicas implements AfterViewInit, OnDestroy {
       { rootMargin: '200px' }
     );
 
-    // Observar quando o elemento sentinela existir no DOM
     const check = () => {
       const el = this.scrollSentinel()?.nativeElement;
       if (el) {
         this.observer!.observe(el);
       } else {
-        // Tentar novamente após renderização
         requestAnimationFrame(check);
       }
     };

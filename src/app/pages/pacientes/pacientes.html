@@ -1,5 +1,4 @@
 <div class="pacientes-page">
-  <!-- Header -->
   <div class="page-header">
     <div class="header-left">
       <h1 class="page-title">Pacientes</h1>
@@ -15,7 +14,6 @@
     </a>
   </div>
 
-  <!-- Search bar -->
   <div class="search-container">
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
          class="search-icon">
@@ -30,7 +28,6 @@
     />
   </div>
 
-  <!-- Loading state -->
   @if (carregando()) {
     <div class="state-container">
       <div class="spinner"></div>
@@ -38,7 +35,6 @@
     </div>
   }
 
-  <!-- Error state -->
   @if (erro() && !carregando()) {
     <div class="error-container">
       <p class="error-text">{{ erro() }}</p>
@@ -48,7 +44,6 @@
     </div>
   }
 
-  <!-- Empty state (no patients at all) -->
   @if (!carregando() && !erro() && pacientes().length === 0 && !termoBusca()) {
     <app-empty-state
       title="Nenhum paciente cadastrado"
@@ -59,7 +54,6 @@
     </app-empty-state>
   }
 
-  <!-- Search empty state -->
   @if (!carregando() && !erro() && pacientes().length === 0 && termoBusca()) {
     <app-empty-state
       title="Nenhum paciente encontrado"
@@ -70,7 +64,6 @@
     </app-empty-state>
   }
 
-  <!-- ═══════════ DESKTOP TABLE (≥ 1024px) ═══════════ -->
   @if (!carregando() && !erro() && pacientes().length > 0) {
     <div class="table-wrapper desktop-only">
       <table class="pacientes-table">
@@ -87,7 +80,6 @@
         <tbody>
           @for (paciente of pacientes(); track paciente.id) {
             <tr class="table-row" (click)="editarPaciente(paciente)">
-              <!-- Paciente (avatar + nome) -->
               <td class="td-paciente">
                 <div class="cell-paciente">
                   <div class="avatar"
@@ -99,24 +91,19 @@
                 </div>
               </td>
 
-              <!-- Status -->
               <td class="td-status">
                 <app-badge [variant]="getStatusVariant(paciente.status)"></app-badge>
               </td>
 
-              <!-- Telefone -->
               <td class="td-telefone">{{ paciente.telefone | telefone }}</td>
 
-              <!-- Última Visita -->
               <td class="td-visita"
                   [class.visita-nunca]="!paciente.ultima_visita">
                 {{ formatarUltimaVisita(paciente.ultima_visita) }}
               </td>
 
-              <!-- Sessões -->
               <td class="td-sessoes">{{ paciente.total_sessoes }}</td>
 
-              <!-- Ações -->
               <td class="td-acoes">
                 <button (click)="confirmarExclusao(paciente, $event)" class="btn-delete" title="Excluir paciente" aria-label="Excluir paciente">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-delete">
@@ -131,7 +118,6 @@
     </div>
   }
 
-  <!-- ═══════════ MOBILE CARDS (< 1024px) ═══════════ -->
   @if (!carregando() && !erro() && pacientes().length > 0) {
     <div class="cards-wrapper mobile-only">
       @for (paciente of pacientes(); track paciente.id) {
@@ -140,14 +126,12 @@
             (click)="editarPaciente(paciente)"
             class="card-content">
 
-            <!-- Avatar -->
             <div class="avatar"
                  [style.background]="'color-mix(in srgb, ' + corDoPaciente(paciente.id) + ' 15%, transparent)'"
                  [style.color]="corDoPaciente(paciente.id)">
               {{ getIniciais(paciente.nome) }}
             </div>
 
-            <!-- Info -->
             <div class="card-info">
               <div class="card-top-row">
                 <p class="card-nome">{{ paciente.nome }}</p>
@@ -159,7 +143,6 @@
               }
             </div>
 
-            <!-- Delete button -->
             <button (click)="confirmarExclusao(paciente, $event)" class="btn-delete-card" title="Excluir paciente" aria-label="Excluir paciente">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon-delete">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
@@ -171,7 +154,6 @@
     </div>
   }
 
-  <!-- ═══════════ INFINITE SCROLL ═══════════ -->
   @if (!carregando() && !erro() && pacientes().length > 0) {
     @if (carregandoMais()) {
       <div class="load-more-container">
@@ -185,7 +167,6 @@
   <!-- Novo/editar paciente: modal aberto pelas rotas filhas -->
   <router-outlet />
 
-  <!-- Confirm Delete Modal -->
   @if (confirmandoExclusao()) {
     <app-confirm-modal
       title="Excluir paciente"

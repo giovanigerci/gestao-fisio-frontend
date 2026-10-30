@@ -1,5 +1,4 @@
 <div class="clinicas-page">
-  <!-- Header -->
   <div class="page-header">
     <div class="header-left">
       <h1 class="page-title">Clínicas</h1>
@@ -16,7 +15,6 @@
     </a>
   </div>
 
-  <!-- Loading state -->
   @if (carregando()) {
   <div class="state-container">
     <div class="spinner"></div>
@@ -24,7 +22,6 @@
   </div>
   }
 
-  <!-- Error state -->
   @if (erro() && !carregando()) {
   <div class="error-container">
     <p class="error-text">{{ erro() }}</p>
@@ -93,7 +90,6 @@
     </li>
   </ul>
 
-  <!-- ═══════════ INFINITE SCROLL ═══════════ -->
   @if (carregandoMais()) {
   <div class="load-more-container">
     <div class="spinner-small"></div>
@@ -106,7 +102,6 @@
   <!-- Nova/editar clínica: modal aberto pelas rotas filhas -->
   <router-outlet />
 
-  <!-- Confirm Delete Modal -->
   @if (confirmandoExclusao()) {
   <app-confirm-modal title="Excluir clínica" [message]="'Deseja realmente excluir ' + confirmandoExclusao()!.nome + '?'"
     confirmLabel="Excluir" cancelLabel="Voltar" variant="danger" [loading]="processandoAcao()"

@@ -11,17 +11,7 @@ export type BadgeVariant =
   | 'ausente'
   | 'hoje';
 
-/**
- * Badge de status reutilizável.
- *
- * Resolve cor **e** texto internamente a partir da `variant` — garante que
- * status nunca seja comunicado apenas por cor (seção 2 do design system).
- *
- * O `label` pode ser sobrescrito via input quando o texto padrão não se aplica
- * (e.g. "Ativa" feminino vs "Ativo" masculino, ou "Gratuito — não conta na receita").
- *
- * @see docs/design-system-frontend.md — Seção 4
- */
+/** Cor e texto saem da `variant`: o status nunca é comunicado só pela cor. */
 @Component({
   selector: 'app-badge',
   templateUrl: './badge.html',

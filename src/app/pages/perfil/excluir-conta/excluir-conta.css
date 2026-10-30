@@ -1,4 +1,3 @@
-/* ─── Card de risco ─── */
 .ec-card {
   display: flex;
   align-items: center;
@@ -49,7 +48,6 @@
   }
 }
 
-/* ─── Modal de exclusão ─── */
 .ec-aviso {
   padding: 0.875rem 1rem;
   border: 1px solid color-mix(in srgb, var(--color-danger) 30%, transparent);

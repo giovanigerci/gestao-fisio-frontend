@@ -1,7 +1,5 @@
-/* Import the shared login styles */
 @import '../login/login.css';
 
-/* ─── Esqueci Senha Specifics ─── */
 .reset-instructions {
   font-size: 0.875rem;
   color: var(--color-text-secondary);

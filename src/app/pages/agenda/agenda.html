@@ -1,6 +1,5 @@
 <div class="agenda-page">
 
-  <!-- Header -->
   <div class="agenda-header" [class.agenda-header--mes]="visao() === 'mes'">
     <div>
       <h1 class="agenda-title">Agenda</h1>
@@ -54,7 +53,6 @@
   }
   } @else {
 
-  <!-- Day Strip Selector -->
   <div class="agenda-day-strip-wrapper">
     <button (click)="semanaAnterior()" class="agenda-nav-btn" aria-label="Semana anterior">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
@@ -86,7 +84,6 @@
     </button>
   </div>
 
-  <!-- Selected Day Header -->
   @if (diaSelecionado(); as dia) {
   <div class="agenda-selected-section">
     <div class="agenda-selected-header">
@@ -100,12 +97,10 @@
       </div>
     </div>
 
-    <!-- Progress Bar -->
     @if (progressSegments().length > 0) {
     <app-progress-bar [segments]="progressSegments()" [height]="4" />
     }
 
-    <!-- Clinic Legend -->
     @if (clinicasDoDia().length > 0) {
     <div class="agenda-clinic-legend">
       @for (clinica of clinicasDoDia(); track clinica.id) {
@@ -119,7 +114,6 @@
   </div>
   }
 
-  <!-- Error -->
   @if (erro()) {
   <div class="agenda-error">
     <p class="agenda-error-text">{{ erro() }}</p>
@@ -129,7 +123,6 @@
   </div>
   }
 
-  <!-- Loading -->
   @if (carregando()) {
   <div class="agenda-loading">
     <div class="agenda-spinner"></div>
@@ -137,9 +130,7 @@
   </div>
   }
 
-  <!-- Appointments for selected day -->
   @if (!carregando() && diaSelecionado(); as dia) {
-  <!-- Banner de Confirmação -->
   @if (dadosConfirmacaoDia().estado === 'aguardando_confirmacao') {
   <div class="agenda-banner agenda-banner--aviso">
     <div class="agenda-banner-body">
@@ -172,7 +163,6 @@
   </div>
   }
 
-  <!-- Banner de Sucesso: Estado 4 (Dia Confirmado) -->
   @if (dadosConfirmacaoDia().estado === 'confirmado') {
   <div class="agenda-banner agenda-banner--sucesso">
     <div class="agenda-banner-body">
@@ -243,7 +233,6 @@
     (cancelarSessao)="cancelarAgendamento(ag)" (excluir)="excluirAgendamento(ag)" />
   }
 
-  <!-- Confirm Delete Modal -->
   @if (confirmandoExclusao()) {
   <app-confirm-modal title="Excluir agendamento"
     [message]="'Deseja realmente excluir o agendamento de ' + (confirmandoExclusao()!.nome_paciente || 'Desconhecido') + '?'"

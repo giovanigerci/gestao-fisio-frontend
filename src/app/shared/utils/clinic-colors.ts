@@ -1,16 +1,8 @@
 /**
- * Paleta de identificação visual de clínicas.
- *
  * A cor de cada clínica é escolhida pelo backend na criação (campo `cor`, de 1 a 5:
  * a menos usada entre as clínicas do profissional) e vem da API — `cor` na clínica,
  * `cor_clinica` no agendamento, `clinica__cor` no resumo financeiro. Assim duas clínicas
  * do mesmo profissional não repetem cor (até 5 clínicas) e a cor é a mesma em todas as telas.
- *
- * Cada cor é uma referência ao token CSS correspondente, garantindo que a
- * alteração de uma cor na paleta se propague automaticamente para todo o
- * produto sem tocar em nenhum componente.
- *
- * @see docs/design-system-frontend.md — Seção 3
  */
 const CORES_CLINICA = [
   'var(--color-clinic-1)',

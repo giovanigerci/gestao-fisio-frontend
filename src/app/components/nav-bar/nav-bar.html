@@ -1,15 +1,12 @@
 <nav class="navbar">
 
-  <!-- Branding (desktop only) -->
   <div class="navbar-brand">
     <img src="/logo.png" alt="Gestão Fisio Logo" class="navbar-logo" />
     <span class="navbar-brand-primary">Gestão</span><span class="navbar-brand-accent">Fisio</span>
   </div>
 
-  <!-- Nav links -->
   <div class="navbar-links">
 
-    <!-- Agenda -->
     <a routerLink="/agenda" routerLinkActive="nav-active" class="nav-link">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
         class="nav-icon">
@@ -19,7 +16,6 @@
       <span class="nav-label">Agenda</span>
     </a>
 
-    <!-- Pacientes -->
     <a routerLink="/pacientes" routerLinkActive="nav-active" class="nav-link">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
         class="nav-icon">
@@ -29,7 +25,6 @@
       <span class="nav-label">Pacientes</span>
     </a>
 
-    <!-- Clínicas -->
     <a routerLink="/clinicas" routerLinkActive="nav-active" class="nav-link">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
         class="nav-icon">
@@ -39,7 +34,6 @@
       <span class="nav-label">Clínicas</span>
     </a>
 
-    <!-- Financeiro -->
     <a routerLink="/financeiro" routerLinkActive="nav-active" class="nav-link">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
         class="nav-icon">
@@ -51,10 +45,8 @@
 
   </div>
 
-  <!-- Profile + Logout (desktop only) -->
   <div class="navbar-footer">
 
-    <!-- Profile card -->
     @if (perfilService.perfil(); as perfil) {
     <a routerLink="/perfil" class="profile-card">
       <div class="profile-avatar">
@@ -73,7 +65,6 @@
     </a>
     }
 
-    <!-- Sair (desktop) -->
     <button (click)="logout()" class="nav-link nav-logout">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
         class="nav-icon">

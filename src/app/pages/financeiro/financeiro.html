@@ -1,5 +1,4 @@
 <div class="fin-page">
-  <!-- Header -->
   <div class="page-header">
     <div class="header-left">
       <h1 class="page-title">Financeiro</h1>
@@ -19,9 +18,7 @@
 
   @if (aba() === 'periodo') {
   <div role="tabpanel" id="painel-periodo" aria-labelledby="aba-periodo">
-    <!-- Controls (um filtro único, acima de tudo o que ele afeta) -->
     <div class="fin-controls">
-      <!-- Period Toggle -->
       <div class="fin-toggle-wrapper">
         <button (click)="trocarPeriodo('mes')" [class.fin-toggle--active]="periodo() === 'mes'" class="fin-toggle-btn">
           Mês
@@ -32,7 +29,6 @@
         </button>
       </div>
 
-      <!-- Date Navigator -->
       <div class="fin-date-nav">
         <button class="fin-nav-btn" (click)="periodoAnterior()" aria-label="Período anterior">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -50,7 +46,6 @@
       </div>
     </div>
 
-    <!-- Error -->
     @if (erro() && !carregando()) {
     <div class="error-container">
       <p class="error-text">{{ erro() }}</p>
@@ -60,7 +55,6 @@
     </div>
     }
 
-    <!-- Loading (só na primeira carga; recargas mantêm o conteúdo esmaecido) -->
     @if (carregando()) {
     <div class="state-container">
       <div class="spinner"></div>
@@ -68,11 +62,9 @@
     </div>
     }
 
-    <!-- Content -->
     @if (!carregando() && !erro()) {
     <div class="fin-conteudo" [class.fin-conteudo--atualizando]="atualizando()" [attr.aria-busy]="atualizando()">
 
-      <!-- Totais do período -->
       <div class="fin-total-card">
         <div class="fin-total-label">Receita realizada</div>
         <div class="fin-total-valor">{{ formatarMoeda(totalGeral()) }}</div>
@@ -118,7 +110,6 @@
       } @else {
       <div class="fin-graficos">
 
-        <!-- Evolução da receita -->
         <section class="fin-grafico-card" aria-labelledby="titulo-evolucao">
           <div class="fin-grafico-header">
             <div>
@@ -169,7 +160,6 @@
           }
         </section>
 
-        <!-- Composição por clínica -->
         <section class="fin-grafico-card" aria-labelledby="titulo-composicao">
           <div class="fin-grafico-header">
             <div>

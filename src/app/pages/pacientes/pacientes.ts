@@ -37,23 +37,19 @@ export class Pacientes implements AfterViewInit, OnDestroy {
 
   totalCadastrados = signal(0);
 
-  /** Referência ao elemento sentinela para IntersectionObserver */
   scrollSentinel = viewChild<ElementRef>('scrollSentinel');
   private observer: IntersectionObserver | null = null;
 
   constructor() {
-    // ── Busca reativa com debounce ──
     toObservable(this.termoBusca).pipe(
       debounceTime(350),
       distinctUntilChanged(),
       tap(() => {
-        // RESET: limpa lista e nextUrl ANTES de disparar a requisição
         this.pacientes.set([]);
         this.nextUrl.set(null);
         this.carregando.set(true);
         this.erro.set('');
       }),
-      // switchMap cancela a requisição anterior automaticamente
       switchMap(termo => this.pacienteService.listar(1, termo)),
       takeUntilDestroyed(this.destroyRef),
     ).subscribe({
@@ -103,13 +99,11 @@ export class Pacientes implements AfterViewInit, OnDestroy {
       { rootMargin: '200px' }
     );
 
-    // Observar quando o elemento sentinela existir no DOM
     const check = () => {
       const el = this.scrollSentinel()?.nativeElement;
       if (el) {
         this.observer!.observe(el);
       } else {
-        // Tentar novamente após renderização
         requestAnimationFrame(check);
       }
     };

@@ -20,7 +20,6 @@ interface OpcaoClinica {
   cor: number;
 }
 
-/** Criar/editar sessão num modal sobre a agenda (rotas filhas de /agenda). */
 @Component({
   selector: 'app-agendamento-form',
   imports: [Modal, ConfirmModal, Combobox],
@@ -73,8 +72,6 @@ export class AgendamentoForm implements ComAlteracoesPendentes {
   );
   readonly temAlteracoes = computed(() => this.estadoAtual() !== this.estadoInicial());
   readonly saida = new ControleDeSaida(() => this.temAlteracoes(), () => this.salvando());
-
-  // ─── Prévia da repetição: as datas que serão criadas e as que o paciente já tem sessão ───
 
   readonly previa = signal<PreviaRecorrencia | null>(null);
   private readonly parametrosDaPrevia = computed(() => {
@@ -223,8 +220,6 @@ export class AgendamentoForm implements ComAlteracoesPendentes {
       },
     });
   }
-
-  // ─── Fechar e descartar ───
 
   /** ✕, Esc ou clique fora: volta para a agenda; o guard da rota pergunta se há alterações. */
   fechar() {

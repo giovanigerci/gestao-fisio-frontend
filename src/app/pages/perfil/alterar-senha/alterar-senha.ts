@@ -7,7 +7,6 @@ import { focarPrimeiroCampoComErro, limparErro, mensagensErro, temErro, tratarEr
 
 type CampoSenha = 'senha_atual' | 'nova_senha' | 'confirmar_senha';
 
-/** Modal "Alterar senha" do Perfil. Aberto e fechado pela página; avisa quando a senha foi trocada. */
 @Component({
   selector: 'app-alterar-senha',
   imports: [Modal, RequisitosSenha, NgTemplateOutlet],

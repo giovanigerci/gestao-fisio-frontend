@@ -13,7 +13,6 @@
 
     @if (perfilService.perfil(); as perfil) {
 
-    <!-- ─── Identidade + números da conta ─── -->
     <section class="perfil-card perfil-identidade" aria-label="Identificação">
       <div class="perfil-identidade-topo">
         <div class="perfil-avatar-area">
@@ -95,7 +94,7 @@
       }
     </section>
 
-    <!-- ─── Dados do perfil (salvos pela barra flutuante, que só aparece com alterações) ─── -->
+    <!-- Salvo pela barra flutuante, que só aparece com alterações -->
     <form id="form-perfil" class="perfil-card" aria-labelledby="perfil-dados-titulo"
       (submit)="$event.preventDefault(); salvar()" novalidate>
       <div class="perfil-card-cabecalho">
@@ -199,7 +198,6 @@
       </div>
     </form>
 
-    <!-- ─── Segurança e dados: uma linha por ação, o botão sempre à direita ─── -->
     <section class="perfil-card" aria-labelledby="perfil-conta-titulo">
       <div class="perfil-card-cabecalho">
         <span class="perfil-icone" aria-hidden="true">
@@ -257,7 +255,6 @@
     }
   </div>
 
-  <!-- Barra de salvar: fixa no rodapé da tela, só enquanto há alterações -->
   @if (temAlteracoesPendentes()) {
   <div class="perfil-barra" role="region" aria-label="Alterações não salvas">
     <div class="perfil-barra-caixa">
@@ -292,7 +289,6 @@
   <app-alterar-senha (fechar)="alterandoSenha.set(false)" (alterada)="aoAlterarSenha()" />
   }
 
-  <!-- Confirmação: descartar alterações, sair da página ou sair da conta com alterações -->
   @if (confirmacao(); as c) {
   <app-confirm-modal [title]="c.titulo" [message]="c.mensagem" [confirmLabel]="c.confirmarLabel"
     cancelLabel="Continuar editando" variant="danger"

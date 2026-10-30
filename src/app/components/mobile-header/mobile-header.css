@@ -1,7 +1,3 @@
-/* ═══════════════════════════════════════════════════════
-   Mobile Header — fixed top bar (< 1024px only)
-   ═══════════════════════════════════════════════════════ */
-
 .mobile-header {
   position: fixed;
   top: 0;
@@ -26,7 +22,6 @@
   }
 }
 
-/* ─── Logo ─── */
 .mobile-header-logo {
   display: flex;
   align-items: center;
@@ -38,7 +33,6 @@
   object-fit: contain;
 }
 
-/* ─── Avatar ─── */
 .mobile-header-avatar {
   width: 2.25rem;
   height: 2.25rem;

@@ -1,4 +1,3 @@
-/* ─── Desktop: janela centralizada ─── */
 .modal {
   width: min(600px, calc(100vw - 2rem));
   max-height: min(860px, calc(100dvh - 3rem));
@@ -103,7 +102,6 @@
   display: none;
 }
 
-/* ─── Celular: tela cheia, ação principal no cabeçalho fixo ─── */
 @media (max-width: 639px) {
   .modal {
     width: 100%;

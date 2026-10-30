@@ -1,8 +1,3 @@
-/* ═══════════════════════════════════════════════════════
-   Perfil — coluna única de cards. Campos, seções e botões vêm de
-   modal-form.css (mf-*); alertas e spinner, de form-page.css.
-   ═══════════════════════════════════════════════════════ */
-
 .perfil-pagina {
   min-height: 100vh;
   padding: 1.25rem 1rem 8rem; /* espaço para a barra de salvar não cobrir o fim da página */
@@ -56,7 +51,6 @@
   }
 }
 
-/* ─── Card base ─── */
 .perfil-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -114,7 +108,6 @@
   background: var(--color-border);
 }
 
-/* ─── Identidade ─── */
 .perfil-identidade {
   overflow: hidden;
 }
@@ -306,7 +299,6 @@
   }
 }
 
-/* Contato do suporte, no fim da página */
 .perfil-ajuda {
   text-align: center;
   font-size: 0.8125rem;
@@ -363,7 +355,6 @@
   height: 18px;
 }
 
-/* Números da conta */
 .perfil-numeros {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -389,7 +380,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* ─── Linhas de ação (Segurança e dados) ─── */
 .perfil-linha {
   display: flex;
   align-items: center;
@@ -440,7 +430,6 @@
   height: 48px;
 }
 
-/* ─── Celular ─── */
 @media (max-width: 639px) {
   .perfil-identidade-topo {
     gap: 1rem;
@@ -498,7 +487,6 @@
   }
 }
 
-/* ─── Barra de salvar (fixa no rodapé da tela) ─── */
 .perfil-barra {
   position: fixed;
   left: 0;
@@ -577,7 +565,6 @@
   }
 }
 
-/* ─── Aviso de sucesso (some sozinho) ─── */
 .perfil-aviso {
   position: fixed;
   top: calc(3.5rem + 12px); /* abaixo do cabeçalho do celular */

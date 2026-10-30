@@ -10,7 +10,6 @@ import { ControleDeSaida } from '../../../shared/utils/controle-de-saida';
 import { focarPrimeiroCampoComErro, tratarErrosApi, temErro, mensagensErro } from '../../../shared/utils/form-errors';
 import { formatarDataISO, idadeEmAnos } from '../../../shared/utils/datas';
 
-/** Criar/editar paciente num modal sobre a listagem (rotas filhas de /pacientes). */
 @Component({
   selector: 'app-paciente-form',
   imports: [Modal, ConfirmModal, TelefoneMaskDirective, CpfMaskDirective],
@@ -48,7 +47,6 @@ export class PacienteForm implements ComAlteracoesPendentes {
     () => `${this.historicoMedico().length.toLocaleString('pt-BR')} / ${this.LIMITE_HISTORICO.toLocaleString('pt-BR')}`
   );
 
-  // Limites para data de nascimento
   readonly hoje = formatarDataISO();
   readonly dataMinima = (() => {
     const d = new Date();
@@ -179,8 +177,6 @@ export class PacienteForm implements ComAlteracoesPendentes {
     });
   }
 
-  // ─── Fechar e descartar ───
-
   /** ✕, Esc ou clique fora: volta para a listagem; o guard da rota pergunta se há alterações. */
   fechar() {
     this.voltarParaLista();
@@ -193,8 +189,6 @@ export class PacienteForm implements ComAlteracoesPendentes {
   responderDescarte(descartar: boolean) {
     this.saida.responder(descartar);
   }
-
-  // ─── Excluir (só na edição) ───
 
   pedirExclusao() {
     this.confirmandoExclusao.set(true);

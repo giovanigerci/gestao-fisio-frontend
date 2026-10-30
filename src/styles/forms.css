@@ -1,4 +1,3 @@
-/* ─── Form Inputs ─── */
 .input-field {
   width: 100%;
   border-radius: 12px;
@@ -48,7 +47,6 @@ input[type="date"].input-field {
   cursor: pointer;
 }
 
-/* Estado de erro nos inputs */
 .input-field--error {
   border-color: var(--color-danger) !important;
   box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.15);
@@ -108,7 +106,6 @@ input[type="date"].input-field {
   color: var(--color-text-secondary);
 }
 
-/* Toggle switch */
 .toggle-track {
   position: relative;
   width: 44px;
@@ -138,7 +135,6 @@ input[type="date"].input-field {
   transform: translateX(20px);
 }
 
-/* Option Card */
 .option-card {
   display: flex;
   align-items: center;
@@ -229,7 +225,6 @@ input[type="date"].input-field {
   background-color: var(--color-primary);
 }
 
-/* ─── Animations ─── */
 .animate-in {
   animation: fadeSlideIn 0.25s ease-out;
 }

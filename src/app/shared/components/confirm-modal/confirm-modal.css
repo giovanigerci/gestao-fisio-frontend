@@ -1,9 +1,3 @@
-/* ═══════════════════════════════════════════════════════
-   Confirm Modal — Estilos
-   Reutiliza tokens de cor via var(--color-*).
-   ═══════════════════════════════════════════════════════ */
-
-/* ─── Overlay ─── */
 .confirm-overlay {
   position: fixed;
   inset: 0;
@@ -14,7 +8,6 @@
   animation: confirmFadeIn 0.2s ease-out;
 }
 
-/* ─── Modal ─── */
 .confirm-modal {
   position: fixed;
   bottom: 0;
@@ -35,7 +28,6 @@
   animation: confirmSlideUp 0.25s ease-out;
 }
 
-/* ─── Icon ─── */
 .confirm-icon-wrapper {
   width: 56px;
   height: 56px;
@@ -68,7 +60,6 @@
   color: var(--color-warning);
 }
 
-/* ─── Text ─── */
 .confirm-title {
   font-size: 1.125rem;
   font-weight: 600;
@@ -84,7 +75,6 @@
   margin-bottom: 24px;
 }
 
-/* ─── Actions ─── */
 .confirm-actions {
   display: flex;
   gap: 10px;
@@ -111,7 +101,6 @@
   cursor: not-allowed;
 }
 
-/* Cancel / Back button */
 .confirm-btn--cancel {
   background: color-mix(in srgb, var(--color-border) 60%, transparent);
   color: var(--color-text-secondary);
@@ -123,7 +112,6 @@
   color: var(--color-text-primary);
 }
 
-/* Confirm button — danger variant */
 .confirm-modal--danger .confirm-btn--confirm {
   background: var(--color-danger-solid);
   color: #fff;
@@ -134,7 +122,6 @@
   box-shadow: 0 4px 12px color-mix(in srgb, var(--color-danger-solid) 35%, transparent);
 }
 
-/* Confirm button — warning variant */
 .confirm-modal--warning .confirm-btn--confirm {
   background: var(--color-warning);
   color: #fff;
@@ -145,7 +132,6 @@
   box-shadow: 0 4px 12px color-mix(in srgb, var(--color-warning) 30%, transparent);
 }
 
-/* ─── Spinner ─── */
 .confirm-spinner {
   width: 14px;
   height: 14px;
@@ -155,7 +141,6 @@
   animation: confirmSpin 0.7s linear infinite;
 }
 
-/* ─── Animations ─── */
 @keyframes confirmFadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
@@ -176,7 +161,6 @@
   to { transform: rotate(360deg); }
 }
 
-/* ─── Desktop: Modal centered (>= 1024px) ─── */
 @media (min-width: 1024px) {
   .confirm-modal {
     top: 50%;

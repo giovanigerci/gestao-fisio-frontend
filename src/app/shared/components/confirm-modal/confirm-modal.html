@@ -1,6 +1,5 @@
 <div class="confirm-overlay" (click)="onOverlayClick()"></div>
 <div class="confirm-modal" [class]="'confirm-modal confirm-modal--' + variant()">
-  <!-- Icon -->
   <div class="confirm-icon-wrapper">
     @if (variant() === 'danger') {
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="confirm-icon">
@@ -13,11 +12,9 @@
     }
   </div>
 
-  <!-- Text -->
   <h3 class="confirm-title">{{ title() }}</h3>
   <p class="confirm-message">{{ message() }}</p>
 
-  <!-- Actions -->
   <div class="confirm-actions">
     <button
       class="confirm-btn confirm-btn--cancel"

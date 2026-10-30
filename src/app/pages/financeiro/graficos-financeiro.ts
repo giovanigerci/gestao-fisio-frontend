@@ -26,8 +26,6 @@ function formatarMoedaCompacta(valor: number): string {
   return `R$ ${valor.toLocaleString('pt-BR', { maximumFractionDigits: 0 })}`;
 }
 
-// ─── Evolução da receita ────────────────────────────────────────────────
-
 export interface SerieEvolucao {
   rotulos: string[];
   /** Título do tooltip: "Dia 18" no mês, "Dom, 15/03" na semana. */
@@ -208,8 +206,6 @@ export function configuracaoEvolucao(serie: SerieEvolucao): ChartConfiguration<'
   };
 }
 
-// ─── Composição por clínica ─────────────────────────────────────────────
-
 export interface FatiaComposicao {
   id: number | null; // null = "Outras"
   /** Posição na paleta (1–5); null em "Outras". */
@@ -307,8 +303,6 @@ export function configuracaoComposicao(composicao: Composicao): ChartConfigurati
     },
   };
 }
-
-// ─── Histórico mensal/anual ─────────────────────────────────────────────
 
 /** 'YYYY-MM' → 'Mar/26'; 'YYYY' → '2026'. */
 export function rotuloPeriodoHistorico(periodo: string): string {
