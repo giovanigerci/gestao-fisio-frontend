@@ -41,7 +41,7 @@ export class AuthService {
             `${environment.apiUrl}/auth/logout/`,
             {},
             { withCredentials: true }
-        ).pipe(
+         ).pipe(
             tap(() => this.perfilService.limpar())
         );
     }

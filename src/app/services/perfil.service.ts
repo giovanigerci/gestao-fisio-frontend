@@ -47,7 +47,7 @@ export class PerfilService {
 
   private _perfilRequest$: Observable<Perfil> | null = null;
 
-  limpar() {
+ limpar() {
     this._perfil.set(null);
     this._carregado = false;
     this._perfilRequest$ = null;
