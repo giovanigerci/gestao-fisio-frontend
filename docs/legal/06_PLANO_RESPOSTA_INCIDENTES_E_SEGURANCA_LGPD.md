@@ -1,6 +1,6 @@
 # Plano de Segurança da Informação e Resposta a Incidentes com Dados Pessoais
 
-*Versão: 1.0 — Em conformidade com os Arts. 46 a 49 da LGPD e a Resolução CD/ANPD nº 15/2024*
+*Versão: 1.1 (30 de outubro de 2026) — Em conformidade com os Arts. 46 a 49 da LGPD e a Resolução CD/ANPD nº 15/2024*
 
 ---
 
@@ -19,19 +19,21 @@ Em consonância com as boas práticas de segurança defensiva (*Security by Desi
 
 ### 2.1. Controle de Acesso e Multi-tenancy Rígido
 - **Isolamento de Queries no Backend**: Todo acesso aos modelos de dados (`Clinica`, `Paciente`, `Agendamento`) é estritamente restrito por filtro do profissional autenticado (`request.user.profissional`), garantindo que nenhum usuário consiga visualizar, consultar ou modificar dados de terceiros.
-- **Proteção de Rotas com Guards**: O frontend Angular possui guardiões de rota (`auth.guard`) que impedem a renderização de telas protegidas sem autenticação ativa e válida.
+- **Proteção de Rotas com Guards**: O frontend Angular possui guardiões de rota (`authGuard`) que impedem a renderização de telas protegidas sem autenticação ativa e válida.
 - **Restrição de Origem (CORS)**: A API aceita requisições exclusivamente de domínios explicitamente autorizados (`CORS_ALLOWED_ORIGINS`) com suporte estrito a credenciais (`CORS_ALLOW_CREDENTIALS = True`).
 
 ### 2.2. Proteção Criptográfica, Cookies e Credenciais
 - **Senhas com Algoritmo Forte**: Senhas são processadas com *hashing* criptográfico irreversível (*PBKDF2* com salt aleatório), não sendo armazenadas em texto legível em nenhuma circunstância.
 - **Autenticação via Cookies HttpOnly (`CookieJWTAuthentication`)**: Tokens JWT são transmitidos e gerenciados exclusivamente via Cookies com as diretivas `HttpOnly=True` e `SameSite='Lax'`, impossibilitando a leitura via JavaScript no cliente e eliminando o risco de sequestro de credenciais via *XSS*.
-- **Validade Curta e Rotação**: O token de acesso possui validade curta de 5 minutos, e a renovação é intermediada por token de atualização rotativo (`refresh_token`).
+- **Validade Curta e Rotação**: O token de acesso possui validade curta de 5 minutos, e a renovação é intermediada por token de atualização rotativo (cookie `refresh`), invalidado a cada uso.
 - **Revogação Imediata no Logout**: Ao acionar o endpoint de logout, o backend emite instrução expressa de remoção imediata dos cookies de autenticação do navegador.
-- **Mitigação de Ataques de Força Bruta (Rate Limiting)**: Implementação de `ScopedRateThrottle` com tetos rígidos: 5 tentativas/minuto para login, 3 cadastros/minuto para novos registros e 3 solicitações/hora para recuperação de senha.
-- **Transporte Seguro (TLS/HTTPS)**: Tráfego cifrado em repouso e em trânsito com certificados TLS modernos, mitigando interceptações do tipo *Man-in-the-Middle*.
+- **Encerramento de Sessões na Troca de Senha**: Trocar a senha encerra as demais sessões abertas; redefinir a senha pelo e-mail encerra todas.
+- **Mitigação de Ataques de Força Bruta (Rate Limiting)**: Implementação de `ScopedRateThrottle` com tetos rígidos: 5 tentativas/minuto para login, 5 cadastros/minuto para novos registros e 3 solicitações/hora para recuperação de senha.
+- **Transporte Seguro (TLS/HTTPS)**: Tráfego cifrado em trânsito com certificados TLS modernos, mitigando interceptações do tipo *Man-in-the-Middle*.
+- **Cabeçalhos de Segurança na Interface Web**: *Content Security Policy* estrita (sem scripts inline ou de terceiros), `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff` e `Referrer-Policy` e `Permissions-Policy` restritivas.
 
 ### 2.3. Rastreabilidade e Auditoria
-- **Logs de Acesso a Aplicação**: Registros obrigatórios de conexão conforme Art. 15 do Marco Civil da Internet (data, hora, IP de origem e rota acessada), mantidos em ambiente seguro por no mínimo 6 meses.
+- **Registros Técnicos de Acesso**: Endereço IP, data/hora e endereço das requisições ficam somente nos registros dos provedores de hospedagem, pelo período curto definido por eles, e são usados apenas para segurança e diagnóstico de falhas.
 
 ---
 
@@ -58,7 +60,7 @@ Para fins deste plano, considera-se incidente qualquer evento adverso confirmado
 ┌─────────────────────────────────────────────────────────────┐
 │ FASE 2: CONTENÇÃO E ISOLAMENTO                              │
 │ - Revogação imediata de credenciais ou tokens suspeitos.    │
-│ - Bloqueio temporário de endpoints ou IPs hostis via firewall│
+│ - Bloqueio temporário de endpoints ou IPs hostis (firewall).│
 │ - Preservação de logs e evidências forenses.                │
 └──────────────────────────────┬──────────────────────────────┘
                                │

@@ -1,7 +1,6 @@
 # Política de Privacidade e Proteção de Dados Pessoais (LGPD) — Gestão Fisio
 
-*Última atualização: 13 de Setembro de 2026*  
-*Versão: 1.0*
+*Última atualização: 30 de outubro de 2026. Alinhado à versão 1.3 (15 de outubro de 2026), publicada em [gestao-fisio.com/privacidade](https://gestao-fisio.com/privacidade), que prevalece em caso de divergência.*
 
 A presente **Política de Privacidade e Proteção de Dados Pessoais** ("Política") tem como objetivo informar, de maneira clara, objetiva e transparente, como o **Gestão Fisio** ("Nós" ou "Plataforma") coleta, utiliza, armazena, compartilha e protege os dados pessoais e dados pessoais sensíveis dos seus Usuários e respectivos pacientes, em estrita conformidade com a **Lei Geral de Proteção de Dados Pessoais (Lei Federal nº 13.709/2018 — LGPD)**, o **Marco Civil da Internet (Lei Federal nº 12.965/2014)** e os regulamentos editados pela **Autoridade Nacional de Proteção de Dados (ANPD)**.
 
@@ -28,8 +27,8 @@ No ecossistema do **Gestão Fisio**, os papéis jurídicos distribuem-se da segu
 ┌─────────────────────────────────────────────────────────────┐
 │ 1. DADOS DO PROFISSIONAL (USUÁRIO CADASTRADO NO SAAS)       │
 │    Controlador: Plataforma Gestão Fisio                     │
-│    Finalidade: Execução do contrato de SaaS, gestão de      │
-│                acesso, faturamento e segurança de rede.     │
+│    Finalidade: Execução do contrato de SaaS, segurança de   │
+│                rede e cumprimento de obrigações legais.     │
 └─────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────┐
@@ -54,8 +53,8 @@ No ecossistema do **Gestão Fisio**, os papéis jurídicos distribuem-se da segu
 | **Telefone** | Contato direto, segurança e validação cadastral (obrigatório no cadastro). | Execução de Contrato (Art. 7º, V) |
 | **CREFITO e Especialidade** | Validação mandatória de registro de classe e regularidade perante o COFFITO/CREFITO. | Cumprimento de Obrigação Legal e Legítimo Interesse (Art. 7º, II e IX) |
 | **Nome, Sobrenome e E-mail (Perfil)** | Identificação nominal do profissional e envio de tokens de redefinição de senha. | Execução de Contrato (Art. 7º, V) |
-| **Foto de Perfil** | Personalização visual da interface do profissional (armazenada em diretório de mídia protegido). | Execução de Contrato (Art. 7º, V) |
-| **Endereço IP, Data/Hora e Logs de Conexão** | Rastreabilidade de transações e cumprimento obrigatório do Marco Civil da Internet. | Cumprimento de Obrigação Legal (Art. 7º, II c/c Art. 15 da Lei nº 12.965/2014) |
+| **Foto de Perfil (opcional)** | Personalização visual da interface. Guardada em armazenamento em nuvem sob endereço aleatório, visível a quem tiver o link; removível a qualquer momento, com exclusão definitiva do arquivo. | Execução de Contrato (Art. 7º, V) |
+| **Endereço IP, Data/Hora e Logs de Acesso** | Segurança da Plataforma e diagnóstico de falhas. | Legítimo Interesse (Art. 7º, IX) |
 
 ### 3.2. Dados Tratados dos Pacientes (Inseridos pelo Profissional)
 
@@ -78,10 +77,10 @@ O Gestão Fisio implementa controles técnicos defensivos consolidados diretamen
 
 1. **Isolamento Estrito de Dados Multi-tenant**: Toda consulta aos modelos de dados (`Clinica`, `Paciente`, `Agendamento`) é filtrada obrigatoriamente pela chave estrangeira do profissional autenticado (`request.user.profissional`), impedindo no nível de banco de dados que um profissional acerte ou visualize registros de outro.
 2. **Criptografia de Senhas (PBKDF2 com Salt)**: As credenciais de acesso são submetidas a algoritmos criptográficos irreversíveis de derivação de chaves homologados pelo Django, com validação mínima de complexidade.
-3. **Autenticação Segura por Cookies HttpOnly (`CookieJWTAuthentication`)**: O sistema não armazena tokens em `localStorage` ou `sessionStorage`. Utiliza cookies protegidos com `HttpOnly=True`, `SameSite='Lax'` e `Secure` em produção, transmitidos via HTTPS (`withCredentials: true`), com validade de 5 minutos para `access_token` e rotação automática de `refresh_token`.
-4. **Proteção Ativa contra Ataques de Força Bruta (Rate Limiting/Throttling)**: A API restringe requisições automatizadas abusivas com limites estritos: máximo de 5 tentativas por minuto para login, 3 por minuto para registro de contas e 3 por hora para solicitações de reset de senha.
+3. **Autenticação Segura por Cookies HttpOnly (`CookieJWTAuthentication`)**: O sistema não armazena tokens em `localStorage` ou `sessionStorage`. Utiliza cookies protegidos com `HttpOnly=True`, `SameSite='Lax'` e `Secure` em produção, transmitidos via HTTPS (`withCredentials: true`), com validade de 5 minutos para o cookie `access` e rotação do cookie `refresh` a cada renovação (o anterior é invalidado).
+4. **Proteção Ativa contra Ataques de Força Bruta (Rate Limiting/Throttling)**: A API restringe requisições automatizadas abusivas com limites estritos: máximo de 5 tentativas por minuto para login, 5 por minuto para cadastro de contas e 3 por hora para solicitações de reset de senha.
 5. **Comunicação Segura (TLS/HTTPS) e CORS Restritivo**: Tráfego integralmente cifrado em trânsito com origens de requisição restritas às URLs autorizadas do frontend (`CORS_ALLOWED_ORIGINS`).
-6. **Logs de Auditoria e Acesso**: Registros invioláveis de data, hora, IP de origem e rota acessada são mantidos de forma protegida para cumprimento do Art. 15 da Lei nº 12.965/2014.
+6. **Cabeçalhos de Segurança na Interface Web**: A aplicação é entregue com *Content Security Policy* estrita (sem scripts inline ou de terceiros), bloqueio de exibição em *iframes* (`X-Frame-Options: DENY`), `X-Content-Type-Options: nosniff` e `Referrer-Policy` e `Permissions-Policy` restritivas.
 
 ---
 
@@ -91,7 +90,9 @@ Os dados tratados pelo Gestão Fisio são compartilhados estritamente na medida 
 
 1. **Infraestrutura de Hospedagem e Banco de Dados PostgreSQL**: Servidores dedicados ao processamento da aplicação e persistência do banco relacional, operando com regras de firewall e isolamento de rede.
 2. **Serviço de Correio Eletrônico Transacional (SMTP)**: Utilizado exclusivamente para envio de links autenticados de redefinição de senha requisitados pelo próprio profissional.
-3. **Autoridades Judiciais e Regulatórias**: Mediante ordem judicial fundamentada ou solicitação formal expedida pela ANPD ou conselhos de fiscalização profissional (COFFITO/CREFITO).
+3. **Armazenamento de Arquivos em Nuvem**: Exclusivamente para a foto de perfil do Profissional. Não recebe dados de pacientes.
+4. **Hospedagem da Interface Web**: Entrega os arquivos da aplicação e recebe apenas dados técnicos de acesso (como IP). Não tem acesso aos dados de pacientes.
+5. **Autoridades Judiciais e Regulatórias**: Mediante ordem judicial fundamentada ou solicitação formal expedida pela ANPD ou conselhos de fiscalização profissional (COFFITO/CREFITO).
 
 A Plataforma **NÃO vende, NÃO aluga e NÃO monetiza** dados pessoais de qualquer natureza.
 
@@ -99,9 +100,11 @@ A Plataforma **NÃO vende, NÃO aluga e NÃO monetiza** dados pessoais de qualqu
 
 ## 6. Retenção e Descarte de Dados
 
-6.1. **Dados dos Profissionais**: Serão mantidos enquanto o cadastro estiver ativo. Após o encerramento da conta, os dados cadastrais serão eliminados ou anonimizados, ressalvada a guarda obrigatória dos registros de conexão por 6 (seis) meses (Art. 15 da Lei nº 12.965/2014) e dados fiscais/tributários pelo prazo prescricional aplicável.
+6.1. **Dados dos Profissionais**: Mantidos enquanto o cadastro estiver ativo. Após o cancelamento, os dados cadastrais são eliminados ou anonimizados.
 
-6.2. **Dados dos Pacientes e Prontuários**: Por imposição legal e ética dos conselhos de saúde (Resolução COFFITO nº 414/2012 e legislação correlata), os prontuários de pacientes devem ser guardados pelo prazo mínimo regulamentar de **20 (vinte) anos** a contar do último atendimento. Caso o Profissional decida encerrar sua conta no Gestão Fisio, será disponibilizado mecanismo de exportação integral das fichas clínicas de seus pacientes para que ele continue garantindo a custódia legal dos prontuários em seus arquivos próprios.
+6.2. **Registros Técnicos de Acesso**: Endereço IP, data/hora e endereço das requisições ficam somente nos registros dos provedores de hospedagem, pelo período curto definido por eles, e são usados apenas para segurança e diagnóstico de falhas.
+
+6.3. **Dados dos Pacientes e Prontuários**: Por imposição legal e ética dos conselhos de saúde (Resolução COFFITO nº 414/2012 e legislação correlata), os prontuários de pacientes devem ser guardados pelo prazo mínimo regulamentar de **20 (vinte) anos** a contar do último atendimento. A exportação integral dos dados fica disponível na aba **Perfil** a qualquer momento, inclusive antes da exclusão da conta, que é definitiva. A guarda do prontuário pelo prazo legal permanece sob responsabilidade do Profissional.
 
 ---
 
@@ -111,13 +114,13 @@ Nos termos do Artigo 18 da LGPD, o Titular de dados pessoais possui os seguintes
 - **Confirmação e Acesso**: Confirmar a existência de tratamento e obter cópia dos dados tratados;
 - **Correção**: Solicitar a retificação imediata de dados incompletos, inexatos ou desatualizados;
 - **Anonimização, Bloqueio ou Eliminação**: De dados desnecessários, excessivos ou tratados em desconformidade com a LGPD;
-- **Portabilidade**: Solicitar a exportação dos seus dados em formato estruturado e legível por máquina;
+- **Portabilidade**: Exportar seus dados em formato estruturado e legível por máquina;
 - **Informação sobre Compartilhamento**: Saber com quais entidades públicas ou privadas os dados foram compartilhados;
 - **Revogação do Consentimento**: Revogar autorizações anteriormente concedidas, quando essa tiver sido a base legal aplicada.
 
 ### 7.1. Como Exercer Seus Direitos
 
-- **Profissionais**: Podem visualizar e retificar seus dados cadastrais diretamente na aba "Perfil" da Plataforma ou acionar o Encarregado pelo canal de privacidade.
+- **Profissionais**: Podem visualizar e atualizar seus dados, exportá-los (portabilidade) e excluir a própria conta (eliminação) diretamente na aba "Perfil" da Plataforma. Para outras solicitações, podem acionar o Encarregado pelo canal de privacidade.
 - **Pacientes**: Visto que o Controlador primário do prontuário é o seu fisioterapeuta, o paciente deve, preferencialmente, direcionar a solicitação de acesso ou correção diretamente ao profissional responsável por seu atendimento. Caso a solicitação seja encaminhada ao canal do Gestão Fisio, esta será direcionada ao Profissional responsável para validação clínica e operacional.
 
 ---
@@ -127,7 +130,7 @@ Nos termos do Artigo 18 da LGPD, o Titular de dados pessoais possui os seguintes
 Para esclarecer quaisquer dúvidas sobre esta Política, solicitar o exercício de direitos ou relatar qualquer inconformidade com a LGPD, o titular poderá entrar em contato com o Encarregado de Proteção de Dados:
 
 - **Encarregado pelo Tratamento de Dados Pessoais (DPO)**: Setor de Privacidade e Proteção de Dados Gestão Fisio  
-- **E-mail de Contato**: `dpo@gestaofisio.com.br`  
+- **E-mail de Contato**: `privacidade@gestao-fisio.com`  
 - **Prazo de Atendimento**: As solicitações de titulares serão respondidas no prazo legal de até 15 (quinze) dias úteis, na forma da regulamentação da ANPD.
 
 ---

@@ -1,6 +1,6 @@
 # Acordo de Processamento de Dados Pessoais (Data Processing Agreement — DPA)
 
-*Versão: 1.0 — Em vigor a partir de: 13 de Setembro de 2026*
+*Versão: 1.1 — Última atualização: 30 de outubro de 2026*
 
 Este **Acordo de Processamento de Dados Pessoais** ("Acordo" ou "DPA") constitui anexo indissociável dos **Termos de Uso e Condições Gerais de Serviço** da plataforma **Gestão Fisio**, celebrado entre:
 
@@ -63,7 +63,9 @@ Ambos doravante denominados individualmente como "Parte" e conjuntamente como "P
 
 5.1. O CONTROLADOR autoriza a utilização pelo OPERADOR dos seguintes serviços de infraestrutura indispensáveis ao funcionamento do serviço:
 - Servidores de aplicação e banco de dados relacional PostgreSQL em nuvem operando em rede privada e protegida por firewall;
-- Servidor de envio de e-mails transacionais (protocolo SMTP seguro com TLS) para redefinição de senhas solicitadas pelos usuários.
+- Servidor de envio de e-mails transacionais (protocolo SMTP seguro com TLS) para redefinição de senhas solicitadas pelos usuários;
+- Armazenamento de arquivos em nuvem, exclusivamente para a foto de perfil do Profissional, sem receber dados de pacientes;
+- Hospedagem da interface web, que entrega os arquivos da aplicação e recebe apenas dados técnicos de acesso (como IP), sem acesso aos dados de pacientes.
 
 5.2. O OPERADOR assegura que exigirá dos referidos suboperadores nível equivalente de proteção de dados e salvaguardas de segurança àquelas estabelecidas neste Acordo.
 
@@ -83,9 +85,13 @@ Ambos doravante denominados individualmente como "Parte" e conjuntamente como "P
 
 ## 7. Término do Tratamento e Devolução dos Dados
 
-7.1. Mediante a rescisão dos Termos de Uso e o encerramento do contrato de prestação de serviços, o OPERADOR:
-- Manterá os dados disponíveis para exportação pelo CONTROLADOR por um período mínimo de tolerância de 30 (trinta) dias;
-- Após o decurso do prazo de tolerância, procederá à eliminação segura e definitiva de todos os registros e cópias existentes nos bancos de dados de produção, ressalvada a retenção de dados estritamente necessária ao cumprimento de deveres legais ou regulatórios da Plataforma (ex: Marco Civil da Internet).
+7.1. O CONTROLADOR pode exportar integralmente os dados a qualquer momento pela aba Perfil da Plataforma, inclusive antes de excluir a conta.
+
+7.2. A exclusão da conta pelo CONTROLADOR, feita na aba Perfil com confirmação da senha, é imediata e definitiva: os registros são eliminados dos bancos de dados de produção e deixam de ficar disponíveis para exportação ou recuperação.
+
+7.3. Nos demais casos de encerramento do contrato, como a rescisão por violação dos Termos de Uso, o OPERADOR manterá os dados disponíveis para exportação pelo CONTROLADOR por 30 (trinta) dias e, depois desse prazo, procederá à eliminação segura e definitiva dos registros nos bancos de dados de produção.
+
+7.4. Registros técnicos de acesso seguem os prazos descritos na Política de Privacidade.
 
 ---
 

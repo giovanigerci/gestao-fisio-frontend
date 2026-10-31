@@ -1,7 +1,6 @@
 # Termos de Uso e Condições Gerais de Serviço — Plataforma Gestão Fisio
 
-*Última atualização: 13 de Setembro de 2026*  
-*Versão: 1.0*
+*Última atualização: 30 de outubro de 2026. Alinhado à versão 1.2 (15 de outubro de 2026), publicada em [gestao-fisio.com/termos](https://gestao-fisio.com/termos), que prevalece em caso de divergência.*
 
 Bem-vindo ao **Gestão Fisio**. Estes Termos de Uso e Condições Gerais de Serviço ("Termos") regulam o acesso e a utilização da plataforma tecnológica Gestão Fisio ("Plataforma", "Sistema" ou "Nós"), disponibilizada via aplicação web e dispositivos correlatos, destinada a fisioterapeutas, instrutores de Pilates e estabelecimentos de saúde ("Usuário", "Profissional" ou "Você").
 
@@ -44,7 +43,7 @@ Ao criar uma conta, clicar em "Aceito os Termos de Uso e a Política de Privacid
 ## 4. Proteção de Dados e Tratamento de Dados Pessoais (LGPD)
 
 4.1. **Papéis Jurídicos sob a Lei Federal nº 13.709/2018 (LGPD)**:
-- **Dados do Profissional**: O Gestão Fisio atua como **Controlador** dos dados cadastrais do Profissional (nome, login, telefone, CREFITO, foto, logs de acesso), tratando-os para execução do contrato, faturamento e cumprimento de obrigações legais (como o Marco Civil da Internet).
+- **Dados do Profissional**: O Gestão Fisio atua como **Controlador** dos dados cadastrais do Profissional (nome, login, telefone, CREFITO, foto, logs de acesso), tratando-os para execução do contrato e cumprimento de obrigações legais.
 - **Dados dos Pacientes**: O Profissional atua como **Controlador** dos dados cadastrais e de saúde (dados pessoais sensíveis) de seus pacientes. O Gestão Fisio atua como **Operador**, executando o tratamento estritamente sob as diretrizes do Profissional e no limite das funcionalidades do software.
 
 4.2. **Obrigações do Usuário como Controlador**: O Usuário declara e garante que:
@@ -84,20 +83,20 @@ Ao criar uma conta, clicar em "Aceito os Termos de Uso e a Política de Privacid
 
 7.2. O aceite destes Termos concede ao Usuário uma licença de uso limitada, não exclusiva, intransferível e revogável, unicamente para utilização do software de acordo com suas finalidades normais.
 
-7.3. Os dados inseridos pelo Usuário (dados cadastrais de pacientes, clínicas e agendamentos) pertencem ao Usuário e/ou aos respectivos titulares, mantendo o Usuário a prerrogativa de solicitar a exportação de seus dados na forma da legislação vigente.
+7.3. Os dados inseridos pelo Usuário (dados cadastrais de pacientes, clínicas e agendamentos) pertencem ao Usuário e/ou aos respectivos titulares, mantendo o Usuário a prerrogativa de exportá-los integralmente, a qualquer momento, pela aba **Perfil** da Plataforma.
 
 ---
 
 ## 8. Suspensão, Rescisão e Encerramento de Conta
 
-8.1. O Usuário poderá requerer o cancelamento e exclusão de sua conta a qualquer tempo mediante requisição através dos canais de suporte ou painel administrativo.
+8.1. O Usuário pode excluir a própria conta a qualquer tempo pela aba **Perfil** da Plataforma, mediante confirmação da senha. A exclusão é **imediata e definitiva**.
 
 8.2. O Gestão Fisio reserva-se o direito de suspender imediatamente o acesso ou rescindir a conta do Usuário, independentemente de notificação prévia, caso seja identificada:
 - Violação comprovada ou fundada suspeita de descumprimento destes Termos de Uso ou da Política de Privacidade;
 - Tentativa de ataque cibernético, intrusão ou comprometimento da integridade do banco de dados e de outros usuários;
 - Ordem judicial ou determinação expressa de autoridade competente (ANPD, autoridade policial ou judiciária).
 
-8.3. Em caso de cancelamento, será facultado ao Profissional um prazo razoável para a exportação de seus dados cadastrais e registros de atendimento antes da purga definitiva dos bancos de dados, ressalvada a retenção de dados obrigatória por força de lei (ex: logs de acesso pelo prazo de 6 meses sob o Marco Civil da Internet).
+8.3. Antes de excluir a conta, o Usuário pode exportar integralmente seus dados pela aba **Perfil**. Após a exclusão, os dados não ficam disponíveis para exportação nem recuperação. Registros técnicos de acesso seguem os prazos descritos na Política de Privacidade.
 
 ---
 
@@ -118,5 +117,5 @@ Ao criar uma conta, clicar em "Aceito os Termos de Uso e a Política de Privacid
 ---
 
 **Canais de Atendimento e Suporte:**  
-E-mail de Contato: `contato@gestaofisio.com.br`  
-Encarregado de Dados (DPO): `dpo@gestaofisio.com.br`
+E-mail de Contato: `contato@gestao-fisio.com`  
+Encarregado de Dados (DPO): `privacidade@gestao-fisio.com`
