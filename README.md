@@ -100,7 +100,7 @@ Todas as páginas são carregadas sob demanda (`loadComponent`).
 
 ## 🧪 Testes
 
-Testes com Vitest e `HttpTestingController`. Cobrem o interceptor e o refresh de sessão, os guards, as telas de perfil, financeiro, agenda (semana e mês) e clínicas, os formulários em modal, a lógica de datas, as cores das clínicas e o ciclo de atualização do PWA.
+322 testes em 38 arquivos, com Vitest e `HttpTestingController`. Cobrem o interceptor e o refresh de sessão, o `guestGuard`, as telas de perfil, financeiro, agenda (semana e mês), clínicas e cadastro, os formulários em modal, o combobox, a máscara de moeda, a lógica de datas, as cores das clínicas e o ciclo de atualização do PWA. Os services são testados pelas telas que os usam.
 
 ```bash
 npm test -- --watch=false
@@ -132,3 +132,9 @@ A URL da API fica em `src/environments/environment.ts` (`http://localhost:8000/a
 
 - [`CLAUDE.md`](CLAUDE.md): convenções do projeto, contrato com a API e o porquê das decisões (autenticação, datas, gráficos, PWA, CSP).
 - [`docs/legal/`](docs/legal/): Termos de Uso, Política de Privacidade (LGPD), DPA, modelo de TCLE, Política de Cookies e Plano de Resposta a Incidentes.
+
+---
+
+## 📄 Licença
+
+Este repositório é público como portfólio e não tem licença de uso: todos os direitos reservados. O código pode ser lido e avaliado, mas não pode ser copiado, modificado ou redistribuído sem autorização.

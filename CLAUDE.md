@@ -122,13 +122,13 @@ Telas autenticadas precisam do backend rodando localmente.
 
 ## Dívidas conhecidas (apague ao resolver)
 
-1. Cobertura baixa: só `perfil` (e seus modais), `financeiro`, `agenda` (semana e mês), `clinicas` (listagem), `guestGuard`, `shared/utils/datas` e `shared/utils/clinic-colors` têm testes de comportamento; os demais specs são apenas "should create".
+1. Sem testes de comportamento: `authGuard` e `AuthService` (specs só com "should be created"), a listagem de pacientes, esqueci/redefinir senha, a nav-bar, as máscaras de CPF e telefone e o `telefone.pipe`. Os services não têm spec próprio: são cobertos pelos specs das telas que os usam.
 
 ## Fluxo de trabalho
 
 - Antes de mexer em auth/interceptor, guards, rotas ou contrato com a API: apresente um plano curto e espere OK.
 - Dúvida de regra de negócio: pergunte, não invente.
 - Dependência nova só com OK.
-- Não Adicionar comentarios desnecessários no código.
-- Commits no padrão Conventional Commits (`feat(agenda): ...`, `fix(financeiro): ...`), com descrição em português; não faça push sem pedido.
+- Não adicione comentários desnecessários no código: rótulo de seção ou comentário que repete o código não entra; comentário explica um porquê que o código não mostra.
+- Commits no padrão Conventional Commits (`feat(agenda): ...`, `fix(financeiro): ...`), com descrição em português e sem linha de coautoria (`Co-Authored-By`); não faça push sem pedido.
 - Pronto = `npm test -- --watch=false` e `npm run build` passando + resumo do que mudou e por quê.
