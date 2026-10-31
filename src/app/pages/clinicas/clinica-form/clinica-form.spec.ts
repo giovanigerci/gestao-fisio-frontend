@@ -15,7 +15,7 @@ describe('ClinicaForm', () => {
   let simulado: ReturnType<typeof simularDialogNativo>;
 
   const clinica: Clinica = {
-    id: 7, profissional: 1, nome: 'Donare', endereco: 'Rua A, 10', telefone: '41999990000',
+    id: 7, profissional: 1, nome: 'Alfa', endereco: 'Rua A, 10', telefone: '41999990000',
     valor_por_atendimento: '80.00', ativo: true, cor: 3,
   };
 
@@ -57,11 +57,11 @@ describe('ClinicaForm', () => {
     });
 
     it('a prévia acompanha o que é digitado', () => {
-      componente.nome.set('Movi Pilates');
+      componente.nome.set('Beta Pilates');
       componente.valorPorAtendimento.set('60.00');
       fixture.detectChanges();
 
-      expect(el().querySelector('.mf-previa-avatar')!.textContent).toContain('MP');
+      expect(el().querySelector('.mf-previa-avatar')!.textContent).toContain('BP');
       expect(el().querySelector('.mf-previa-detalhe')!.textContent!.replace(/\s+/g, ' ')).toContain('R$ 60,00 por atendimento');
     });
 
@@ -76,13 +76,13 @@ describe('ClinicaForm', () => {
     });
 
     it('salvar cria a clínica e volta para a listagem sem perguntar nada', async () => {
-      componente.nome.set('Movi');
+      componente.nome.set('Beta');
       componente.endereco.set('Av. das Flores, 382');
       componente.valorPorAtendimento.set('60.00');
 
       componente.salvar();
       const req = http.expectOne((r) => r.method === 'POST' && r.url.endsWith('/clinicas/'));
-      expect(req.request.body).toMatchObject({ nome: 'Movi', endereco: 'Av. das Flores, 382', valor_por_atendimento: '60.00' });
+      expect(req.request.body).toMatchObject({ nome: 'Beta', endereco: 'Av. das Flores, 382', valor_por_atendimento: '60.00' });
       req.flush({ ...clinica, id: 9 });
 
       expect(navegar).toHaveBeenCalledWith(['/clinicas']);
@@ -129,7 +129,7 @@ describe('ClinicaForm', () => {
     });
 
     it('carrega os dados e a cor salva, sem contar como alteração', () => {
-      expect(componente.nome()).toBe('Donare');
+      expect(componente.nome()).toBe('Alfa');
       expect(componente.previaCor()).toBe('var(--color-clinic-3)');
       expect(componente.temAlteracoes()).toBe(false);
     });

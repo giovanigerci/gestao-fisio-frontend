@@ -326,7 +326,7 @@ describe('Agenda — acessível pelo teclado', () => {
       req.flush([
         {
           id: 1, profissional: 1, clinica: 1, paciente: 1, data: '2026-10-07', hora_inicio: '08:00:00', hora_fim: '09:00:00',
-          status: 'AG', eh_experimental: false, valor_calculado: 80, nome_paciente: 'Mariana Costa', nome_clinica: 'Movi',
+          status: 'AG', eh_experimental: false, valor_calculado: 80, nome_paciente: 'Mariana Costa', nome_clinica: 'Beta',
           cor_clinica: 1,
         },
       ]),

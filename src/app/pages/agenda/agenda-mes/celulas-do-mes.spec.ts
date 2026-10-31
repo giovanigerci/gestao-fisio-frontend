@@ -4,7 +4,7 @@ import { CelulaDoMes, clinicasDaLegenda, montarCelulasDoMes } from './celulas-do
 function sessao(dados: Partial<Agendamento>): Agendamento {
   return {
     id: 1, profissional: 1, clinica: 1, paciente: 1, data: '2026-10-20', hora_inicio: '08:00:00', hora_fim: '09:00:00',
-    status: 'AG', eh_experimental: false, valor_calculado: 100, nome_paciente: 'Mariana Costa', nome_clinica: 'Movi',
+    status: 'AG', eh_experimental: false, valor_calculado: 100, nome_paciente: 'Mariana Costa', nome_clinica: 'Beta',
     cor_clinica: 1, ...dados,
   };
 }
@@ -101,11 +101,11 @@ describe('células do mês', () => {
 
   it('a legenda lista cada clínica do mês uma vez', () => {
     const legenda = clinicasDaLegenda([
-      sessao({ id: 1, clinica: 1, nome_clinica: 'Movi', cor_clinica: 1 }),
-      sessao({ id: 2, clinica: 2, nome_clinica: 'Donare', cor_clinica: 2 }),
-      sessao({ id: 3, clinica: 1, nome_clinica: 'Movi', cor_clinica: 1 }),
+      sessao({ id: 1, clinica: 1, nome_clinica: 'Beta', cor_clinica: 1 }),
+      sessao({ id: 2, clinica: 2, nome_clinica: 'Alfa', cor_clinica: 2 }),
+      sessao({ id: 3, clinica: 1, nome_clinica: 'Beta', cor_clinica: 1 }),
     ]);
 
-    expect(legenda.map((c) => c.nome)).toEqual(['Movi', 'Donare']);
+    expect(legenda.map((c) => c.nome)).toEqual(['Beta', 'Alfa']);
   });
 });

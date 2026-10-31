@@ -6,7 +6,7 @@ import { DetalhesDaSessao } from './detalhes-da-sessao';
 function sessao(dados: Partial<Agendamento>): Agendamento {
   return {
     id: 1, profissional: 1, clinica: 1, paciente: 1, data: '2026-10-20', hora_inicio: '08:00:00', hora_fim: '09:00:00',
-    status: 'AG', eh_experimental: false, valor_calculado: 80, nome_paciente: 'Mariana Costa', nome_clinica: 'Movi',
+    status: 'AG', eh_experimental: false, valor_calculado: 80, nome_paciente: 'Mariana Costa', nome_clinica: 'Beta',
     cor_clinica: 1, idade_paciente: '34 anos', ...dados,
   };
 }
@@ -37,7 +37,7 @@ describe('DetalhesDaSessao', () => {
     expect(dialogo.showModal).toHaveBeenCalled();
     expect(campo('Paciente')).toBe('Mariana Costa');
     expect(campo('Idade')).toBe('34 anos');
-    expect(campo('Clínica')).toBe('Movi');
+    expect(campo('Clínica')).toBe('Beta');
     expect(campo('Data')).toBe('20/10/2026');
     expect(campo('Horário')).toBe('08:00 – 09:00');
     expect(campo('Valor')).toBe('R$ 80,00');

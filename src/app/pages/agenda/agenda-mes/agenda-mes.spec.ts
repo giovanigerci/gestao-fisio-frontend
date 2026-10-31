@@ -5,7 +5,7 @@ import { AgendaMes, DiaEscolhido } from './agenda-mes';
 function sessao(dados: Partial<Agendamento>): Agendamento {
   return {
     id: 1, profissional: 1, clinica: 1, paciente: 1, data: '2026-10-20', hora_inicio: '08:00:00', hora_fim: '09:00:00',
-    status: 'AG', eh_experimental: false, valor_calculado: 80, nome_paciente: 'Mariana Costa', nome_clinica: 'Movi',
+    status: 'AG', eh_experimental: false, valor_calculado: 80, nome_paciente: 'Mariana Costa', nome_clinica: 'Beta',
     cor_clinica: 1, ...dados,
   };
 }
@@ -26,7 +26,7 @@ describe('AgendaMes', () => {
     fixture.componentRef.setInput('agendamentos', [
       sessao({ id: 1, hora_inicio: '14:00:00', nome_paciente: 'João Pereira' }),
       sessao({ id: 2, hora_inicio: '08:00:00' }),
-      sessao({ id: 3, clinica: 2, nome_clinica: 'Donare', cor_clinica: 2, data: '2026-10-21' }),
+      sessao({ id: 3, clinica: 2, nome_clinica: 'Alfa', cor_clinica: 2, data: '2026-10-21' }),
     ]);
     fixture.detectChanges();
   });
@@ -70,6 +70,6 @@ describe('AgendaMes', () => {
   it('a legenda mostra as clínicas do mês', () => {
     const nomes = [...elemento().querySelectorAll('.mes-legenda-item')].map((i) => i.textContent?.trim());
 
-    expect(nomes).toEqual(['Movi', 'Donare']);
+    expect(nomes).toEqual(['Beta', 'Alfa']);
   });
 });

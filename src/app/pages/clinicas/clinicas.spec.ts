@@ -40,7 +40,7 @@ describe('Clinicas', () => {
   });
 
   it('mostra um card por clínica com o valor e os números do mês', () => {
-    responder([clinica(), clinica({ id: 2, nome: 'Movi', cor: 3 })]);
+    responder([clinica(), clinica({ id: 2, nome: 'Beta', cor: 3 })]);
     const card = el().querySelector('.clinica-card')!;
 
     expect(el().querySelectorAll('.clinica-card').length).toBe(2);
@@ -84,7 +84,7 @@ describe('Clinicas', () => {
   });
 
   it('excluir pede confirmação e tira a clínica da lista', () => {
-    responder([clinica(), clinica({ id: 2, nome: 'Movi' })]);
+    responder([clinica(), clinica({ id: 2, nome: 'Beta' })]);
 
     (el().querySelector('.clinica-excluir') as HTMLButtonElement).click();
     fixture.detectChanges();
@@ -92,7 +92,7 @@ describe('Clinicas', () => {
     http.expectOne((req) => req.method === 'DELETE' && req.url.endsWith('/clinicas/1/')).flush(null);
     fixture.detectChanges();
     expect(el().querySelectorAll('.clinica-card').length).toBe(1); // sai da tela na hora
-    responder([clinica({ id: 2, nome: 'Movi' })]); // e a lista recarrega em segundo plano
+    responder([clinica({ id: 2, nome: 'Beta' })]); // e a lista recarrega em segundo plano
 
     expect(el().querySelectorAll('.clinica-card').length).toBe(1);
     expect(el().querySelector('.page-counter')!.textContent).toContain('1 cadastrada');

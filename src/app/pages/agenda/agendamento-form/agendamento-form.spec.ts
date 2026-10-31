@@ -43,7 +43,7 @@ describe('AgendamentoForm', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
     http.expectOne((r) => r.url.endsWith('/pacientes/opcoes/')).flush([{ id: 1, nome: 'Ana Souza' }, { id: 2, nome: 'Bruno Lima' }]);
-    http.expectOne((r) => r.url.endsWith('/clinicas/opcoes/')).flush([{ id: 2, nome: 'Donare', cor: 1 }, { id: 3, nome: 'Movi', cor: 2 }]);
+    http.expectOne((r) => r.url.endsWith('/clinicas/opcoes/')).flush([{ id: 2, nome: 'Alfa', cor: 1 }, { id: 3, nome: 'Beta', cor: 2 }]);
     fixture.detectChanges();
   }
 
@@ -80,7 +80,7 @@ describe('AgendamentoForm', () => {
 
       expect(chips.length).toBe(2);
       expect(chips[0].style.getPropertyValue('--cor-chip')).toBe('var(--color-clinic-1)');
-      expect(chips[1].textContent).toContain('Movi');
+      expect(chips[1].textContent).toContain('Beta');
     });
 
     it('o início sugere o fim uma hora depois', () => {
