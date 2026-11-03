@@ -7,6 +7,8 @@ O **GestãoFisio** é um sistema de agenda e receita para fisioterapeutas e inst
 
 > **Regra de ouro do projeto:** regra de negócio e dinheiro são calculados no backend; o frontend exibe. Nenhum valor de receita é recalculado no cliente: as telas usam `valor_calculado` e os totais de `/resumo-financeiro/`.
 
+![Financeiro de outubro: receita realizada, evolução diária comparada ao mês anterior e composição por clínica](docs/screenshots/financeiro.png)
+
 ---
 
 ## ✨ Destaques técnicos
@@ -19,6 +21,51 @@ O **GestãoFisio** é um sistema de agenda e receita para fisioterapeutas e inst
 - **Segurança no deploy.** Content Security Policy estrita (sem script inline), `X-Frame-Options`, `Referrer-Policy` e `Permissions-Policy` no `vercel.json`. A fonte Inter é servida pelo próprio site, sem Google Fonts (que mandaria o IP de cada visitante ao Google).
 - **LGPD na prática.** Exportação de todos os dados da conta (ZIP com CSVs), exclusão definitiva da conta com confirmação por senha, troca de e-mail confirmada por código, e Termos e Política de Privacidade versionados no próprio app.
 - **Datas sem os bugs clássicos.** `new Date('YYYY-MM-DD')` vira o dia anterior no Brasil (UTC-3), e `toISOString()` depois das 21h vira o dia seguinte. As datas da API passam por `formatarDataISO`/`parseDataISO`, e os testes fixam o relógio no pior caso (22h30 de um dia 31).
+
+---
+
+## 📸 Telas
+
+Capturas da conta de demonstração em produção, com dados fictícios.
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="docs/screenshots/agenda-semana.png" alt="Agenda na visão de semana, com o dia confirmado e as sessões realizadas">
+      <p align="center"><sub><b>Agenda (semana):</b> sessões do dia, progresso e dia confirmado</sub></p>
+    </td>
+    <td width="50%">
+      <img src="docs/screenshots/agenda-mes.png" alt="Agenda na visão de mês, com as sessões de cada dia na cor da clínica">
+      <p align="center"><sub><b>Agenda (mês):</b> cada clínica com a sua cor; canceladas riscadas</sub></p>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="docs/screenshots/sessao-modal.png" alt="Modal de nova sessão com repetição semanal e as datas já ocupadas pelo paciente">
+      <p align="center"><sub><b>Nova sessão:</b> a prévia da repetição aponta os horários já ocupados</sub></p>
+    </td>
+    <td width="50%">
+      <img src="docs/screenshots/pacientes.png" alt="Listagem de pacientes com busca, status, telefone, última visita e sessões">
+      <p align="center"><sub><b>Pacientes:</b> busca no servidor e scroll infinito</sub></p>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2">
+      <img src="docs/screenshots/financeiro-historico.png" alt="Histórico da receita por mês, cada mês ao lado do mesmo mês do ano anterior">
+      <p align="center"><sub><b>Histórico:</b> receita por mês ao lado do mesmo mês do ano anterior; o mês em andamento fica sinalizado</sub></p>
+    </td>
+  </tr>
+</table>
+
+**No celular**, onde o app é mais usado (PWA instalável):
+
+<p align="center">
+  <img src="docs/screenshots/celular-agenda.png" alt="Agenda no celular" width="260">
+  &nbsp;
+  <img src="docs/screenshots/celular-sessao.png" alt="Detalhes da sessão em painel que sobe de baixo no celular" width="260">
+  &nbsp;
+  <img src="docs/screenshots/celular-financeiro.png" alt="Composição da receita por clínica no celular" width="260">
+</p>
 
 ---
 
